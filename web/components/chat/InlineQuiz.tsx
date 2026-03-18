@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useLangStore } from '@/stores/use-lang-store'
 
 /* ── Quiz Definitions ── */
 interface QuizQuestion {
@@ -188,6 +189,8 @@ interface Props {
 }
 
 export function InlineQuiz({ quizType = 'THI', onResult }: Props) {
+  const { lang } = useLangStore()
+  const isEn = lang === 'en'
   const quiz = QUIZZES[quizType] ?? QUIZZES.THI
   const [started, setStarted] = useState(false)
   const [currentQ, setCurrentQ] = useState(0)
@@ -233,9 +236,9 @@ export function InlineQuiz({ quizType = 'THI', onResult }: Props) {
           <h3 className="text-sm font-bold text-white">{quiz.name}</h3>
           <p className="text-[10px] text-slate-400">{quiz.fullName}</p>
           <p className="text-xs text-slate-300">{quiz.description}</p>
-          <p className="text-[10px] text-slate-500">{quiz.questions.length} câu hỏi</p>
+          <p className="text-[10px] text-slate-500">{quiz.questions.length} {isEn ? 'questions' : 'câu hỏi'}</p>
           <button onClick={() => setStarted(true)} className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded-lg font-semibold transition-colors">
-            📋 Bắt Đầu Đánh Giá
+            {isEn ? '📋 Start Assessment' : '📋 Bắt Đầu Đánh Giá'}
           </button>
         </div>
       )}
@@ -275,7 +278,7 @@ export function InlineQuiz({ quizType = 'THI', onResult }: Props) {
       {/* Results */}
       {result && (
         <div className="p-4 space-y-3 text-center">
-          <h3 className="text-sm font-bold text-white">📊 Kết Quả {quiz.name}</h3>
+          <h3 className="text-sm font-bold text-white">{isEn ? '📊 Results' : '📊 Kết Quả'} {quiz.name}</h3>
           <div className="bg-slate-700/40 rounded-lg p-3">
             <div className="text-2xl font-bold" style={{ color: result.color }}>
               {result.score}/{quiz.questions.length * (quiz.questions[0].options.length - 1)}
@@ -286,10 +289,10 @@ export function InlineQuiz({ quizType = 'THI', onResult }: Props) {
           </div>
           <p className="text-xs text-slate-400">{result.interpretation}</p>
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-[10px] text-amber-300">
-            ⚠️ Kết quả chỉ mang tính tham khảo. Vui lòng tham vấn chuyên gia y tế để được đánh giá chính xác.
+            {isEn ? '⚠️ Results are for reference only. Please consult a healthcare professional for accurate evaluation.' : '⚠️ Kết quả chỉ mang tính tham khảo. Vui lòng tham vấn chuyên gia y tế để được đánh giá chính xác.'}
           </div>
           <button onClick={restart} className="text-[10px] text-slate-500 hover:text-white transition-colors">
-            🔄 Làm lại
+            {isEn ? '🔄 Start Over' : '🔄 Làm lại'}
           </button>
         </div>
       )}

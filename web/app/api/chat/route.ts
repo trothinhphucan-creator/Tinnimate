@@ -65,8 +65,8 @@ export async function POST(request: Request) {
     }
 
     // 3. Parse request body
-    const body = await request.json() as { messages: ChatMessage[]; conversationId?: string }
-    const { messages } = body
+    const body = await request.json() as { messages: ChatMessage[]; conversationId?: string; lang?: string }
+    const { messages, lang } = body
     let { conversationId } = body
 
     const serviceClient = createServiceClient()
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     }
 
     // 7. Stream AI response
-    const stream = await streamChat(messages, { training: isTrainingMode, onUsage })
+    const stream = await streamChat(messages, { training: isTrainingMode, onUsage, lang: lang ?? 'vi' })
 
     const encoder = new TextEncoder()
     const readable = new ReadableStream({

@@ -34,11 +34,12 @@ export async function streamChat(
   options?: {
     training?: boolean
     onUsage?: (usage: TokenUsage) => void | Promise<void>
+    lang?: string
   }
 ): Promise<ReadableStream> {
   const [config, systemPrompt, trainingPrompt] = await Promise.all([
     getAdminConfig(),
-    assembleSystemPrompt(),
+    assembleSystemPrompt(undefined, options?.lang ?? 'vi'),
     options?.training ? getTrainingModePrompt() : Promise.resolve(''),
   ])
 

@@ -106,6 +106,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           messages: [...messages, userMsg],
           conversationId,
+          lang,
         }),
       })
 

@@ -1,12 +1,15 @@
 'use client'
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
+import { useLangStore } from '@/stores/use-lang-store'
 
 /* ── Sound Types Configuration ── */
 interface SoundDef {
   label: string
+  labelEn: string
   emoji: string
   description: string
+  descEn: string
   freq?: number
   type: OscillatorType | 'noise'
   noiseType?: string
@@ -17,81 +20,78 @@ interface SoundDef {
 }
 
 const SOUND_TYPES: Record<string, SoundDef> = {
-  // — NOISE category —
   white_noise: {
-    label: 'White Noise', emoji: '✨', description: 'Che lấp tiếng ù tai hiệu quả',
+    label: 'White Noise', labelEn: 'White Noise', emoji: '✨',
+    description: 'Che lấp tiếng ù tai hiệu quả', descEn: 'Effectively masks tinnitus',
     type: 'noise', noiseType: 'white', image: '/sounds/whitenoise.png',
-    gradient: 'from-gray-500/20 to-gray-900/40', animClass: 'animate-visual-particles',
-    category: 'noise',
+    gradient: 'from-gray-500/20 to-gray-900/40', animClass: 'animate-visual-particles', category: 'noise',
   },
   pink_noise: {
-    label: 'Pink Noise', emoji: '🌸', description: 'Tự nhiên, thoải mái như gió',
+    label: 'Pink Noise', labelEn: 'Pink Noise', emoji: '🌸',
+    description: 'Tự nhiên, thoải mái như gió', descEn: 'Natural and gentle like wind',
     type: 'noise', noiseType: 'pink', image: '/sounds/whitenoise.png',
-    gradient: 'from-pink-500/20 to-purple-900/40', animClass: 'animate-visual-breathe',
-    category: 'noise',
+    gradient: 'from-pink-500/20 to-purple-900/40', animClass: 'animate-visual-breathe', category: 'noise',
   },
   brown_noise: {
-    label: 'Brown Noise', emoji: '🍂', description: 'Trầm ấm, thư giãn sâu',
+    label: 'Brown Noise', labelEn: 'Brown Noise', emoji: '🍂',
+    description: 'Trầm ấm, thư giãn sâu', descEn: 'Deep, warm and relaxing',
     type: 'noise', noiseType: 'brown', image: '/sounds/whitenoise.png',
-    gradient: 'from-amber-800/20 to-stone-900/40', animClass: 'animate-visual-drift',
-    category: 'noise',
+    gradient: 'from-amber-800/20 to-stone-900/40', animClass: 'animate-visual-drift', category: 'noise',
   },
-  // — NATURE category —
   rain: {
-    label: 'Tiếng mưa', emoji: '🌧️', description: 'Mưa rơi trên mặt hồ yên tĩnh',
+    label: 'Tiếng mưa', labelEn: 'Rain', emoji: '🌧️',
+    description: 'Mưa rơi trên mặt hồ yên tĩnh', descEn: 'Rain falling on a calm lake',
     type: 'noise', noiseType: 'rain', image: '/sounds/rain.png',
-    gradient: 'from-blue-800/30 to-slate-900/50', animClass: 'animate-visual-rain',
-    category: 'nature',
+    gradient: 'from-blue-800/30 to-slate-900/50', animClass: 'animate-visual-rain', category: 'nature',
   },
   ocean: {
-    label: 'Sóng biển', emoji: '🌊', description: 'Sóng biển dưới ánh trăng',
+    label: 'Sóng biển', labelEn: 'Ocean Waves', emoji: '🌊',
+    description: 'Sóng biển dưới ánh trăng', descEn: 'Waves under moonlight',
     type: 'noise', noiseType: 'ocean', image: '/sounds/ocean.png',
-    gradient: 'from-teal-800/30 to-blue-900/50', animClass: 'animate-visual-waves',
-    category: 'nature',
+    gradient: 'from-teal-800/30 to-blue-900/50', animClass: 'animate-visual-waves', category: 'nature',
   },
   forest: {
-    label: 'Rừng đêm', emoji: '🌿', description: 'Côn trùng + gió lá rì rào',
+    label: 'Rừng đêm', labelEn: 'Night Forest', emoji: '🌿',
+    description: 'Côn trùng + gió lá rì rào', descEn: 'Insects and rustling leaves',
     type: 'noise', noiseType: 'forest', image: '/sounds/forest.png',
-    gradient: 'from-green-800/30 to-emerald-900/50', animClass: 'animate-visual-fireflies',
-    category: 'nature',
+    gradient: 'from-green-800/30 to-emerald-900/50', animClass: 'animate-visual-fireflies', category: 'nature',
   },
   birds: {
-    label: 'Tiếng chim', emoji: '🐦', description: 'Bình minh trong vườn',
+    label: 'Tiếng chim', labelEn: 'Birdsong', emoji: '🐦',
+    description: 'Bình minh trong vườn', descEn: 'Dawn in the garden',
     type: 'noise', noiseType: 'birds', image: '/sounds/birds.png',
-    gradient: 'from-orange-700/30 to-amber-900/50', animClass: 'animate-visual-sunrise',
-    category: 'nature',
+    gradient: 'from-orange-700/30 to-amber-900/50', animClass: 'animate-visual-sunrise', category: 'nature',
   },
   campfire: {
-    label: 'Lửa trại', emoji: '🔥', description: 'Ấm áp dưới bầu trời sao',
+    label: 'Lửa trại', labelEn: 'Campfire', emoji: '🔥',
+    description: 'Ấm áp dưới bầu trời sao', descEn: 'Warm under the starry sky',
     type: 'noise', noiseType: 'campfire', image: '/sounds/campfire.png',
-    gradient: 'from-orange-600/30 to-red-900/50', animClass: 'animate-visual-flicker',
-    category: 'nature',
+    gradient: 'from-orange-600/30 to-red-900/50', animClass: 'animate-visual-flicker', category: 'nature',
   },
-  // — TONE category —
   tone_440: {
-    label: '440 Hz', emoji: '🎵', description: 'Nốt La — cân bằng, thư giãn',
+    label: '440 Hz', labelEn: '440 Hz', emoji: '🎵',
+    description: 'Nốt La — cân bằng, thư giãn', descEn: 'Note A — balance and relaxation',
     freq: 440, type: 'sine', image: '/sounds/whitenoise.png',
-    gradient: 'from-cyan-500/20 to-blue-900/40', animClass: 'animate-visual-pulse',
-    category: 'tone',
+    gradient: 'from-cyan-500/20 to-blue-900/40', animClass: 'animate-visual-pulse', category: 'tone',
   },
   tone_528: {
-    label: '528 Hz', emoji: '💜', description: 'Tần số chữa lành — "Love frequency"',
+    label: '528 Hz', labelEn: '528 Hz', emoji: '💜',
+    description: 'Tần số chữa lành — "Love frequency"', descEn: 'Healing frequency — "Love frequency"',
     freq: 528, type: 'sine', image: '/sounds/whitenoise.png',
-    gradient: 'from-violet-500/20 to-purple-900/40', animClass: 'animate-visual-pulse',
-    category: 'tone',
+    gradient: 'from-violet-500/20 to-purple-900/40', animClass: 'animate-visual-pulse', category: 'tone',
   },
   tone_1000: {
-    label: '1000 Hz', emoji: '🎶', description: 'Tone trung — masking ù tai',
+    label: '1000 Hz', labelEn: '1000 Hz', emoji: '🎶',
+    description: 'Tone trung — masking ù tai', descEn: 'Mid tone — tinnitus masking',
     freq: 1000, type: 'sine', image: '/sounds/whitenoise.png',
-    gradient: 'from-blue-500/20 to-indigo-900/40', animClass: 'animate-visual-pulse',
-    category: 'tone',
+    gradient: 'from-blue-500/20 to-indigo-900/40', animClass: 'animate-visual-pulse', category: 'tone',
   },
 }
 
-const CATEGORY_LABELS: Record<string, { label: string; emoji: string }> = {
-  noise: { label: 'Tiếng ồn', emoji: '📡' },
-  nature: { label: 'Thiên nhiên', emoji: '🌿' },
-  tone: { label: 'Tần số', emoji: '🎵' },
+const CATEGORY_LABELS: Record<string, { label: string; labelEn: string; emoji: string }> = {
+  noise: { label: 'Tiếng ồn', labelEn: 'Noise', emoji: '📡' },
+  nature: { label: 'Thiên nhiên', labelEn: 'Nature', emoji: '🌿' },
+  tone: { label: 'Tần số', labelEn: 'Tones', emoji: '🎵' },
 }
 
 interface Props {
@@ -138,6 +138,8 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
   const stylesRef = useRef(false)
   const totalSeconds = durationMinutes * 60
   const config = SOUND_TYPES[selectedSound] ?? SOUND_TYPES.white_noise
+  const { lang } = useLangStore()
+  const isEn = lang === 'en'
 
   // Inject CSS animations once
   useEffect(() => {
@@ -319,9 +321,9 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
             {/* Top: Title */}
             <div>
               <p className="text-white/90 font-bold text-sm drop-shadow-lg">
-                {config.emoji} {config.label}
+                {config.emoji} {isEn ? config.labelEn : config.label}
               </p>
-              <p className="text-white/50 text-[10px] drop-shadow">{config.description}</p>
+              <p className="text-white/50 text-[10px] drop-shadow">{isEn ? config.descEn : config.description}</p>
             </div>
 
             {/* Center: Play button + EQ bars */}
@@ -404,7 +406,7 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
             onClick={() => setShowPicker(!showPicker)}
             className="w-full text-[10px] text-slate-400 hover:text-white py-1 rounded-lg hover:bg-slate-800/60 transition-colors disabled:opacity-40 text-center"
           >
-            {showPicker ? '▲ Ẩn danh sách' : '▼ Chọn âm thanh khác'}
+            {showPicker ? (isEn ? '▲ Hide list' : '▲ Ẩn danh sách') : (isEn ? '▼ Choose another sound' : '▼ Chọn âm thanh khác')}
           </button>
 
           {/* Sound picker grid */}
@@ -413,7 +415,7 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
               {Object.entries(grouped).map(([cat, sounds]) => (
                 <div key={cat}>
                   <p className="text-[9px] text-slate-600 uppercase tracking-wider mb-1">
-                    {CATEGORY_LABELS[cat]?.emoji} {CATEGORY_LABELS[cat]?.label}
+                    {CATEGORY_LABELS[cat]?.emoji} {isEn ? CATEGORY_LABELS[cat]?.labelEn : CATEGORY_LABELS[cat]?.label}
                   </p>
                   <div className="grid grid-cols-3 gap-1">
                     {sounds.map(([key, s]) => (
@@ -426,7 +428,7 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
                             : 'bg-slate-800/50 border-slate-700/30 text-slate-400 hover:bg-slate-700/50 hover:text-white'
                         }`}
                       >
-                        {s.emoji} {s.label}
+                        {s.emoji} {isEn ? s.labelEn : s.label}
                       </button>
                     ))}
                   </div>

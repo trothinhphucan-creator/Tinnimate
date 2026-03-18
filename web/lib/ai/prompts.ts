@@ -71,7 +71,7 @@ interface UserContext {
   recentCheckin?: Record<string, unknown>
 }
 
-export async function assembleSystemPrompt(userContext?: UserContext): Promise<string> {
+export async function assembleSystemPrompt(userContext?: UserContext, lang: string = 'vi'): Promise<string> {
   const supabase = createServiceClient()
 
   // Fetch all DB sources in parallel
@@ -137,6 +137,20 @@ export async function assembleSystemPrompt(userContext?: UserContext): Promise<s
       .map((e) => `User: ${e.user_message}\nTinni: ${e.ai_response}`)
       .join('\n\n')
     parts.push(`\n## Example Conversations\n${examplesText}`)
+  }
+  // Inject language directive
+  if (lang === 'en') {
+    parts.push(`\n## ⚠️ LANGUAGE OVERRIDE — RESPOND IN ENGLISH
+- The user has selected ENGLISH as their preferred language
+- You MUST respond ENTIRELY in English — no Vietnamese at all
+- Translate all option labels, tool names, and suggestions to English
+- Use the same warm, encouraging tone but in English
+- Example options format:
+  "I can help you with:
+  1. 🎧 Hearing Test
+  2. 🎵 Sound Therapy
+  3. 📋 Clinical Assessment
+  Which would you like?"`)
   }
 
   return parts.join('\n')
