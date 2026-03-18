@@ -5,14 +5,14 @@ import { useLangStore } from '@/stores/use-lang-store'
 import { Play, Square, Volume2, Plus, X, Layers } from 'lucide-react'
 
 const SOUNDS = [
-  { key: 'white', emoji: '〰️', vi: 'Ồn trắng', en: 'White Noise', type: 'white' as const },
-  { key: 'pink', emoji: '🌸', vi: 'Ồn hồng', en: 'Pink Noise', type: 'pink' as const },
-  { key: 'brown', emoji: '🟤', vi: 'Ồn nâu', en: 'Brown Noise', type: 'brown' as const },
-  { key: 'rain', emoji: '🌧️', vi: 'Tiếng mưa', en: 'Rain', type: 'nature' as const },
-  { key: 'ocean', emoji: '🌊', vi: 'Sóng biển', en: 'Ocean', type: 'nature' as const },
-  { key: 'forest', emoji: '🌲', vi: 'Rừng', en: 'Forest', type: 'nature' as const },
-  { key: 'campfire', emoji: '🔥', vi: 'Lửa trại', en: 'Campfire', type: 'nature' as const },
-  { key: 'birds', emoji: '🐦', vi: 'Tiếng chim', en: 'Birds', type: 'nature' as const },
+  { key: 'white', emoji: '〰️', vi: 'Ồn trắng', en: 'White Noise' },
+  { key: 'pink', emoji: '🌸', vi: 'Ồn hồng', en: 'Pink Noise' },
+  { key: 'brown', emoji: '🟤', vi: 'Ồn nâu', en: 'Brown Noise' },
+  { key: 'rain', emoji: '🌧️', vi: 'Tiếng mưa', en: 'Rain' },
+  { key: 'ocean', emoji: '🌊', vi: 'Sóng biển', en: 'Ocean' },
+  { key: 'forest', emoji: '🌲', vi: 'Rừng', en: 'Forest' },
+  { key: 'campfire', emoji: '🔥', vi: 'Lửa trại', en: 'Campfire' },
+  { key: 'birds', emoji: '🐦', vi: 'Tiếng chim', en: 'Birds' },
 ]
 
 interface MixLayer { key: string; volume: number }
@@ -44,26 +44,42 @@ function createBuffer(ctx: AudioContext, type: string): AudioBuffer {
   return buf
 }
 
+// Persist mix to localStorage
+function loadSavedMix(): MixLayer[] {
+  if (typeof window === 'undefined') return [{ key: 'rain', volume: 50 }, { key: 'brown', volume: 30 }]
+  try {
+    const saved = localStorage.getItem('tinnimate-mix')
+    if (saved) return JSON.parse(saved)
+  } catch {}
+  return [{ key: 'rain', volume: 50 }, { key: 'brown', volume: 30 }]
+}
+
 export default function SoundMixerPage() {
   const { lang } = useLangStore()
   const isEn = lang === 'en'
-  const [layers, setLayers] = useState<MixLayer[]>([{ key: 'rain', volume: 50 }, { key: 'brown', volume: 30 }])
+  const [layers, setLayers] = useState<MixLayer[]>(() => loadSavedMix())
   const [masterVol, setMasterVol] = useState(60)
   const [isPlaying, setIsPlaying] = useState(false)
   const ctxRef = useRef<AudioContext | null>(null)
   const sourcesRef = useRef<Map<string, { src: AudioBufferSourceNode; gain: GainNode }>>(new Map())
   const masterRef = useRef<GainNode | null>(null)
 
+  // Save layers to localStorage
+  useEffect(() => {
+    try { localStorage.setItem('tinnimate-mix', JSON.stringify(layers)) } catch {}
+  }, [layers])
+
   const stopAll = useCallback(() => {
-    sourcesRef.current.forEach(s => s.src.stop())
+    sourcesRef.current.forEach(s => { try { s.src.stop() } catch {} })
     sourcesRef.current.clear()
-    ctxRef.current?.close().catch(() => {})
+    try { ctxRef.current?.close() } catch {}
     ctxRef.current = null; masterRef.current = null
     setIsPlaying(false)
   }, [])
 
   const playMix = useCallback(() => {
     stopAll()
+    if (layers.length === 0) return
     const ctx = new AudioContext()
     ctxRef.current = ctx
     const master = ctx.createGain()
@@ -83,7 +99,7 @@ export default function SoundMixerPage() {
     setIsPlaying(true)
   }, [layers, masterVol, stopAll])
 
-  // Live volume updates
+  // Live master volume
   useEffect(() => {
     if (masterRef.current && ctxRef.current) {
       masterRef.current.gain.setValueAtTime(masterVol / 100, ctxRef.current.currentTime)
@@ -98,13 +114,16 @@ export default function SoundMixerPage() {
 
   const addLayer = (key: string) => {
     if (layers.length >= 4 || layers.some(l => l.key === key)) return
-    setLayers([...layers, { key, volume: 40 }])
+    setLayers(prev => [...prev, { key, volume: 40 }])
   }
 
   const removeLayer = (key: string) => {
+    // Stop and disconnect this particular layer if playing
     const s = sourcesRef.current.get(key)
-    if (s) { s.src.stop(); sourcesRef.current.delete(key) }
+    if (s) { try { s.src.stop() } catch {}; sourcesRef.current.delete(key) }
     setLayers(ls => ls.filter(l => l.key !== key))
+    // If no layers left, stop everything
+    if (layers.length <= 1 && isPlaying) stopAll()
   }
 
   useEffect(() => () => { stopAll() }, [stopAll])
@@ -139,14 +158,16 @@ export default function SoundMixerPage() {
             <div key={layer.key} className="bg-white/[0.03] border border-white/5 rounded-xl p-3 flex items-center gap-3">
               <span className="text-xl flex-shrink-0">{sound.emoji}</span>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-white mb-1">{isEn ? sound.en : sound.vi}</div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-medium text-white">{isEn ? sound.en : sound.vi}</span>
+                  <span className="text-[10px] text-slate-500">{layer.volume}%</span>
+                </div>
                 <input type="range" min={0} max={100} value={layer.volume}
                   onChange={e => updateLayerVol(layer.key, +e.target.value)}
                   className="w-full h-1 accent-blue-500 cursor-pointer" />
               </div>
-              <span className="text-[10px] text-slate-500 w-7 text-right">{layer.volume}%</span>
-              <button onClick={() => removeLayer(layer.key)} disabled={isPlaying}
-                className="text-slate-600 hover:text-red-400 transition-colors disabled:opacity-30">
+              <button onClick={() => removeLayer(layer.key)}
+                className="text-slate-600 hover:text-red-400 transition-colors p-1">
                 <X size={14} />
               </button>
             </div>
@@ -155,7 +176,7 @@ export default function SoundMixerPage() {
       </div>
 
       {/* Add sound */}
-      {layers.length < 4 && !isPlaying && (
+      {layers.length < 4 && (
         <div className="mb-4">
           <p className="text-[10px] text-slate-500 mb-2">{isEn ? 'Add sound layer' : 'Thêm lớp âm thanh'}</p>
           <div className="flex flex-wrap gap-1.5">
@@ -192,6 +213,13 @@ export default function SoundMixerPage() {
           ? <><Square size={16} /> {isEn ? 'Stop Mix' : 'Dừng'}</>
           : <><Layers size={16} /> {isEn ? 'Play Mix' : 'Phát Hỗn Hợp'} ({layers.length} {isEn ? 'layers' : 'lớp'})</>}
       </button>
+
+      {/* Tip */}
+      {isPlaying && (
+        <p className="text-center text-[10px] text-blue-400 mt-3 animate-pulse">
+          🎶 {isEn ? 'Adjust volume sliders in real-time while playing!' : 'Điều chỉnh âm lượng từng lớp khi đang phát!'}
+        </p>
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { Play, Square, Volume2, Target } from 'lucide-react'
 
@@ -14,18 +14,21 @@ export default function NotchTherapyPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [calibrating, setCalibrating] = useState(false)
   const ctxRef = useRef<AudioContext | null>(null)
+  const oscRef = useRef<OscillatorNode | null>(null)
   const nodesRef = useRef<{ src?: AudioBufferSourceNode; gain?: GainNode; notch?: BiquadFilterNode }>({})
 
   const stopAll = useCallback(() => {
-    nodesRef.current.src?.stop()
-    ctxRef.current?.close().catch(() => {})
+    try { oscRef.current?.stop() } catch {}
+    try { nodesRef.current.src?.stop() } catch {}
+    try { ctxRef.current?.close() } catch {}
     ctxRef.current = null
+    oscRef.current = null
     nodesRef.current = {}
     setIsPlaying(false)
     setCalibrating(false)
   }, [])
 
-  // Calibration: play pure tone at selected frequency
+  // Calibration: play pure tone at selected frequency — LIVE update via AudioParam
   const playCalibration = useCallback(() => {
     stopAll()
     const ctx = new AudioContext()
@@ -38,11 +41,17 @@ export default function NotchTherapyPage() {
     osc.connect(gain)
     gain.connect(ctx.destination)
     osc.start()
+    oscRef.current = osc
     nodesRef.current.gain = gain
     setCalibrating(true)
-    // Store oscillator ref for cleanup
-    nodesRef.current.src = { stop: () => osc.stop() } as unknown as AudioBufferSourceNode
   }, [freq, stopAll])
+
+  // Live-update oscillator frequency while calibrating
+  useEffect(() => {
+    if (calibrating && oscRef.current && ctxRef.current) {
+      oscRef.current.frequency.setTargetAtTime(freq, ctxRef.current.currentTime, 0.02)
+    }
+  }, [freq, calibrating])
 
   // Notch therapy: play broadband noise with notch filter
   const playTherapy = useCallback(() => {
@@ -71,7 +80,7 @@ export default function NotchTherapyPage() {
     const notch = ctx.createBiquadFilter()
     notch.type = 'notch'
     notch.frequency.setValueAtTime(freq, ctx.currentTime)
-    notch.Q.setValueAtTime(freq / (notchWidth * 100), ctx.currentTime) // Q = f / bandwidth
+    notch.Q.setValueAtTime(freq / (notchWidth * 100), ctx.currentTime)
 
     const gain = ctx.createGain()
     gain.gain.setValueAtTime(volume / 100, ctx.currentTime)
@@ -84,6 +93,7 @@ export default function NotchTherapyPage() {
     setIsPlaying(true)
   }, [freq, notchWidth, volume, stopAll])
 
+  // Live volume during therapy
   useEffect(() => {
     if (nodesRef.current.gain && ctxRef.current) {
       nodesRef.current.gain.gain.setValueAtTime(volume / 100, ctxRef.current.currentTime)
@@ -93,6 +103,9 @@ export default function NotchTherapyPage() {
   useEffect(() => () => { stopAll() }, [stopAll])
 
   const freqLabel = freq >= 1000 ? `${(freq/1000).toFixed(1)} kHz` : `${freq} Hz`
+
+  // Pre-compute stable random heights for visualization (no flickering)
+  const barHeights = useMemo(() => Array.from({ length: 40 }, () => 30 + Math.random() * 55), [])
 
   return (
     <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-6">
@@ -146,19 +159,26 @@ export default function NotchTherapyPage() {
               </div>
 
               <input type="range" min={500} max={12000} step={50} value={freq}
-                onChange={e => {
-                  setFreq(+e.target.value)
-                  if (calibrating && ctxRef.current) {
-                    // Live update oscillator frequency
-                    try {
-                      const nodes = ctxRef.current.destination
-                      // Will need restart for live update
-                    } catch {}
-                  }
-                }}
+                onChange={e => setFreq(+e.target.value)}
                 className="w-full h-2 accent-teal-500 cursor-pointer mb-1" />
               <div className="flex justify-between text-[9px] text-slate-600">
                 <span>500 Hz</span><span>4 kHz</span><span>8 kHz</span><span>12 kHz</span>
+              </div>
+
+              {/* Frequency guide */}
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                {[
+                  { f: 2000, label: isEn ? 'Low hum' : 'Âm trầm', emoji: '🔊' },
+                  { f: 4000, label: isEn ? 'Ringing' : 'Tiếng rít', emoji: '🔔' },
+                  { f: 8000, label: isEn ? 'High hiss' : 'Rít cao', emoji: '📡' },
+                ].map(g => (
+                  <button key={g.f} onClick={() => setFreq(g.f)}
+                    className={`py-2 rounded-lg border text-xs transition-all ${freq === g.f ? 'bg-teal-600/15 border-teal-500/30 text-teal-300' : 'bg-white/[0.02] border-white/5 text-slate-500 hover:text-white'}`}>
+                    <div className="text-base">{g.emoji}</div>
+                    <div className="text-[10px]">{g.label}</div>
+                    <div className="text-[9px] text-slate-600">{g.f >= 1000 ? `${g.f/1000}k` : g.f} Hz</div>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -169,9 +189,15 @@ export default function NotchTherapyPage() {
                   : 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white'
               }`}>
               {calibrating
-                ? <><Square size={16} /> {isEn ? 'Stop Test Tone' : 'Dừng'}</>
+                ? <><Square size={16} /> {isEn ? 'Stop Test Tone' : 'Dừng Âm Thử'}</>
                 : <><Target size={16} /> {isEn ? 'Play Test Tone' : 'Phát Âm Thử'}</>}
             </button>
+
+            {calibrating && (
+              <p className="text-center text-[10px] text-teal-400 animate-pulse">
+                🎵 {isEn ? 'Move the slider — tone updates live!' : 'Kéo thanh trượt — âm thanh thay đổi trực tiếp!'}
+              </p>
+            )}
 
             <button onClick={() => { stopAll(); setStep('therapy') }}
               className="w-full py-2.5 text-xs text-teal-400 hover:text-teal-300 transition-colors">
@@ -217,26 +243,25 @@ export default function NotchTherapyPage() {
               </div>
             </div>
 
-            {/* Visualization */}
+            {/* Visualization — stable bars, no flickering */}
             {isPlaying && (
               <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4">
                 <div className="relative h-16 flex items-end gap-[2px]">
-                  {Array.from({ length: 40 }).map((_, i) => {
+                  {barHeights.map((h, i) => {
                     const f = 200 + i * 300
                     const isNotched = Math.abs(f - freq) < notchWidth * 150
                     return (
                       <div key={i}
-                        className={`flex-1 rounded-t transition-all ${isNotched ? 'bg-red-500/20' : 'bg-teal-500/40'}`}
+                        className={`flex-1 rounded-t transition-all duration-500 ${isNotched ? 'bg-red-500/30' : 'bg-teal-500/40'}`}
                         style={{
-                          height: isNotched ? '10%' : `${30 + Math.random() * 60}%`,
-                          animation: isNotched ? 'none' : `pulse ${1 + Math.random()}s ease-in-out infinite`,
+                          height: isNotched ? '8%' : `${h}%`,
                         }} />
                     )
                   })}
                 </div>
                 <div className="flex justify-between text-[8px] text-slate-600 mt-1">
                   <span>200 Hz</span>
-                  <span className="text-red-400">↓ {isEn ? 'Notch' : 'Lọc'}</span>
+                  <span className="text-red-400">↓ {isEn ? 'Notch' : 'Lọc'} @ {freqLabel}</span>
                   <span>12 kHz</span>
                 </div>
               </div>
