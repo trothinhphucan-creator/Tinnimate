@@ -113,6 +113,12 @@ const VISUAL_STYLES = `
 @keyframes visual-particles { 0% { transform: scale(1.02) rotate(0deg); } 50% { transform: scale(1.06) rotate(1deg); } 100% { transform: scale(1.02) rotate(0deg); } }
 @keyframes visual-glow { 0%,100% { box-shadow: 0 0 30px rgba(255,255,255,0.05); } 50% { box-shadow: 0 0 60px rgba(255,255,255,0.12); } }
 @keyframes eq-bar { 0%,100% { height: 20%; } 50% { height: 100%; } }
+@keyframes rain-drop { 0% { transform: translateY(-10px); opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { transform: translateY(240px); opacity: 0; } }
+@keyframes wave-ripple { 0% { transform: scale(0.5); opacity: 0.6; } 100% { transform: scale(3); opacity: 0; } }
+@keyframes firefly-float { 0% { transform: translate(0,0); opacity: 0; } 20% { opacity: 1; } 50% { transform: translate(15px,-20px); opacity: 0.8; } 80% { opacity: 1; } 100% { transform: translate(-10px,10px); opacity: 0; } }
+@keyframes fire-spark { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-80px) scale(0); opacity: 0; } }
+@keyframes sound-pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2.5); opacity: 0; } }
+@keyframes float-note { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: 0.8; } 85% { opacity: 0.6; } 100% { transform: translateY(-100px) rotate(20deg); opacity: 0; } }
 .animate-visual-breathe { animation: visual-breathe 6s ease-in-out infinite; }
 .animate-visual-drift { animation: visual-drift 10s ease-in-out infinite; }
 .animate-visual-waves { animation: visual-waves 8s ease-in-out infinite; }
@@ -286,32 +292,98 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
     <div className="rounded-xl overflow-hidden mt-2 animate-visual-glow" style={{ maxWidth: 420 }}>
       {/* ─── Visual Background ─── */}
       <div className="relative">
-        {/* Background image with animation */}
-        <div className="relative h-44 overflow-hidden rounded-t-xl">
+        <div className="relative h-56 overflow-hidden rounded-t-xl">
           <div
             className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ${isPlaying ? config.animClass : ''}`}
             style={{
               backgroundImage: `url(${config.image})`,
-              filter: isPlaying ? 'brightness(0.65)' : 'brightness(0.4)',
-              transition: 'filter 1s ease',
+              filter: isPlaying ? 'brightness(0.65) saturate(1.2)' : 'brightness(0.35)',
+              transition: 'filter 1.5s ease',
             }}
           />
           {/* Gradient overlay */}
           <div className={`absolute inset-0 bg-gradient-to-t ${config.gradient} to-transparent`} />
-          {/* Floating particles effect when playing */}
-          {isPlaying && (
+
+          {/* ─── Per-sound animated overlays ─── */}
+          {isPlaying && selectedSound === 'rain' && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div key={i} className="absolute w-[1px] bg-gradient-to-b from-transparent via-blue-300/40 to-transparent"
+                  style={{ left: `${2 + i * 5}%`, top: '-10px', height: '30px',
+                    animation: `rain-drop ${0.8 + Math.random() * 0.6}s linear infinite`,
+                    animationDelay: `${Math.random() * 2}s`,
+                  }} />
+              ))}
+            </div>
+          )}
+
+          {isPlaying && selectedSound === 'ocean' && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="absolute rounded-full border border-cyan-300/20"
+                  style={{ left: `${20 + i * 18}%`, bottom: '20%', width: '40px', height: '40px',
+                    animation: `wave-ripple ${3 + i * 0.5}s ease-out infinite`,
+                    animationDelay: `${i * 0.8}s`,
+                  }} />
+              ))}
+            </div>
+          )}
+
+          {isPlaying && (selectedSound === 'forest' || selectedSound === 'birds') && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className={`absolute w-2 h-2 rounded-full ${selectedSound === 'forest' ? 'bg-emerald-300/60' : 'bg-amber-300/50'}`}
+                  style={{ left: `${5 + i * 9}%`, top: `${15 + (i % 4) * 20}%`,
+                    animation: `firefly-float ${4 + Math.random() * 3}s ease-in-out infinite`,
+                    animationDelay: `${i * 0.6}s`,
+                  }} />
+              ))}
+            </div>
+          )}
+
+          {isPlaying && selectedSound === 'campfire' && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className="absolute w-1 h-1 bg-orange-400/70 rounded-full"
+                  style={{ left: `${30 + i * 3.5}%`, bottom: '30%',
+                    animation: `fire-spark ${1.5 + Math.random() * 1.5}s ease-out infinite`,
+                    animationDelay: `${Math.random() * 2}s`,
+                  }} />
+              ))}
+            </div>
+          )}
+
+          {isPlaying && config.category === 'noise' && (
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               {[...Array(8)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white/30 rounded-full"
-                  style={{
-                    left: `${10 + i * 12}%`,
-                    bottom: `${10 + (i % 3) * 20}%`,
-                    animation: `eq-bar ${1.5 + i * 0.3}s ease-in-out infinite`,
-                    animationDelay: `${i * 0.2}s`,
-                  }}
-                />
+                <div key={i} className="absolute w-1.5 h-1.5 bg-white/25 rounded-full"
+                  style={{ left: `${10 + i * 11}%`, bottom: '10%',
+                    animation: `float-note ${3 + i * 0.4}s ease-out infinite`,
+                    animationDelay: `${i * 0.4}s`,
+                  }} />
+              ))}
+            </div>
+          )}
+
+          {isPlaying && config.category === 'tone' && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="absolute w-1 h-1 rounded-full"
+                  style={{ left: `${15 + i * 13}%`, bottom: '20%',
+                    background: `hsl(${260 + i * 15}, 70%, 70%)`,
+                    animation: `float-note ${2.5 + i * 0.5}s ease-out infinite`,
+                    animationDelay: `${i * 0.3}s`,
+                  }} />
+              ))}
+            </div>
+          )}
+
+          {/* Sound pulse rings from center when playing */}
+          {isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="absolute w-16 h-16 rounded-full border border-white/10"
+                  style={{ animation: `sound-pulse ${3}s ease-out infinite`, animationDelay: `${i}s` }} />
               ))}
             </div>
           )}
