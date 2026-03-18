@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Moon, Play, Square, Volume2 } from 'lucide-react'
 import { useLangStore } from '@/stores/use-lang-store'
+import { PremiumGate } from '@/components/premium-gate'
 
 const SLEEP_SOUNDS = [
   { key: 'brown_noise', emoji: '🟤', vi: 'Tiếng ồn nâu', en: 'Brown Noise' },
@@ -97,6 +98,7 @@ export default function SleepPage() {
   const formatTime = (s: number) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`
 
   return (
+    <PremiumGate feature="Sleep Mode" featureVi="Chế Độ Ngủ">
     <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-6 relative">
       {/* Ambient background */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -203,5 +205,6 @@ export default function SleepPage() {
         </div>
       </div>
     </div>
+    </PremiumGate>
   )
 }

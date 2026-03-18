@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { Play, Square, Volume2, Target } from 'lucide-react'
+import { PremiumGate } from '@/components/premium-gate'
 
 export default function NotchTherapyPage() {
   const { lang } = useLangStore()
@@ -108,6 +109,7 @@ export default function NotchTherapyPage() {
   const barHeights = useMemo(() => Array.from({ length: 40 }, () => 30 + Math.random() * 55), [])
 
   return (
+    <PremiumGate feature="Notch Therapy" featureVi="Liệu Pháp Lọc Âm">
     <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-6">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-teal-950/20 to-slate-950" />
@@ -287,5 +289,6 @@ export default function NotchTherapyPage() {
         )}
       </div>
     </div>
+    </PremiumGate>
   )
 }
