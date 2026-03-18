@@ -3,115 +3,61 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { SquarePen } from 'lucide-react'
 import { useChatStore } from '@/stores/use-chat-store'
+import { useLangStore } from '@/stores/use-lang-store'
+import { t } from '@/lib/i18n'
 import { ChatMessage, ToolCall } from '@/types'
 import { ChatMessageBubble } from '@/components/chat-message-bubble'
 import { ChatInputArea } from '@/components/chat-input-area'
 
-/* ── Tool Menu cho Welcome Screen ── */
-const TOOL_CARDS = [
-  {
-    id: 'hearing_test',
-    emoji: '🎧',
-    label: 'Kiểm tra thính lực',
-    desc: 'Đo ngưỡng nghe 6 tần số',
-    trigger: 'Tôi muốn kiểm tra thính lực',
-    color: 'from-blue-600/20 to-blue-800/10 border-blue-500/20 hover:border-blue-400/40',
-    iconBg: 'bg-blue-500/20',
-  },
-  {
-    id: 'sound_therapy',
-    emoji: '🎵',
-    label: 'Âm thanh trị liệu',
-    desc: 'White noise, tiếng mưa, thiên nhiên',
-    trigger: 'Tôi muốn nghe âm thanh trị liệu',
-    color: 'from-emerald-600/20 to-emerald-800/10 border-emerald-500/20 hover:border-emerald-400/40',
-    iconBg: 'bg-emerald-500/20',
-  },
-  {
-    id: 'quiz',
-    emoji: '📋',
-    label: 'Trắc nghiệm đánh giá',
-    desc: 'THI, PHQ-9, GAD-7',
-    trigger: 'Tôi muốn làm trắc nghiệm đánh giá',
-    color: 'from-purple-600/20 to-purple-800/10 border-purple-500/20 hover:border-purple-400/40',
-    iconBg: 'bg-purple-500/20',
-  },
-  {
-    id: 'relaxation',
-    emoji: '🧘',
-    label: 'Bài tập thư giãn',
-    desc: 'Hít thở, thiền, thư giãn cơ',
-    trigger: 'Hướng dẫn tôi bài tập thư giãn',
-    color: 'from-teal-600/20 to-teal-800/10 border-teal-500/20 hover:border-teal-400/40',
-    iconBg: 'bg-teal-500/20',
-  },
-  {
-    id: 'diagnosis',
-    emoji: '🔍',
-    label: 'Chẩn đoán ù tai',
-    desc: 'Phân tích triệu chứng của bạn',
-    trigger: 'Tôi muốn được chẩn đoán tình trạng ù tai',
-    color: 'from-rose-600/20 to-rose-800/10 border-rose-500/20 hover:border-rose-400/40',
-    iconBg: 'bg-rose-500/20',
-  },
-  {
-    id: 'checkin',
-    emoji: '📝',
-    label: 'Check-in hôm nay',
-    desc: 'Ghi nhận tâm trạng & triệu chứng',
-    trigger: 'Tôi muốn check-in hôm nay',
-    color: 'from-amber-600/20 to-amber-800/10 border-amber-500/20 hover:border-amber-400/40',
-    iconBg: 'bg-amber-500/20',
-  },
-]
+/* ── Tool Card Config ── */
+const TOOL_STYLES = {
+  hearing_test:  { emoji: '🎧', color: 'from-blue-600/20 to-blue-800/10 border-blue-500/20 hover:border-blue-400/40', iconBg: 'bg-blue-500/20' },
+  sound_therapy: { emoji: '🎵', color: 'from-emerald-600/20 to-emerald-800/10 border-emerald-500/20 hover:border-emerald-400/40', iconBg: 'bg-emerald-500/20' },
+  quiz:          { emoji: '📋', color: 'from-purple-600/20 to-purple-800/10 border-purple-500/20 hover:border-purple-400/40', iconBg: 'bg-purple-500/20' },
+  relaxation:    { emoji: '🧘', color: 'from-teal-600/20 to-teal-800/10 border-teal-500/20 hover:border-teal-400/40', iconBg: 'bg-teal-500/20' },
+  diagnosis:     { emoji: '🔍', color: 'from-rose-600/20 to-rose-800/10 border-rose-500/20 hover:border-rose-400/40', iconBg: 'bg-rose-500/20' },
+  checkin:       { emoji: '📝', color: 'from-amber-600/20 to-amber-800/10 border-amber-500/20 hover:border-amber-400/40', iconBg: 'bg-amber-500/20' },
+} as const
 
 function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void }) {
+  const { lang } = useLangStore()
+  const d = t(lang)
+  const toolKeys = Object.keys(TOOL_STYLES) as (keyof typeof TOOL_STYLES)[]
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-6 text-center max-w-lg mx-auto">
-      {/* Tinni Avatar + Intro */}
       <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center text-3xl shadow-lg shadow-blue-500/10">
         💙
       </div>
       <div className="space-y-2">
-        <h2 className="font-bold text-xl text-slate-100">
-          Xin chào! Tôi là Tinni 💙
-        </h2>
-        <p className="text-sm text-slate-300 leading-relaxed max-w-sm mx-auto">
-          Tôi là trợ lý AI được thiết kế riêng để <strong className="text-blue-400">đồng hành cùng bạn quản lý tiếng ù tai</strong>. 
-          Dù bạn mới phát hiện hay đã sống chung với ù tai lâu năm — tôi luôn ở đây.
-        </p>
-        <p className="text-xs text-slate-500">
-          ✨ Bạn không đơn độc. Hãy chọn một công cụ để bắt đầu:
-        </p>
+        <h2 className="font-bold text-xl text-slate-100">{d.chat.greeting}</h2>
+        <p className="text-sm text-slate-300 leading-relaxed max-w-sm mx-auto" dangerouslySetInnerHTML={{ __html: d.chat.intro }} />
+        <p className="text-xs text-slate-500">{d.chat.pickTool}</p>
       </div>
 
-      {/* Tool Cards Grid */}
       <div className="grid grid-cols-2 gap-2 w-full">
-        {TOOL_CARDS.map((tool) => (
-          <button
-            key={tool.id}
-            onClick={() => onSelectTool(tool.trigger)}
-            className={`group flex flex-col items-start gap-1.5 p-3 rounded-xl border bg-gradient-to-br text-left transition-all duration-200 ${tool.color} hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            <div className={`w-8 h-8 rounded-lg ${tool.iconBg} flex items-center justify-center text-base`}>
-              {tool.emoji}
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-200 group-hover:text-white transition-colors">
-                {tool.label}
-              </p>
-              <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors">
-                {tool.desc}
-              </p>
-            </div>
-          </button>
-        ))}
+        {toolKeys.map((key) => {
+          const style = TOOL_STYLES[key]
+          const text = d.tools[key]
+          return (
+            <button
+              key={key}
+              onClick={() => onSelectTool(text.trigger)}
+              className={`group flex flex-col items-start gap-1.5 p-3 rounded-xl border bg-gradient-to-br text-left transition-all duration-200 ${style.color} hover:scale-[1.02] active:scale-[0.98]`}
+            >
+              <div className={`w-8 h-8 rounded-lg ${style.iconBg} flex items-center justify-center text-base`}>
+                {style.emoji}
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-200 group-hover:text-white transition-colors">{text.label}</p>
+                <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors">{text.desc}</p>
+              </div>
+            </button>
+          )
+        })}
       </div>
 
-      {/* Or just chat */}
-      <p className="text-[10px] text-slate-600 mt-1">
-        Hoặc bạn cũng có thể nhắn tin trực tiếp với Tinni bên dưới 👇
-      </p>
+      <p className="text-[10px] text-slate-600 mt-1">{d.chat.orChat}</p>
     </div>
   )
 }
@@ -202,6 +148,9 @@ export default function ChatPage() {
     }
   }
 
+  const { lang } = useLangStore()
+  const d = t(lang)
+
   return (
     <div className="flex flex-col h-full bg-slate-950">
       {/* Header */}
@@ -209,16 +158,16 @@ export default function ChatPage() {
         <div className="flex items-center gap-2">
           <span className="text-lg font-semibold">Tinni 💙</span>
           {isLoading && (
-            <span className="text-xs text-slate-500 animate-pulse">đang trả lời...</span>
+            <span className="text-xs text-slate-500 animate-pulse">{d.common.loading}</span>
           )}
         </div>
         <button
           onClick={clearMessages}
-          title="Cuộc trò chuyện mới"
+          title={d.chat.newChat}
           className="flex items-center gap-1.5 rounded-xl border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors"
         >
           <SquarePen size={13} />
-          Mới
+          {d.chat.newChat}
         </button>
       </div>
 

@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { Play, Square, Timer, Volume2, Headphones } from 'lucide-react'
 import { THERAPY_PRESETS } from '@/lib/audio/therapy-presets'
 import { useAudioEngine } from '@/hooks/use-audio-engine'
+import { useLangStore } from '@/stores/use-lang-store'
+import { t } from '@/lib/i18n'
 import type { TherapySound } from '@/types'
 
 export default function TherapyPage() {
@@ -11,11 +13,14 @@ export default function TherapyPage() {
   const [timerMin, setTimerMin] = useState<15 | 30 | 60>(30)
   const [elapsed, setElapsed] = useState(0)
 
+  const { lang } = useLangStore()
+  const d = t(lang)
+
   const categories = [
-    { label: 'Tiếng ồn', color: 'from-blue-500 to-cyan-400', sounds: ['white_noise', 'pink_noise', 'brown_noise'] as TherapySound[] },
-    { label: 'Thiên nhiên', color: 'from-emerald-500 to-teal-400', sounds: ['rain', 'ocean', 'forest', 'campfire'] as TherapySound[] },
-    { label: 'Binaural Beats', color: 'from-violet-500 to-purple-400', sounds: ['binaural_alpha', 'binaural_theta', 'binaural_delta'] as TherapySound[] },
-    { label: 'Notch Therapy', color: 'from-pink-500 to-rose-400', sounds: ['notch_therapy'] as TherapySound[] },
+    { label: d.therapy.categories.noise, color: 'from-blue-500 to-cyan-400', sounds: ['white_noise', 'pink_noise', 'brown_noise'] as TherapySound[] },
+    { label: d.therapy.categories.nature, color: 'from-emerald-500 to-teal-400', sounds: ['rain', 'ocean', 'forest', 'campfire'] as TherapySound[] },
+    { label: d.therapy.categories.binaural, color: 'from-violet-500 to-purple-400', sounds: ['binaural_alpha', 'binaural_theta', 'binaural_delta'] as TherapySound[] },
+    { label: d.therapy.categories.notch, color: 'from-pink-500 to-rose-400', sounds: ['notch_therapy'] as TherapySound[] },
   ]
 
   useEffect(() => {
@@ -58,8 +63,8 @@ export default function TherapyPage() {
             <Headphones size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Liệu pháp âm thanh</h1>
-            <p className="text-sm text-slate-400">Chọn loại âm thanh phù hợp để giảm tiếng ù</p>
+            <h1 className="text-2xl font-bold text-white">{d.therapy.title}</h1>
+            <p className="text-sm text-slate-400">{d.therapy.subtitle}</p>
           </div>
         </div>
       </div>
@@ -169,8 +174,10 @@ export default function TherapyPage() {
       {/* Tips */}
       <div className="mt-10 p-5 bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl">
         <p className="text-slate-400 text-sm">
-          💡 <strong className="text-slate-200">Mẹo:</strong> Sử dụng tai nghe để có trải nghiệm tốt nhất.
-          Binaural beats cần tai nghe stereo để hoạt động. Âm thanh thiên nhiên dùng tổng hợp tiếng ồn lọc.
+          💡 <strong className="text-slate-200">{lang === 'vi' ? 'Mẹo' : 'Tip'}:</strong>{' '}
+          {lang === 'vi'
+            ? 'Sử dụng tai nghe để có trải nghiệm tốt nhất. Binaural beats cần tai nghe stereo để hoạt động. Âm thanh thiên nhiên dùng tổng hợp tiếng ồn lọc.'
+            : 'Use headphones for the best experience. Binaural beats require stereo headphones. Nature sounds use filtered noise synthesis.'}
         </p>
       </div>
     </div>

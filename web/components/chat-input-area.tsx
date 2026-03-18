@@ -2,14 +2,8 @@
 
 import { useRef, KeyboardEvent } from 'react'
 import { Send } from 'lucide-react'
-
-const QUICK_ACTIONS = [
-  { text: 'Kiểm tra tai 🎧', trigger: 'Tôi muốn kiểm tra thính lực' },
-  { text: 'Âm thanh trị liệu 🎵', trigger: 'Tôi muốn nghe âm thanh trị liệu' },
-  { text: 'Trắc nghiệm 📋', trigger: 'Tôi muốn làm trắc nghiệm đánh giá' },
-  { text: 'Thư giãn 🧘', trigger: 'Hướng dẫn tôi bài tập thư giãn' },
-  { text: 'Check-in 📝', trigger: 'Tôi muốn check-in hôm nay' },
-]
+import { useLangStore } from '@/stores/use-lang-store'
+import { t } from '@/lib/i18n'
 
 interface ChatInputAreaProps {
   value: string
@@ -21,6 +15,8 @@ interface ChatInputAreaProps {
 
 export function ChatInputArea({ value, onChange, onSend, disabled, showQuickActions = true }: ChatInputAreaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const { lang } = useLangStore()
+  const d = t(lang)
 
   const handleSend = () => {
     const trimmed = value.trim()
@@ -48,10 +44,10 @@ export function ChatInputArea({ value, onChange, onSend, disabled, showQuickActi
 
   return (
     <div className="border-t border-slate-800 bg-slate-950 px-4 py-3 flex flex-col gap-2">
-      {/* Quick actions — only when there are messages */}
+      {/* Quick actions */}
       {showQuickActions && (
         <div className="flex flex-wrap gap-1.5">
-          {QUICK_ACTIONS.map((action) => (
+          {d.quickActions.map((action) => (
             <button
               key={action.text}
               onClick={() => onSend(action.trigger)}
@@ -73,7 +69,7 @@ export function ChatInputArea({ value, onChange, onSend, disabled, showQuickActi
           onKeyDown={handleKeyDown}
           disabled={disabled}
           rows={1}
-          placeholder="Nhắn tin với Tinni..."
+          placeholder={d.chat.inputPlaceholder}
           className="flex-1 resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 transition-colors leading-relaxed"
           style={{ minHeight: '42px', maxHeight: '120px' }}
         />
@@ -81,7 +77,7 @@ export function ChatInputArea({ value, onChange, onSend, disabled, showQuickActi
           onClick={handleSend}
           disabled={!value.trim() || disabled}
           className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          aria-label="Gửi"
+          aria-label="Send"
         >
           <Send size={16} />
         </button>

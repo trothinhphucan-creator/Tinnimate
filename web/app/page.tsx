@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useLangStore } from '@/stores/use-lang-store'
 
 /* ── i18n ── */
 const T = {
@@ -186,8 +187,8 @@ function RevealSection({ children, className = '', delay = 0 }: { children: Reac
 }
 
 export default function LandingPage() {
-  const [lang, setLang] = useState<'vi' | 'en'>('vi')
-  const t = T[lang]
+  const { lang, toggle: toggleLang } = useLangStore()
+  const lt = T[lang]
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 overflow-hidden">
@@ -209,22 +210,22 @@ export default function LandingPage() {
             <span className="font-bold text-lg text-white">TinniMate</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-slate-400">
-            <a href="#features" className="hover:text-white transition-colors">{t.nav.features}</a>
-            <a href="#how" className="hover:text-white transition-colors">{t.nav.how}</a>
-            <a href="#testimonials" className="hover:text-white transition-colors">{t.nav.testimonials}</a>
-            <a href="#pricing" className="hover:text-white transition-colors">{t.nav.pricing}</a>
+            <a href="#features" className="hover:text-white transition-colors">{lt.nav.features}</a>
+            <a href="#how" className="hover:text-white transition-colors">{lt.nav.how}</a>
+            <a href="#testimonials" className="hover:text-white transition-colors">{lt.nav.testimonials}</a>
+            <a href="#pricing" className="hover:text-white transition-colors">{lt.nav.pricing}</a>
           </div>
           <div className="flex items-center gap-3">
             {/* Language switcher */}
-            <button onClick={() => setLang(l => l === 'vi' ? 'en' : 'vi')}
+            <button onClick={toggleLang}
               className="px-3 py-1.5 text-xs font-medium border border-white/10 rounded-full text-slate-400 hover:text-white hover:border-white/25 transition-all">
               {lang === 'vi' ? '🇬🇧 EN' : '🇻🇳 VI'}
             </button>
             <Link href="/login" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors hidden sm:block">
-              {t.nav.login}
+              {lt.nav.login}
             </Link>
             <Link href="/signup" className="px-5 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full transition-all hover:shadow-lg hover:shadow-blue-500/25">
-              {t.nav.cta}
+              {lt.nav.cta}
             </Link>
           </div>
         </div>
@@ -236,32 +237,32 @@ export default function LandingPage() {
           <RevealSection>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-              {t.hero.badge}
+              {lt.hero.badge}
             </div>
             <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
               <span className="bg-gradient-to-r from-white via-blue-100 to-violet-200 bg-clip-text text-transparent">
-                {t.hero.title1}
+                {lt.hero.title1}
               </span>
               <br />
               <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
-                {t.hero.title2}
+                {lt.hero.title2}
               </span>
             </h1>
-            <p className="text-lg text-slate-400 mb-8 max-w-md leading-relaxed">{t.hero.desc}</p>
+            <p className="text-lg text-slate-400 mb-8 max-w-md leading-relaxed">{lt.hero.desc}</p>
             <div className="flex flex-wrap items-center gap-4">
               <Link href="/signup" className="group flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
-                {t.hero.cta1}
+                {lt.hero.cta1}
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
               <a href="#features" className="px-6 py-3.5 border border-white/10 hover:border-white/25 text-slate-300 hover:text-white rounded-full text-sm transition-all hover:bg-white/5">
-                {t.hero.cta2}
+                {lt.hero.cta2}
               </a>
             </div>
             <div className="flex items-center gap-8 mt-12 pt-8 border-t border-white/5">
               {[
-                { value: '10K+', label: t.hero.stat1 },
-                { value: '50K+', label: t.hero.stat2 },
-                { value: '4.8★', label: t.hero.stat3 },
+                { value: '10K+', label: lt.hero.stat1 },
+                { value: '50K+', label: lt.hero.stat2 },
+                { value: '4.8★', label: lt.hero.stat3 },
               ].map(s => (
                 <div key={s.label}>
                   <div className="text-2xl font-bold text-white">{s.value}</div>
@@ -284,10 +285,10 @@ export default function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-red-500/80" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                   <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="ml-3 text-xs text-slate-500">{t.chat.title}</span>
+                  <span className="ml-3 text-xs text-slate-500">{lt.chat.title}</span>
                 </div>
                 <div className="space-y-4">
-                  {t.chatMsgs.map((msg, i) => (
+                  {lt.chatMsgs.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'items-start gap-2'}`}>
                       {msg.role === 'assistant' && (
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-xs flex-shrink-0">💙</div>
@@ -303,13 +304,13 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <div className="mt-3 ml-9 bg-gradient-to-r from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-xl p-3">
-                  <div className="flex items-center gap-2 text-green-400 text-xs font-medium">🎧 {t.chat.playing}</div>
+                  <div className="flex items-center gap-2 text-green-400 text-xs font-medium">🎧 {lt.chat.playing}</div>
                   <div className="mt-2 w-full bg-white/5 rounded-full h-1">
                     <div className="bg-gradient-to-r from-green-500 to-emerald-400 h-1 rounded-full w-[35%]" />
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-5 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5">
-                  <span className="text-slate-500 text-sm flex-1">{t.chat.input}</span>
+                  <span className="text-slate-500 text-sm flex-1">{lt.chat.input}</span>
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 flex items-center justify-center text-xs">↑</div>
                 </div>
               </div>
@@ -324,14 +325,14 @@ export default function LandingPage() {
           <RevealSection>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">{t.features.title}</span> {t.features.title2}
+                <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">{lt.features.title}</span> {lt.features.title2}
               </h2>
-              <p className="text-slate-400 max-w-lg mx-auto">{t.features.desc}</p>
+              <p className="text-slate-400 max-w-lg mx-auto">{lt.features.desc}</p>
             </div>
           </RevealSection>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {t.features.items.map((f, i) => (
+            {lt.features.items.map((f, i) => (
               <RevealSection key={f.title} delay={i * 100}>
                 <div className={`group relative bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${FEATURE_COLORS[i]?.glow}`}>
                   {/* Feature image */}
@@ -359,12 +360,12 @@ export default function LandingPage() {
           <RevealSection>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {t.how.title1} <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">{t.how.title2}</span>
+                {lt.how.title1} <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">{lt.how.title2}</span>
               </h2>
             </div>
           </RevealSection>
           <div className="grid md:grid-cols-3 gap-8">
-            {t.how.steps.map((s, i) => (
+            {lt.how.steps.map((s, i) => (
               <RevealSection key={s.step} delay={i * 150}>
                 <div className="text-center">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${['from-blue-500 to-cyan-400', 'from-violet-500 to-purple-400', 'from-emerald-500 to-teal-400'][i]} flex items-center justify-center text-2xl font-bold text-white mx-auto mb-4 shadow-lg`}>
@@ -392,29 +393,29 @@ export default function LandingPage() {
                 {/* Left — stat + description */}
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-6">
-                    {t.hearingLoss.title1}{' '}
-                    <span className="bg-gradient-to-r from-red-400 to-amber-400 bg-clip-text text-transparent">{t.hearingLoss.title2}</span>
+                    {lt.hearingLoss.title1}{' '}
+                    <span className="bg-gradient-to-r from-red-400 to-amber-400 bg-clip-text text-transparent">{lt.hearingLoss.title2}</span>
                   </h2>
                   <div className="flex items-baseline gap-3 mb-4">
                     <span className="text-6xl md:text-7xl font-black bg-gradient-to-r from-red-400 via-orange-400 to-amber-400 bg-clip-text text-transparent">
-                      {t.hearingLoss.stat}
+                      {lt.hearingLoss.stat}
                     </span>
                     <span className="text-lg text-slate-300 font-medium max-w-[200px] leading-tight">
-                      {t.hearingLoss.statDesc}
+                      {lt.hearingLoss.statDesc}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-400 leading-relaxed mb-6">{t.hearingLoss.desc}</p>
-                  <a href={t.hearingLoss.ctaLink} target="_blank" rel="noopener noreferrer"
+                  <p className="text-sm text-slate-400 leading-relaxed mb-6">{lt.hearingLoss.desc}</p>
+                  <a href={lt.hearingLoss.ctaLink} target="_blank" rel="noopener noreferrer"
                     className="group inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-red-500/25 hover:-translate-y-0.5">
-                    👂 {t.hearingLoss.cta}
+                    👂 {lt.hearingLoss.cta}
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </a>
-                  <p className="text-[11px] text-slate-500 mt-2">{t.hearingLoss.ctaSub}</p>
+                  <p className="text-[11px] text-slate-500 mt-2">{lt.hearingLoss.ctaSub}</p>
                 </div>
 
                 {/* Right — fact cards */}
                 <div className="space-y-3">
-                  {t.hearingLoss.facts.map((fact: string, i: number) => (
+                  {lt.hearingLoss.facts.map((fact: string, i: number) => (
                     <RevealSection key={i} delay={i * 100}>
                       <div className="flex items-start gap-3 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 hover:bg-white/[0.06] hover:border-white/10 transition-all">
                         <span className="text-lg">{fact.slice(0, 2)}</span>
@@ -445,12 +446,12 @@ export default function LandingPage() {
           <RevealSection>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {t.testimonials.title1} <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">{t.testimonials.title2}</span>
+                {lt.testimonials.title1} <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">{lt.testimonials.title2}</span>
               </h2>
             </div>
           </RevealSection>
           <div className="grid md:grid-cols-3 gap-6">
-            {t.testimonials.items.map((r, i) => (
+            {lt.testimonials.items.map((r, i) => (
               <RevealSection key={r.name} delay={i * 100}>
                 <div className="bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
                   <div className="flex items-center gap-3 mb-4">
@@ -477,13 +478,13 @@ export default function LandingPage() {
           <RevealSection>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">{t.pricing.title1}</span> {t.pricing.title2}
+                <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">{lt.pricing.title1}</span> {lt.pricing.title2}
               </h2>
-              <p className="text-slate-400">{t.pricing.desc}</p>
+              <p className="text-slate-400">{lt.pricing.desc}</p>
             </div>
           </RevealSection>
           <div className="grid md:grid-cols-3 gap-6">
-            {t.pricing.plans.map((p, i) => (
+            {lt.pricing.plans.map((p, i) => (
               <RevealSection key={p.name} delay={i * 100}>
                 <div className={`relative rounded-2xl p-6 transition-all duration-300 ${
                   p.highlight
@@ -492,7 +493,7 @@ export default function LandingPage() {
                 }`}>
                   {p.highlight && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full text-xs font-medium text-white">
-                      {t.pricing.popular}
+                      {lt.pricing.popular}
                     </div>
                   )}
                   <div className="mb-6 pt-2">
@@ -532,10 +533,10 @@ export default function LandingPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-violet-600/20 to-pink-600/20 blur-3xl rounded-full" />
               <div className="relative bg-white/[0.02] backdrop-blur border border-white/5 rounded-3xl p-12">
-                <h2 className="text-3xl font-bold mb-4">{t.cta.title}</h2>
-                <p className="text-slate-400 mb-8 max-w-md mx-auto">{t.cta.desc}</p>
+                <h2 className="text-3xl font-bold mb-4">{lt.cta.title}</h2>
+                <p className="text-slate-400 mb-8 max-w-md mx-auto">{lt.cta.desc}</p>
                 <Link href="/signup" className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-medium text-lg transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
-                  {t.cta.btn}
+                  {lt.cta.btn}
                 </Link>
               </div>
             </div>
@@ -548,12 +549,12 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-slate-500 text-sm">
             <div className="w-6 h-6 rounded bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white">T</div>
-            {t.footer.tagline}
+            {lt.footer.tagline}
           </div>
           <div className="flex items-center gap-6 text-xs text-slate-600">
-            <a href="#" className="hover:text-slate-400 transition-colors">{t.footer.privacy}</a>
-            <a href="#" className="hover:text-slate-400 transition-colors">{t.footer.terms}</a>
-            <a href="#" className="hover:text-slate-400 transition-colors">{t.footer.contact}</a>
+            <a href="#" className="hover:text-slate-400 transition-colors">{lt.footer.privacy}</a>
+            <a href="#" className="hover:text-slate-400 transition-colors">{lt.footer.terms}</a>
+            <a href="#" className="hover:text-slate-400 transition-colors">{lt.footer.contact}</a>
           </div>
         </div>
       </footer>
