@@ -1,0 +1,11 @@
+# Environment files
+.env
+.env.*
+!.env.*.example
+
+# macOS metadata
+._*
+.DS_Store
+
+# Docker
+docker-compose.override.yml
