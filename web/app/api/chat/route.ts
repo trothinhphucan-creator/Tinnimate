@@ -7,18 +7,24 @@ export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
   try {
-    // 1. Authenticate user
+    // 1. Authenticate user (allow guest mode with 2 free messages)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const isGuest = !user
+    if (isGuest) {
+      // Guest mode: allow max 2 messages (tracked client-side via header)
+      const guestCount = parseInt(request.headers.get('X-Guest-Count') ?? '0')
+      if (guestCount >= 2) {
+        return Response.json({ error: 'guest_limit', message: 'Sign up for free to continue chatting!' }, { status: 403 })
+      }
     }
 
-    const isTrainingMode = request.headers.get('X-Training-Mode') === 'true'
-      && user.app_metadata?.is_admin === true
+    const isTrainingMode = !isGuest && request.headers.get('X-Training-Mode') === 'true'
+      && user!.app_metadata?.is_admin === true
 
-    // 2. Rate limit check (skip in training mode)
-    if (!isTrainingMode) {
+    // 2. Rate limit check (skip for guests and training mode)
+    if (!isGuest && !isTrainingMode) {
       const adminConfig = await getAdminConfig()
 
       // Get user's subscription tier from profile
@@ -26,7 +32,7 @@ export async function POST(request: Request) {
       const { data: profile } = await serviceClient
         .from('profiles')
         .select('subscription_tier')
-        .eq('id', user.id)
+        .eq('id', user!.id)
         .single()
 
       const tier = (profile?.subscription_tier ?? 'free') as SubscriptionTier
@@ -40,7 +46,7 @@ export async function POST(request: Request) {
         const { data: userConvIds } = await serviceClient
           .from('conversations')
           .select('id')
-          .eq('user_id', user.id)
+          .eq('user_id', user!.id)
 
         const convIds = (userConvIds ?? []).map((c: { id: string }) => c.id)
 
@@ -71,11 +77,11 @@ export async function POST(request: Request) {
 
     const serviceClient = createServiceClient()
 
-    // 4. Create conversation if none provided
-    if (!conversationId) {
+    // 4. Create conversation if none provided (skip for guests)
+    if (!isGuest && !conversationId) {
       const { data: conv, error: convError } = await serviceClient
         .from('conversations')
-        .insert({ user_id: user.id })
+        .insert({ user_id: user!.id })
         .select('id')
         .single()
 
@@ -85,9 +91,9 @@ export async function POST(request: Request) {
       conversationId = conv.id
     }
 
-    // 5. Save user message to DB
+    // 5. Save user message to DB (skip for guests)
     const lastMessage = messages[messages.length - 1]
-    if (lastMessage?.role === 'user') {
+    if (!isGuest && lastMessage?.role === 'user' && conversationId) {
       await serviceClient.from('messages').insert({
         conversation_id: conversationId,
         role: 'user',
@@ -96,9 +102,10 @@ export async function POST(request: Request) {
     }
 
     // 6. Build usage-logging callback (fire-and-forget, non-critical)
-    const capturedUserId = user.id
+    const capturedUserId = user?.id ?? 'guest'
     const capturedConvId = conversationId
     const onUsage = async (usage: TokenUsage) => {
+      if (isGuest) return // Don't log guest usage
       try {
         const cfg = await getAdminConfig()
         const { data: modelRow } = await serviceClient
@@ -121,7 +128,7 @@ export async function POST(request: Request) {
     }
 
     // 7. Stream AI response
-    const stream = await streamChat(messages, { training: isTrainingMode, onUsage, lang: lang ?? 'vi', userId: user.id })
+    const stream = await streamChat(messages, { training: isTrainingMode, onUsage, lang: lang ?? 'vi', userId: user?.id ?? 'guest' })
 
     const encoder = new TextEncoder()
     const readable = new ReadableStream({

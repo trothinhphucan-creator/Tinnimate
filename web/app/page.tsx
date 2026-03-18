@@ -33,6 +33,12 @@ const T = {
         { icon: '📋', title: 'Trắc Nghiệm Lâm Sàng', desc: '5 bộ câu hỏi chuẩn quốc tế: THI, TFI, ISI, PHQ-9, GAD-7 — AI phân tích kết quả', img: '/landing/quiz.png' },
         { icon: '🧘', title: 'Thư Giãn & Thiền', desc: 'Hít thở 4-7-8, box breathing, thư giãn cơ tiến dạt — giảm stress gây ù tai', img: '/landing/relax.png' },
         { icon: '📊', title: 'Theo Dõi Tiến Triển', desc: 'Biểu đồ mood, giấc ngủ, mức ù tai theo thời gian — đo lường hiệu quả trị liệu', img: '/landing/quiz.png' },
+        { icon: '🎛️', title: 'Sound Mixer', desc: 'Trộn nhiều âm thanh cùng lúc, chỉnh volume riêng từng lớp — tạo mix cá nhân hóa', img: '/landing/sound-therapy.png' },
+        { icon: '🎯', title: 'Notch Therapy', desc: 'Liệu pháp notch theo tần số ù tai — giảm cường độ ù bằng kích thích thần kinh', img: '/landing/hearing-test.png' },
+        { icon: '🧠', title: 'CBT-i Module', desc: '4 tuần trị liệu hành vi nhận thức cho mất ngủ — 12 bài tập với hướng dẫn chi tiết', img: '/landing/relax.png' },
+        { icon: '🌙', title: 'Chế Độ Ngủ', desc: 'Hẹn giờ âm thanh, fade-out tự động, màn hình tối — thiết kế riêng cho giấc ngủ', img: '/landing/sound-therapy.png' },
+        { icon: '🤖', title: 'Tinni Coach', desc: 'AI huấn luyện cá nhân — gợi ý bài tập, theo dõi tiến trình, nhắc nhở hàng ngày', img: '/landing/ai-chat.png' },
+        { icon: '📰', title: 'Blog Kiến Thức', desc: 'Bài viết chuyên sâu về ù tai, thính học, nghiên cứu mới — cập nhật thường xuyên', img: '/landing/quiz.png' },
       ],
     },
     how: {
@@ -105,6 +111,12 @@ const T = {
         { icon: '📋', title: 'Clinical Assessments', desc: '5 validated questionnaires: THI, TFI, ISI, PHQ-9, GAD-7 — with AI-powered analysis', img: '/landing/quiz.png' },
         { icon: '🧘', title: 'Relaxation & Meditation', desc: '4-7-8 breathing, box breathing, progressive muscle relaxation — reduce stress-triggered tinnitus', img: '/landing/relax.png' },
         { icon: '📊', title: 'Progress Tracking', desc: 'Charts for mood, sleep quality, tinnitus severity over time — measure therapy effectiveness', img: '/landing/quiz.png' },
+        { icon: '🎛️', title: 'Sound Mixer', desc: 'Layer multiple sounds, adjust per-channel volume — create your personalized therapy mix', img: '/landing/sound-therapy.png' },
+        { icon: '🎯', title: 'Notch Therapy', desc: 'Frequency-targeted notch therapy — reduce tinnitus intensity through neuroplasticity', img: '/landing/hearing-test.png' },
+        { icon: '🧠', title: 'CBT-i Module', desc: '4-week cognitive behavioral therapy for insomnia — 12 guided exercises with clinical content', img: '/landing/relax.png' },
+        { icon: '🌙', title: 'Sleep Mode', desc: 'Sleep timer, auto fade-out, dark screen — designed for bedtime tinnitus masking', img: '/landing/sound-therapy.png' },
+        { icon: '🤖', title: 'Tinni Coach', desc: 'AI personal coach — suggests exercises, tracks progress, daily reminders', img: '/landing/ai-chat.png' },
+        { icon: '📰', title: 'Knowledge Blog', desc: 'Expert articles on tinnitus, audiology, latest research — regularly updated', img: '/landing/quiz.png' },
       ],
     },
     how: {
@@ -160,6 +172,12 @@ const FEATURE_COLORS = [
   { color: 'from-amber-500 to-orange-400', glow: 'shadow-amber-500/20' },
   { color: 'from-pink-500 to-rose-400', glow: 'shadow-pink-500/20' },
   { color: 'from-indigo-500 to-blue-400', glow: 'shadow-indigo-500/20' },
+  { color: 'from-cyan-500 to-sky-400', glow: 'shadow-cyan-500/20' },
+  { color: 'from-red-500 to-pink-400', glow: 'shadow-red-500/20' },
+  { color: 'from-fuchsia-500 to-purple-400', glow: 'shadow-fuchsia-500/20' },
+  { color: 'from-slate-400 to-blue-400', glow: 'shadow-slate-400/20' },
+  { color: 'from-teal-500 to-emerald-400', glow: 'shadow-teal-500/20' },
+  { color: 'from-orange-500 to-amber-400', glow: 'shadow-orange-500/20' },
 ]
 
 /* ── Scroll animation hook ── */
@@ -250,11 +268,14 @@ export default function LandingPage() {
             </h1>
             <p className="text-lg text-slate-400 mb-8 max-w-md leading-relaxed">{lt.hero.desc}</p>
             <div className="flex flex-wrap items-center gap-4">
-              <Link href="/signup" className="group flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
-                {lt.hero.cta1}
+              <Link href="/chat" className="group flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
+                {lang === 'vi' ? '💬 Chat thử với Tinni' : '💬 Try Chatting with Tinni'}
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
-              <a href="#features" className="px-6 py-3.5 border border-white/10 hover:border-white/25 text-slate-300 hover:text-white rounded-full text-sm transition-all hover:bg-white/5">
+              <Link href="/signup" className="px-6 py-3.5 border border-white/10 hover:border-white/25 text-slate-300 hover:text-white rounded-full text-sm transition-all hover:bg-white/5">
+                {lt.hero.cta1}
+              </Link>
+              <a href="#features" className="px-6 py-3.5 text-slate-500 hover:text-white text-sm transition-all">
                 {lt.hero.cta2}
               </a>
             </div>

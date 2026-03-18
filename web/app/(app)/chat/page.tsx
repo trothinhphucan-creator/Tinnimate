@@ -1,13 +1,17 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { SquarePen } from 'lucide-react'
+import { SquarePen, Sparkles, LogIn } from 'lucide-react'
+import Link from 'next/link'
 import { useChatStore } from '@/stores/use-chat-store'
 import { useLangStore } from '@/stores/use-lang-store'
+import { useUserStore } from '@/stores/use-user-store'
 import { t } from '@/lib/i18n'
 import { ChatMessage, ToolCall } from '@/types'
 import { ChatMessageBubble } from '@/components/chat-message-bubble'
 import { ChatInputArea } from '@/components/chat-input-area'
+
+const GUEST_MAX = 2
 
 /* ── Tool Card Config ── */
 const TOOL_STYLES = {
@@ -65,8 +69,21 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
 export default function ChatPage() {
   const { messages, isLoading, addMessage, updateLastMessage, appendToolCall, setLoading, conversationId, clearMessages } =
     useChatStore()
+  const { user } = useUserStore()
+  const isGuest = !user
   const [input, setInput] = useState('')
+  const [guestCount, setGuestCount] = useState(0)
+  const [showSignupModal, setShowSignupModal] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  // Restore guest count from localStorage
+  useEffect(() => {
+    if (isGuest) {
+      const saved = parseInt(localStorage.getItem('tinni_guest_count') ?? '0')
+      setGuestCount(saved)
+      if (saved >= GUEST_MAX) setShowSignupModal(true)
+    }
+  }, [isGuest])
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -100,12 +117,21 @@ export default function ChatPage() {
     addMessage({ id: assistantId, role: 'assistant', content: '', timestamp: new Date() })
 
     try {
+      // Guest mode: check limit before sending
+      if (isGuest && guestCount >= GUEST_MAX) {
+        setShowSignupModal(true)
+        return
+      }
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (isGuest) headers['X-Guest-Count'] = String(guestCount)
+
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           messages: [...messages, userMsg],
-          conversationId,
+          conversationId: isGuest ? undefined : conversationId,
           lang,
         }),
       })
@@ -113,12 +139,28 @@ export default function ChatPage() {
       if (!response.ok || !response.body) {
         try {
           const errData = await response.json()
+          if (errData?.error === 'guest_limit') {
+            setShowSignupModal(true)
+            updateLastMessage('')
+            return
+          }
           const msg = errData?.error ?? `Lỗi ${response.status}`
           updateLastMessage(`⚠️ ${msg}`)
         } catch {
           updateLastMessage(`⚠️ Lỗi ${response.status}. Vui lòng thử lại.`)
         }
         return
+      }
+
+      // Update guest count after successful send
+      if (isGuest) {
+        const newCount = guestCount + 1
+        setGuestCount(newCount)
+        localStorage.setItem('tinni_guest_count', String(newCount))
+        if (newCount >= GUEST_MAX) {
+          // Will show signup after AI replies
+          setTimeout(() => setShowSignupModal(true), 3000)
+        }
       }
 
       const reader = response.body.getReader()
@@ -154,6 +196,46 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-full bg-slate-950">
+      {/* Guest banner */}
+      {isGuest && !showSignupModal && (
+        <div className="bg-gradient-to-r from-blue-600/20 to-violet-600/20 border-b border-blue-500/20 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-blue-300">
+            <Sparkles size={12} />
+            {lang === 'vi'
+              ? `Bạn đang dùng thử! Còn ${Math.max(0, GUEST_MAX - guestCount)} tin nhắn miễn phí`
+              : `You're trying Tinni! ${Math.max(0, GUEST_MAX - guestCount)} free messages left`}
+          </div>
+          <Link href="/signup" className="text-[10px] font-semibold text-blue-400 hover:text-blue-300 transition-colors">
+            {lang === 'vi' ? 'Đăng ký miễn phí →' : 'Sign up free →'}
+          </Link>
+        </div>
+      )}
+
+      {/* Signup modal after guest limit */}
+      {showSignupModal && (
+        <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-blue-500/30 flex items-center justify-center text-3xl mx-auto mb-4">
+              💙
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">
+              {lang === 'vi' ? 'Bạn thích Tinni chứ? 😊' : 'Enjoying Tinni? 😊'}
+            </h3>
+            <p className="text-sm text-slate-400 mb-6">
+              {lang === 'vi'
+                ? 'Đăng ký miễn phí để tiếp tục chat, lưu lịch sử và trải nghiệm tất cả tính năng!'
+                : 'Sign up free to continue chatting, save history, and unlock all features!'}
+            </p>
+            <Link href="/signup" className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/25">
+              <LogIn size={16} /> {lang === 'vi' ? 'Đăng ký miễn phí' : 'Sign Up Free'}
+            </Link>
+            <Link href="/login" className="block mt-3 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+              {lang === 'vi' ? 'Đã có tài khoản? Đăng nhập' : 'Already have an account? Log in'}
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 shrink-0">
         <div className="flex items-center gap-2">

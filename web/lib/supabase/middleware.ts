@@ -39,9 +39,9 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Protect /app routes — require auth
+  // Protect /app routes — require auth (except /chat which allows guest mode)
   if (request.nextUrl.pathname.startsWith('/(app)') ||
-      ['/chat', '/dashboard', '/therapy', '/hearing-test', '/profile', '/pricing'].includes(request.nextUrl.pathname)) {
+      ['/dashboard', '/therapy', '/hearing-test', '/profile', '/pricing'].includes(request.nextUrl.pathname)) {
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
