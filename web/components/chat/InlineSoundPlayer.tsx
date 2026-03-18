@@ -137,12 +137,13 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
   const [elapsed, setElapsed] = useState(0)
   const [selectedSound, setSelectedSound] = useState(soundType)
   const [showPicker, setShowPicker] = useState(false)
+  const [duration, setDuration] = useState(durationMinutes)
   const ctxRef = useRef<AudioContext | null>(null)
   const sourceRef = useRef<AudioBufferSourceNode | OscillatorNode | null>(null)
   const gainRef = useRef<GainNode | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const stylesRef = useRef(false)
-  const totalSeconds = durationMinutes * 60
+  const totalSeconds = duration * 60
   const config = SOUND_TYPES[selectedSound] ?? SOUND_TYPES.white_noise
   const { lang } = useLangStore()
   const isEn = lang === 'en'
@@ -470,6 +471,25 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
               className="flex-1 h-1 accent-emerald-500 cursor-pointer"
             />
             <span className="text-[10px] text-slate-500 w-6 text-right">{volume}%</span>
+          </div>
+
+          {/* Duration picker */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-slate-500 mr-1">⏱ {isEn ? 'Duration' : 'Thời gian'}:</span>
+            {[10, 15, 30].map(m => (
+              <button
+                key={m}
+                disabled={isPlaying}
+                onClick={() => setDuration(m)}
+                className={`px-2.5 py-1 text-[10px] rounded-md border transition-all ${
+                  duration === m
+                    ? 'bg-emerald-600/30 border-emerald-500/40 text-emerald-300 font-semibold'
+                    : 'bg-slate-800/50 border-slate-700/30 text-slate-500 hover:text-white hover:bg-slate-700/50 disabled:opacity-40'
+                }`}
+              >
+                {m} {isEn ? 'min' : 'phút'}
+              </button>
+            ))}
           </div>
 
           {/* Sound picker toggle */}

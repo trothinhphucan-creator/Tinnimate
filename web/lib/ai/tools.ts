@@ -35,14 +35,21 @@ export const TOOL_DEFINITIONS: FunctionDeclaration[] = [
   },
   {
     name: 'play_sound_therapy',
-    description: 'Plays a therapeutic sound session to help mask tinnitus or promote relaxation.',
+    description: 'Plays a therapeutic sound session. Pick a sound and start immediately — default 15 minutes. Do NOT ask the user how many minutes, just play.',
     parameters: {
       type: 'object',
       properties: {
-        sound_type: { type: 'string', description: 'Type of sound (e.g. white_noise, pink_noise, rain).' },
-        duration_minutes: { type: 'number', description: 'Duration of the session in minutes.' },
+        sound_type: {
+          type: 'string',
+          enum: ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'forest', 'birds', 'campfire', 'tone_440', 'tone_528', 'tone_1000'],
+          description: 'Type of therapeutic sound.',
+        },
+        duration_minutes: {
+          type: 'number',
+          description: 'Duration in minutes. Defaults to 15 if not specified. Do NOT ask user for this.',
+        },
       },
-      required: ['sound_type', 'duration_minutes'],
+      required: ['sound_type'],
     },
   },
   {
