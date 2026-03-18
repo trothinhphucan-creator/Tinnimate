@@ -131,12 +131,28 @@ export async function assembleSystemPrompt(userContext?: UserContext, lang: stri
     parts.push(`\n## Kiến thức được đào tạo\n${sections.join('\n\n')}`)
   }
 
-  // Inject user context if available
+  // Inject user context if available (personalized Tinni)
   if (userContext?.tinnitusProfile) {
-    parts.push(`\n## User Tinnitus Profile\n${JSON.stringify(userContext.tinnitusProfile, null, 2)}`)
+    const p = userContext.tinnitusProfile as Record<string, unknown>
+    const lines = ['## 👤 User Profile (use to personalize your responses)']
+    if (p.name) lines.push(`- Name: ${p.name}`)
+    if (p.tinnitus_type) lines.push(`- Tinnitus type: ${p.tinnitus_type}`)
+    if (p.tinnitus_ear) lines.push(`- Ear: ${p.tinnitus_ear}`)
+    if (p.tinnitus_frequency) lines.push(`- Frequency: ${p.tinnitus_frequency}`)
+    if (p.streak !== undefined) lines.push(`- Check-in streak: ${p.streak} days ${Number(p.streak) > 0 ? '🔥' : ''}`)
+    const assess = p.latestAssessment as Record<string, unknown> | undefined
+    if (assess) {
+      lines.push(`- Latest assessment: ${assess.quiz_type} → score ${assess.total_score} (${assess.severity}) on ${new Date(assess.created_at as string).toLocaleDateString()}`)
+    }
+    parts.push('\n' + lines.join('\n'))
   }
   if (userContext?.recentCheckin) {
-    parts.push(`\n## Recent Check-in\n${JSON.stringify(userContext.recentCheckin, null, 2)}`)
+    const c = userContext.recentCheckin as Record<string, unknown>
+    parts.push(`\n## 📝 Latest Check-in (${new Date(c.created_at as string).toLocaleDateString()})
+- Mood: ${c.mood_score}/10
+- Sleep: ${c.sleep_score}/10
+- Tinnitus loudness: ${c.tinnitus_loudness}/10
+Use this to greet the user appropriately and track their progress.`)
   }
 
   // Inject few-shot examples

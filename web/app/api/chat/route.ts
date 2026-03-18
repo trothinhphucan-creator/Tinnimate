@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     }
 
     // 7. Stream AI response
-    const stream = await streamChat(messages, { training: isTrainingMode, onUsage, lang: lang ?? 'vi' })
+    const stream = await streamChat(messages, { training: isTrainingMode, onUsage, lang: lang ?? 'vi', userId: user.id })
 
     const encoder = new TextEncoder()
     const readable = new ReadableStream({

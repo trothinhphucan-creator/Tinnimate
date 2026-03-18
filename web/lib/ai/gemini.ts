@@ -35,11 +35,50 @@ export async function streamChat(
     training?: boolean
     onUsage?: (usage: TokenUsage) => void | Promise<void>
     lang?: string
+    userId?: string
   }
 ): Promise<ReadableStream> {
+  // Fetch personalized user context if userId is available
+  let userContext: Parameters<typeof assembleSystemPrompt>[0] = undefined
+  if (options?.userId) {
+    try {
+      const svc = createServiceClient()
+      const [profileRes, checkinRes, assessmentRes, streakRes] = await Promise.all([
+        svc.from('profiles').select('name, tinnitus_type, tinnitus_frequency, tinnitus_ear')
+          .eq('id', options.userId).single(),
+        svc.from('daily_checkins').select('mood_score, sleep_score, tinnitus_loudness, created_at')
+          .eq('user_id', options.userId).order('created_at', { ascending: false }).limit(1).single(),
+        svc.from('assessments').select('quiz_type, total_score, severity, created_at')
+          .eq('user_id', options.userId).order('created_at', { ascending: false }).limit(1).single(),
+        svc.from('daily_checkins').select('created_at')
+          .eq('user_id', options.userId).order('created_at', { ascending: false }).limit(30),
+      ])
+      // Calculate streak
+      let streak = 0
+      if (streakRes.data?.length) {
+        const today = new Date(); today.setHours(0,0,0,0)
+        const dates = new Set(streakRes.data.map((c: { created_at: string }) => {
+          const d = new Date(c.created_at); d.setHours(0,0,0,0); return d.toDateString()
+        }))
+        for (let i = 0; i < 365; i++) {
+          const d = new Date(today); d.setDate(d.getDate() - i)
+          if (dates.has(d.toDateString())) streak++; else break
+        }
+      }
+      userContext = {
+        tinnitusProfile: {
+          ...(profileRes.data ?? {}),
+          latestAssessment: assessmentRes.data ?? undefined,
+          streak,
+        },
+        recentCheckin: checkinRes.data ?? undefined,
+      }
+    } catch { /* personalization is non-critical */ }
+  }
+
   const [config, systemPrompt, trainingPrompt] = await Promise.all([
     getAdminConfig(),
-    assembleSystemPrompt(undefined, options?.lang ?? 'vi'),
+    assembleSystemPrompt(userContext, options?.lang ?? 'vi'),
     options?.training ? getTrainingModePrompt() : Promise.resolve(''),
   ])
 
