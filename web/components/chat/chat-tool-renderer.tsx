@@ -8,6 +8,7 @@ import type { ToolCall } from '@/types'
 const InlineSoundPlayer = dynamic(() => import('./InlineSoundPlayer').then(m => ({ default: m.InlineSoundPlayer })), { ssr: false })
 const InlineHearingTest = dynamic(() => import('./InlineHearingTest').then(m => ({ default: m.InlineHearingTest })), { ssr: false })
 const InlineQuiz = dynamic(() => import('./InlineQuiz').then(m => ({ default: m.InlineQuiz })), { ssr: false })
+const InlineRelaxation = dynamic(() => import('./InlineRelaxation').then(m => ({ default: m.InlineRelaxation })), { ssr: false })
 
 interface Props {
   toolCall: ToolCall
@@ -87,18 +88,11 @@ export function ChatToolRenderer({ toolCall, onResult }: Props) {
 
     case 'play_relaxation': {
       const exerciseType = (args.exercise_type as string) ?? 'breathing'
-      const exerciseLabels: Record<string, string> = {
-        breathing: '🫁 Bài tập hít thở',
-        pmr: '💪 Thư giãn cơ tiến triển',
-        visualization: '🧘 Hình dung',
-      }
       return (
-        <div className="bg-gradient-to-br from-emerald-900/20 to-slate-800 border border-emerald-500/20 rounded-xl p-3 mt-2">
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium mb-1">
-            <span>🧘</span> Thư giãn
-          </div>
-          <div className="text-slate-300 text-sm">{exerciseLabels[exerciseType] ?? exerciseType}</div>
-        </div>
+        <InlineRelaxation
+          exerciseType={exerciseType}
+          onResult={(data) => onResult?.(name, data)}
+        />
       )
     }
 
