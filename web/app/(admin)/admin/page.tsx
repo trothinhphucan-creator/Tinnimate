@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Settings, FileText, Database, MessageSquare, Bot, Cpu, CreditCard } from "lucide-react"
+import { Settings, FileText, Database, MessageSquare, Bot, Cpu, CreditCard, UsersRound } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CostDashboard } from "@/components/admin/CostDashboard"
 import type { AdminConfig, SystemPrompt } from "@/types"
@@ -31,6 +31,7 @@ async function getPrompts(): Promise<SystemPrompt[]> {
 const quickLinks = [
   { href: "/admin/config", label: "AI Config", icon: Settings, desc: "Model, temperature, rate limits" },
   { href: "/admin/pricing", label: "Pricing & Payments", icon: CreditCard, desc: "Plans, prices, Stripe/MoMo/VNPay" },
+  { href: "/admin/users", label: "CRM — Users", icon: UsersRound, desc: "User management, stats, tiers" },
   { href: "/admin/models", label: "LLM Models", icon: Cpu, desc: "Providers, pricing, API keys" },
   { href: "/admin/prompts", label: "System Prompts", icon: FileText, desc: "Edit and version prompts" },
   { href: "/admin/knowledge", label: "Knowledge Base", icon: Database, desc: "RAG documents" },
