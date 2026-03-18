@@ -46,8 +46,35 @@ export interface AdminConfig {
   max_tokens: number
   tool_config: Record<string, boolean>
   rate_limits: RateLimits
+  pricing_config: PricingConfig
   updated_at: string
 }
+
+export interface PricingConfig {
+  plans: PlanConfig[]
+  gateways: PaymentGateways
+  trial_days: number
+  yearly_discount: number // 0-100 percent
+}
+
+export interface PlanConfig {
+  tier: SubscriptionTier
+  name: string
+  emoji: string
+  price_usd: number
+  price_vnd: number
+  stripe_price_id: string
+  features_en: string[]
+  features_vi: string[]
+  highlighted: boolean
+}
+
+export interface PaymentGateways {
+  stripe: { enabled: boolean; secret_key: string; webhook_secret: string }
+  momo: { enabled: boolean; partner_code: string; access_key: string; secret_key: string; endpoint: string }
+  vnpay: { enabled: boolean; tmn_code: string; hash_secret: string; endpoint: string }
+}
+
 
 export interface RateLimits {
   free: TierLimits

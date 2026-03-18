@@ -1,109 +1,107 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useUserStore } from '@/stores/use-user-store'
 import { useLangStore } from '@/stores/use-lang-store'
-import { Check, X, Sparkles } from 'lucide-react'
-import type { SubscriptionTier } from '@/types'
+import { Check, X, Sparkles, CreditCard } from 'lucide-react'
+import type { SubscriptionTier, PricingConfig, PlanConfig } from '@/types'
 
-interface Plan {
-  tier: SubscriptionTier
-  name: string
-  emoji: string
-  monthlyUSD: number
-  monthlyVND: number
-  features: { vi: string; en: string }[]
-  priceIdEnv: string
+const COMPARISON_KEYS = [
+  { key: 'chat', vi: 'Chat AI', en: 'AI Chat', free: '5/ngày', premium: '∞', pro: '∞ + priority' },
+  { key: 'sounds', vi: 'Âm thanh trị liệu', en: 'Therapy sounds', free: '3', premium: '11+', pro: '11+' },
+  { key: 'quiz', vi: 'Bộ câu hỏi', en: 'Quizzes', free: '1/tháng', premium: '∞', pro: '∞' },
+  { key: 'mixer', vi: 'Sound Mixer', en: 'Sound Mixer', free: false, premium: true, pro: true },
+  { key: 'notch', vi: 'Notch Therapy', en: 'Notch Therapy', free: false, premium: true, pro: true },
+  { key: 'sleep', vi: 'Chế độ ngủ', en: 'Sleep Mode', free: false, premium: true, pro: true },
+  { key: 'cbti', vi: 'CBT-i', en: 'CBT-i', free: 'Tuần 1', premium: '4 tuần', pro: '4 tuần' },
+  { key: 'charts', vi: 'Biểu đồ', en: 'Charts', free: false, premium: true, pro: true },
+  { key: 'pdf', vi: 'Xuất PDF', en: 'PDF export', free: false, premium: true, pro: true },
+  { key: 'ent', vi: 'Bác sĩ TMH', en: 'ENT specialist', free: false, premium: false, pro: true },
+  { key: 'family', vi: 'Family plan', en: 'Family plan', free: false, premium: false, pro: true },
+]
+
+type Gateway = 'stripe' | 'momo' | 'vnpay'
+const GW_INFO: Record<Gateway, { icon: string; label: string; labelVi: string }> = {
+  stripe: { icon: '💳', label: 'Credit Card', labelVi: 'Thẻ quốc tế' },
+  momo: { icon: '🟣', label: 'MoMo Wallet', labelVi: 'Ví MoMo' },
+  vnpay: { icon: '🏦', label: 'VNPay / ATM', labelVi: 'VNPay / ATM' },
 }
-
-const PLANS: Plan[] = [
-  {
-    tier: 'free', name: 'Free', emoji: '🆓',
-    monthlyUSD: 0, monthlyVND: 0,
-    features: [
-      { vi: '5 tin nhắn/ngày', en: '5 messages/day' },
-      { vi: '3 âm thanh cơ bản', en: '3 basic sounds' },
-      { vi: 'Kiểm tra thính lực', en: 'Hearing test' },
-      { vi: '1 bộ câu hỏi/tháng', en: '1 quiz/month' },
-      { vi: 'Blog kiến thức', en: 'Knowledge blog' },
-    ],
-    priceIdEnv: '',
-  },
-  {
-    tier: 'premium', name: 'Premium', emoji: '⭐',
-    monthlyUSD: 4.99, monthlyVND: 99000,
-    features: [
-      { vi: 'Chat không giới hạn', en: 'Unlimited chat' },
-      { vi: 'Toàn bộ 11+ âm thanh', en: 'All 11+ sounds' },
-      { vi: 'Tất cả bộ câu hỏi', en: 'All quizzes' },
-      { vi: 'Sound Mixer', en: 'Sound Mixer' },
-      { vi: 'Notch Therapy', en: 'Notch Therapy' },
-      { vi: 'Chế độ ngủ', en: 'Sleep Mode' },
-      { vi: 'CBT-i đầy đủ 4 tuần', en: 'Full 4-week CBT-i' },
-      { vi: 'Biểu đồ tiến triển', en: 'Progress charts' },
-      { vi: 'Xuất PDF báo cáo', en: 'PDF export' },
-    ],
-    priceIdEnv: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID ?? '',
-  },
-  {
-    tier: 'pro', name: 'Pro', emoji: '💎',
-    monthlyUSD: 9.99, monthlyVND: 199000,
-    features: [
-      { vi: 'Tất cả Premium', en: 'Everything in Premium' },
-      { vi: 'AI ưu tiên (phản hồi nhanh)', en: 'Priority AI (faster)' },
-      { vi: 'Kết nối bác sĩ TMH', en: 'ENT specialist connect' },
-      { vi: 'Hỗ trợ ưu tiên 24/7', en: 'Priority support 24/7' },
-      { vi: 'Family plan (3 người)', en: 'Family plan (3 users)' },
-    ],
-    priceIdEnv: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID ?? '',
-  },
-]
-
-const COMPARISON = [
-  { feature: { vi: 'Chat AI', en: 'AI Chat' }, free: '5/ngày', premium: '∞', pro: '∞ + priority' },
-  { feature: { vi: 'Âm thanh trị liệu', en: 'Therapy sounds' }, free: '3', premium: '11+', pro: '11+' },
-  { feature: { vi: 'Bộ câu hỏi', en: 'Quizzes' }, free: '1/tháng', premium: '∞', pro: '∞' },
-  { feature: { vi: 'Sound Mixer', en: 'Sound Mixer' }, free: false, premium: true, pro: true },
-  { feature: { vi: 'Notch Therapy', en: 'Notch Therapy' }, free: false, premium: true, pro: true },
-  { feature: { vi: 'Chế độ ngủ', en: 'Sleep Mode' }, free: false, premium: true, pro: true },
-  { feature: { vi: 'CBT-i', en: 'CBT-i' }, free: 'Tuần 1', premium: '4 tuần', pro: '4 tuần' },
-  { feature: { vi: 'Biểu đồ tiến triển', en: 'Progress charts' }, free: false, premium: true, pro: true },
-  { feature: { vi: 'Xuất PDF', en: 'PDF export' }, free: false, premium: true, pro: true },
-  { feature: { vi: 'Bác sĩ TMH', en: 'ENT specialist' }, free: false, premium: false, pro: true },
-  { feature: { vi: 'Family plan', en: 'Family plan' }, free: false, premium: false, pro: true },
-]
 
 export default function PricingPage() {
   const { user } = useUserStore()
   const { lang } = useLangStore()
   const isEn = lang === 'en'
+  const isVN = lang === 'vi'
   const currentTier = (user?.subscription_tier ?? 'free') as SubscriptionTier
   const [yearly, setYearly] = useState(false)
-  const [loadingTier, setLoadingTier] = useState<SubscriptionTier | null>(null)
-  const isVN = lang === 'vi'
+  const [loadingGw, setLoadingGw] = useState<string | null>(null)
+  const [pricingConfig, setPricingConfig] = useState<PricingConfig | null>(null)
+  const [selectedGw, setSelectedGw] = useState<Gateway>('stripe')
 
-  const getPrice = (plan: Plan) => {
-    const base = isVN ? plan.monthlyVND : plan.monthlyUSD
+  // Fetch pricing config from DB
+  useEffect(() => {
+    fetch('/api/pricing-config')
+      .then(r => r.json())
+      .then(d => {
+        if (d.pricing_config) {
+          setPricingConfig(d.pricing_config)
+          // Default to MoMo for VN locale if enabled
+          const gw = d.pricing_config.gateways
+          if (isVN && gw.momo?.enabled) setSelectedGw('momo')
+          else if (isVN && gw.vnpay?.enabled) setSelectedGw('vnpay')
+        }
+      })
+      .catch(() => {})
+  }, [isVN])
+
+  // Fallback plans if DB not loaded yet
+  const plans: PlanConfig[] = pricingConfig?.plans ?? [
+    { tier: 'free', name: 'Free', emoji: '🆓', price_usd: 0, price_vnd: 0, stripe_price_id: '', features_en: ['5 messages/day', '3 basic sounds', 'Hearing test'], features_vi: ['5 tin nhắn/ngày', '3 âm thanh cơ bản', 'Kiểm tra thính lực'], highlighted: false },
+    { tier: 'premium', name: 'Premium', emoji: '⭐', price_usd: 4.99, price_vnd: 99000, stripe_price_id: '', features_en: ['Unlimited chat', 'All sounds', 'Sound Mixer', 'Notch Therapy', 'Sleep Mode'], features_vi: ['Chat không giới hạn', 'Tất cả âm thanh', 'Sound Mixer', 'Notch Therapy', 'Chế độ ngủ'], highlighted: true },
+    { tier: 'pro', name: 'Pro', emoji: '💎', price_usd: 9.99, price_vnd: 199000, stripe_price_id: '', features_en: ['All Premium', 'Priority AI', 'ENT specialist'], features_vi: ['Tất cả Premium', 'AI ưu tiên', 'Bác sĩ TMH'], highlighted: false },
+  ]
+  const discount = pricingConfig?.yearly_discount ?? 20
+  const enabledGateways = Object.entries(pricingConfig?.gateways ?? { stripe: { enabled: true } })
+    .filter(([, v]) => (v as { enabled: boolean }).enabled)
+    .map(([k]) => k as Gateway)
+
+  const getPrice = (plan: PlanConfig) => {
+    const base = isVN ? plan.price_vnd : plan.price_usd
     if (base === 0) return isVN ? '0₫' : '$0'
-    const price = yearly ? base * 0.8 : base
+    const price = yearly ? base * (1 - discount / 100) : base
     if (isVN) return `${Math.round(price).toLocaleString('vi-VN')}₫`
     return `$${price.toFixed(2)}`
   }
 
-  const handleUpgrade = async (plan: Plan) => {
-    if (!plan.priceIdEnv || plan.tier === currentTier) return
-    setLoadingTier(plan.tier)
+  const handleUpgrade = async (plan: PlanConfig) => {
+    if (plan.tier === 'free' || plan.tier === currentTier) return
+    setLoadingGw(plan.tier)
     try {
-      const res = await fetch('/api/stripe/checkout', {
+      let endpoint: string
+      let body: Record<string, unknown>
+
+      if (selectedGw === 'stripe') {
+        endpoint = '/api/stripe/checkout'
+        body = { priceId: plan.stripe_price_id, yearly }
+      } else if (selectedGw === 'momo') {
+        endpoint = '/api/payment/momo'
+        body = { tier: plan.tier, yearly }
+      } else {
+        endpoint = '/api/payment/vnpay'
+        body = { tier: plan.tier, yearly }
+      }
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: plan.priceIdEnv, yearly }),
+        body: JSON.stringify(body),
       })
-      const { url } = await res.json()
+      const { url, error } = await res.json()
       if (url) window.location.href = url
+      else if (error) alert(error)
     } catch {
     } finally {
-      setLoadingTier(null)
+      setLoadingGw(null)
     }
   }
 
@@ -133,15 +131,34 @@ export default function PricingPage() {
           </button>
           <span className={yearly ? 'text-white font-medium' : 'text-slate-400'}>
             {isEn ? 'Yearly' : 'Hàng năm'}{' '}
-            <span className="rounded-full bg-emerald-600/20 text-emerald-400 px-2 py-0.5 text-xs ml-1">-20%</span>
+            <span className="rounded-full bg-emerald-600/20 text-emerald-400 px-2 py-0.5 text-xs ml-1">-{discount}%</span>
           </span>
         </div>
 
+        {/* Payment method */}
+        {enabledGateways.length > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <CreditCard size={14} className="text-slate-500" />
+            <span className="text-xs text-slate-500">{isEn ? 'Pay with:' : 'Thanh toán:'}</span>
+            {enabledGateways.map(gw => (
+              <button key={gw} onClick={() => setSelectedGw(gw)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs transition-all ${
+                  selectedGw === gw
+                    ? 'bg-blue-600/20 border-blue-500/30 text-blue-300'
+                    : 'bg-white/[0.02] border-white/5 text-slate-500 hover:text-white'
+                }`}>
+                <span>{GW_INFO[gw].icon}</span>
+                <span>{isEn ? GW_INFO[gw].label : GW_INFO[gw].labelVi}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Plan cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {PLANS.map(plan => {
+          {plans.map(plan => {
             const isCurrent = plan.tier === currentTier
-            const isHighlighted = plan.tier === 'premium'
+            const isHighlighted = plan.highlighted
 
             return (
               <div key={plan.tier}
@@ -165,18 +182,18 @@ export default function PricingPage() {
                     <span className="text-3xl font-bold text-white">{getPrice(plan)}</span>
                     <span className="text-sm text-slate-500">/{isEn ? 'month' : 'tháng'}</span>
                   </div>
-                  {yearly && plan.monthlyUSD > 0 && (
+                  {yearly && plan.price_usd > 0 && (
                     <p className="text-xs text-slate-600 mt-0.5 line-through">
-                      {isVN ? `${plan.monthlyVND.toLocaleString('vi-VN')}₫/tháng` : `$${plan.monthlyUSD.toFixed(2)}/month`}
+                      {isVN ? `${plan.price_vnd.toLocaleString('vi-VN')}₫` : `$${plan.price_usd.toFixed(2)}`}/{isEn ? 'mo' : 'tháng'}
                     </p>
                   )}
                 </div>
 
                 <ul className="flex-1 flex flex-col gap-2">
-                  {plan.features.map(feat => (
-                    <li key={feat.en} className="flex items-start gap-2 text-sm text-slate-300">
+                  {(isEn ? plan.features_en : plan.features_vi).map(feat => (
+                    <li key={feat} className="flex items-start gap-2 text-sm text-slate-300">
                       <span className="text-blue-400 mt-0.5 shrink-0">✓</span>
-                      {isEn ? feat.en : feat.vi}
+                      {feat}
                     </li>
                   ))}
                 </ul>
@@ -191,15 +208,18 @@ export default function PricingPage() {
                   </div>
                 ) : (
                   <button onClick={() => handleUpgrade(plan)}
-                    disabled={loadingTier !== null}
-                    className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all disabled:opacity-50 ${
+                    disabled={loadingGw !== null}
+                    className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${
                       isHighlighted
                         ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-500 hover:to-cyan-500'
                         : 'border border-white/10 text-white hover:bg-white/[0.05]'
                     }`}>
-                    {loadingTier === plan.tier
+                    {loadingGw === plan.tier
                       ? (isEn ? 'Processing...' : 'Đang xử lý...')
-                      : (isEn ? `Upgrade to ${plan.name}` : `Nâng cấp ${plan.name}`)}
+                      : <>
+                          <span>{GW_INFO[selectedGw].icon}</span>
+                          {isEn ? `Upgrade with ${GW_INFO[selectedGw].label}` : `Nâng cấp qua ${GW_INFO[selectedGw].labelVi}`}
+                        </>}
                   </button>
                 )}
               </div>
@@ -207,7 +227,7 @@ export default function PricingPage() {
           })}
         </div>
 
-        {/* Feature comparison table */}
+        {/* Feature comparison */}
         <div className="mt-4">
           <h2 className="text-sm font-semibold text-slate-400 text-center mb-4">
             {isEn ? 'Feature Comparison' : 'So Sánh Tính Năng'}
@@ -219,9 +239,9 @@ export default function PricingPage() {
               <div className="p-3 text-center">⭐ Premium</div>
               <div className="p-3 text-center">💎 Pro</div>
             </div>
-            {COMPARISON.map((row, i) => (
-              <div key={i} className={`grid grid-cols-4 text-xs border-b border-white/5 last:border-b-0 ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
-                <div className="p-3 text-slate-300">{isEn ? row.feature.en : row.feature.vi}</div>
+            {COMPARISON_KEYS.map((row, i) => (
+              <div key={row.key} className={`grid grid-cols-4 text-xs border-b border-white/5 last:border-b-0 ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
+                <div className="p-3 text-slate-300">{isEn ? row.en : row.vi}</div>
                 {(['free', 'premium', 'pro'] as const).map(tier => {
                   const val = row[tier]
                   return (
@@ -241,7 +261,9 @@ export default function PricingPage() {
         <div className="flex justify-center gap-6 text-center text-xs text-slate-600 pb-8">
           <div>🔒 {isEn ? 'Secure payment' : 'Thanh toán an toàn'}</div>
           <div>↩️ {isEn ? 'Cancel anytime' : 'Hủy bất cứ lúc nào'}</div>
-          <div>💳 {isEn ? 'Stripe powered' : 'Powered by Stripe'}</div>
+          {enabledGateways.map(gw => (
+            <div key={gw}>{GW_INFO[gw].icon} {GW_INFO[gw].label}</div>
+          ))}
         </div>
       </div>
     </div>

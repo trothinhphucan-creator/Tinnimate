@@ -31,6 +31,16 @@ export default async function ConfigPage() {
       premium: { chat: 100, quiz: 10, hearing_test: 5 },
       pro: { chat: -1, quiz: -1, hearing_test: -1 },
     },
+    pricing_config: {
+      plans: [],
+      gateways: {
+        stripe: { enabled: true, secret_key: '', webhook_secret: '' },
+        momo: { enabled: false, partner_code: '', access_key: '', secret_key: '', endpoint: '' },
+        vnpay: { enabled: false, tmn_code: '', hash_secret: '', endpoint: '' },
+      },
+      trial_days: 7,
+      yearly_discount: 20,
+    },
     updated_at: "",
   }
 
