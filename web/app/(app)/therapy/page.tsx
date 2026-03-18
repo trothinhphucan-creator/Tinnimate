@@ -92,8 +92,8 @@ export default function TherapyPage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="font-semibold text-white">{THERAPY_PRESETS[activeSound]?.labelVi ?? activeSound}</div>
-              <div className="text-xs text-slate-400 truncate">{THERAPY_PRESETS[activeSound]?.description}</div>
+              <div className="font-semibold text-white">{lang === 'vi' ? THERAPY_PRESETS[activeSound]?.labelVi : THERAPY_PRESETS[activeSound]?.label}</div>
+              <div className="text-xs text-slate-400 truncate">{lang === 'vi' ? THERAPY_PRESETS[activeSound]?.descriptionVi : THERAPY_PRESETS[activeSound]?.description}</div>
               <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
                 <span>{formatTime(elapsed)}</span>
                 <div className="flex-1 bg-white/5 rounded-full h-1">
@@ -154,8 +154,8 @@ export default function TherapyPage() {
                     <div className={`text-3xl mb-3 transition-transform group-hover:scale-110 ${isActive ? 'animate-bounce' : ''}`}>
                       {preset?.icon ?? '🎵'}
                     </div>
-                    <div className="font-medium text-sm text-white">{preset?.labelVi ?? sound}</div>
-                    <div className="text-[11px] text-slate-500 mt-1 line-clamp-2">{preset?.description}</div>
+                    <div className="font-medium text-sm text-white">{lang === 'vi' ? preset?.labelVi : preset?.label}</div>
+                    <div className="text-[11px] text-slate-500 mt-1 line-clamp-2">{lang === 'vi' ? preset?.descriptionVi : preset?.description}</div>
                     {isActive && (
                       <div className="absolute top-3 right-3 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-pulse" />
