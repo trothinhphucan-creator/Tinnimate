@@ -226,6 +226,17 @@ export function InlineQuiz({ quizType = 'THI', onResult }: Props) {
         interpretation: isEn ? r.interpretationEn : r.interpretation,
         answers: newAnswers,
       })
+      // Save to Supabase
+      fetch('/api/save-assessment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quiz_type: quiz.name,
+          total_score: r.score,
+          severity: r.label,
+          answers: newAnswers,
+        }),
+      }).catch(err => console.warn('[InlineQuiz] Save failed:', err))
     } else {
       setCurrentQ(currentQ + 1)
     }

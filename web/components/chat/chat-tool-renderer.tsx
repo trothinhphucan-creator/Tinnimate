@@ -9,6 +9,7 @@ const InlineSoundPlayer = dynamic(() => import('./InlineSoundPlayer').then(m => 
 const InlineHearingTest = dynamic(() => import('./InlineHearingTest').then(m => ({ default: m.InlineHearingTest })), { ssr: false })
 const InlineQuiz = dynamic(() => import('./InlineQuiz').then(m => ({ default: m.InlineQuiz })), { ssr: false })
 const InlineRelaxation = dynamic(() => import('./InlineRelaxation').then(m => ({ default: m.InlineRelaxation })), { ssr: false })
+const InlineCheckin = dynamic(() => import('./InlineCheckin').then(m => ({ default: m.InlineCheckin })), { ssr: false })
 
 interface Props {
   toolCall: ToolCall
@@ -50,14 +51,9 @@ export function ChatToolRenderer({ toolCall, onResult }: Props) {
 
     case 'daily_checkin':
       return (
-        <div className="bg-gradient-to-br from-amber-900/20 to-slate-800 border border-amber-500/20 rounded-xl p-3 mt-2">
-          <div className="flex items-center gap-2 text-amber-400 text-xs font-medium mb-1">
-            <span>📝</span> Check-in hàng ngày
-          </div>
-          <div className="text-slate-400 text-xs">
-            Theo dõi tâm trạng, giấc ngủ và mức độ ù tai hôm nay
-          </div>
-        </div>
+        <InlineCheckin
+          onResult={(data) => onResult?.(name, data)}
+        />
       )
 
     case 'show_progress': {
