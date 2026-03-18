@@ -33,6 +33,23 @@ const LIKERT_PHQ = [
   { value: 3, label: 'Gần như mỗi ngày' },
 ]
 
+const LIKERT_TFI = [
+  { value: 0, label: 'Hoàn toàn không (0)' },
+  { value: 2, label: 'Nhẹ (2)' },
+  { value: 4, label: 'Trung bình (4)' },
+  { value: 6, label: 'Khá nhiều (6)' },
+  { value: 8, label: 'Nặng (8)' },
+  { value: 10, label: 'Cực kỳ nặng (10)' },
+]
+
+const LIKERT_ISI = [
+  { value: 0, label: 'Không' },
+  { value: 1, label: 'Nhẹ' },
+  { value: 2, label: 'Trung bình' },
+  { value: 3, label: 'Nặng' },
+  { value: 4, label: 'Rất nặng' },
+]
+
 const QUIZZES: Record<string, QuizDef> = {
   THI: {
     name: 'THI',
@@ -107,6 +124,60 @@ const QUIZZES: Record<string, QuizDef> = {
       if (score <= 9) return { score, label: 'Lo âu vừa', color: '#f59e0b', interpretation: 'Cần theo dõi thường xuyên' }
       if (score <= 14) return { score, label: 'Lo âu nặng vừa', color: '#f97316', interpretation: 'Nên tham vấn chuyên gia' }
       return { score, label: 'Lo âu nặng', color: '#ef4444', interpretation: 'Cần can thiệp chuyên sâu' }
+    },
+  },
+  TFI: {
+    name: 'TFI',
+    fullName: 'Tinnitus Functional Index',
+    description: 'Đánh giá tác động của ù tai lên các hoạt động chức năng',
+    emoji: '📊',
+    questions: [
+      { id: 1, text: 'Trong tuần qua, tỷ lệ % thời gian bạn nhận thức rõ tiếng ù tai?', options: LIKERT_TFI },
+      { id: 2, text: 'Tiếng ù tai mạnh đến mức nào?', options: LIKERT_TFI },
+      { id: 3, text: 'Tỷ lệ % thời gian ù tai gây phiền toái?', options: LIKERT_TFI },
+      { id: 4, text: 'Ù tai khiến bạn cảm thấy mất kiểm soát?', options: LIKERT_TFI },
+      { id: 5, text: 'Ù tai khiến bạn khó tập trung?', options: LIKERT_TFI },
+      { id: 6, text: 'Ù tai khiến bạn khó suy nghĩ rõ ràng?', options: LIKERT_TFI },
+      { id: 7, text: 'Ù tai ảnh hưởng khả năng nghe rõ?', options: LIKERT_TFI },
+      { id: 8, text: 'Ù tai ảnh hưởng giấc ngủ?', options: LIKERT_TFI },
+      { id: 9, text: 'Ù tai gây khó chịu khi cố gắng nghỉ ngơi?', options: LIKERT_TFI },
+      { id: 10, text: 'Ù tai khiến bạn cảm thấy lo lắng?', options: LIKERT_TFI },
+      { id: 11, text: 'Ù tai khiến bạn buồn phiền?', options: LIKERT_TFI },
+      { id: 12, text: 'Ù tai khiến bạn cảm thấy khó chịu, bực bội?', options: LIKERT_TFI },
+    ],
+    scoringFn: (answers) => {
+      const score = Math.round((answers.reduce((a, b) => a + b, 0) / (answers.length * 10)) * 100)
+      if (score <= 17) return { score, label: 'Không đáng kể', color: '#10b981', interpretation: 'Ù tai ít hoặc không ảnh hưởng chức năng' }
+      if (score <= 31) return { score, label: 'Nhẹ', color: '#84cc16', interpretation: 'Ù tai gây ảnh hưởng nhẹ đến hoạt động hàng ngày' }
+      if (score <= 53) return { score, label: 'Trung bình', color: '#f59e0b', interpretation: 'Ù tai ảnh hưởng đáng kể đến chức năng hàng ngày' }
+      if (score <= 72) return { score, label: 'Nặng', color: '#f97316', interpretation: 'Ù tai gây suy giảm chức năng nghiêm trọng' }
+      return { score, label: 'Rất nặng', color: '#ef4444', interpretation: 'Ù tai gây ảnh hưởng rất nặng, cần can thiệp chuyên sâu' }
+    },
+  },
+  ISI: {
+    name: 'ISI',
+    fullName: 'Insomnia Severity Index',
+    description: 'Đánh giá mức độ nghiêm trọng của chứng mất ngủ',
+    emoji: '🌙',
+    questions: [
+      { id: 1, text: 'Khó vào giấc ngủ?', options: LIKERT_ISI },
+      { id: 2, text: 'Khó duy trì giấc ngủ (thức dậy giữa đêm)?', options: LIKERT_ISI },
+      { id: 3, text: 'Thức dậy quá sớm vào buổi sáng?', options: LIKERT_ISI },
+      { id: 4, text: 'Bạn hài lòng với kiểu ngủ hiện tại ở mức nào?', options: [
+        { value: 0, label: 'Rất hài lòng' }, { value: 1, label: 'Hài lòng' },
+        { value: 2, label: 'Trung bình' }, { value: 3, label: 'Không hài lòng' },
+        { value: 4, label: 'Rất không hài lòng' },
+      ]},
+      { id: 5, text: 'Mất ngủ ảnh hưởng đến hoạt động ban ngày ở mức nào?', options: LIKERT_ISI },
+      { id: 6, text: 'Người khác có nhận thấy chất lượng sống của bạn giảm do mất ngủ?', options: LIKERT_ISI },
+      { id: 7, text: 'Bạn lo lắng về vấn đề mất ngủ ở mức nào?', options: LIKERT_ISI },
+    ],
+    scoringFn: (answers) => {
+      const score = answers.reduce((a, b) => a + b, 0)
+      if (score <= 7) return { score, label: 'Không mất ngủ', color: '#10b981', interpretation: 'Giấc ngủ trong giới hạn bình thường' }
+      if (score <= 14) return { score, label: 'Mất ngủ nhẹ', color: '#f59e0b', interpretation: 'Cần theo dõi và cải thiện vệ sinh giấc ngủ' }
+      if (score <= 21) return { score, label: 'Mất ngủ trung bình', color: '#f97316', interpretation: 'Nên tham vấn bác sĩ về giấc ngủ' }
+      return { score, label: 'Mất ngủ nặng', color: '#ef4444', interpretation: 'Cần can thiệp chuyên sâu về giấc ngủ' }
     },
   },
 }
