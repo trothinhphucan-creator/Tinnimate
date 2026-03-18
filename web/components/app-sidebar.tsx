@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { MessageSquare, BarChart2, Music, Ear, User, CreditCard, LogOut, Globe, BookOpen, Moon } from 'lucide-react'
+import { MessageSquare, BarChart2, Music, Ear, User, CreditCard, LogOut, Globe, BookOpen, Moon, Layers, Target, Brain, Sparkles, Newspaper } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useUserStore } from '@/stores/use-user-store'
 import { useLangStore } from '@/stores/use-lang-store'
@@ -12,7 +12,12 @@ const NAV_KEYS = [
   { href: '/chat', key: 'chat' as const, icon: MessageSquare },
   { href: '/dashboard', key: 'dashboard' as const, icon: BarChart2 },
   { href: '/therapy', key: 'therapy' as const, icon: Music },
+  { href: '/mixer', key: 'mixer' as const, icon: Layers },
+  { href: '/notch-therapy', key: 'notchTherapy' as const, icon: Target },
   { href: '/journal', key: 'journal' as const, icon: BookOpen },
+  { href: '/cbti', key: 'cbti' as const, icon: Brain },
+  { href: '/coach', key: 'coach' as const, icon: Sparkles },
+  { href: '/blog', key: 'blog' as const, icon: Newspaper },
   { href: '/hearing-test', key: 'hearingTest' as const, icon: Ear },
   { href: '/sleep', key: 'sleepMode' as const, icon: Moon },
   { href: '/profile', key: 'profile' as const, icon: User },
