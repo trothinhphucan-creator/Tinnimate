@@ -11,8 +11,8 @@ const T = {
     nav: { features: 'Tính năng', how: 'Cách hoạt động', pricing: 'Bảng giá', testimonials: 'Phản hồi', login: 'Đăng nhập', cta: 'Bắt đầu ngay' },
     hero: {
       badge: 'AI-Powered Tinnitus Care',
-      title1: 'Đồng hành cùng',
-      title2: 'ù tai của bạn',
+      title1: 'Trợ thủ giúp',
+      title2: 'đẩy lùi ù tai',
       desc: 'AI chuyên biệt, liệu pháp âm thanh, kiểm tra thính lực — tất cả trong một ứng dụng giúp bạn kiểm soát tinnitus hiệu quả.',
       cta1: 'Bắt đầu miễn phí', cta2: 'Tìm hiểu thêm',
       stat1: 'Người dùng', stat2: 'Phiên trị liệu', stat3: 'Đánh giá',
@@ -83,7 +83,7 @@ const T = {
       ],
     },
     cta: { title: 'Sẵn sàng kiểm soát ù tai?', desc: 'Hàng ngàn người đã cải thiện chất lượng cuộc sống với TinniMate. Bắt đầu hành trình của bạn ngay hôm nay.', btn: 'Bắt đầu miễn phí →' },
-    footer: { tagline: 'TinniMate — Đồng hành cùng ù tai', privacy: 'Chính sách bảo mật', terms: 'Điều khoản sử dụng', contact: 'Liên hệ' },
+    footer: { tagline: 'TinniMate — Trợ thủ giúp đẩy lùi ù tai', privacy: 'Chính sách bảo mật', terms: 'Điều khoản sử dụng', contact: 'Liên hệ' },
   },
   en: {
     nav: { features: 'Features', how: 'How it Works', pricing: 'Pricing', testimonials: 'Reviews', login: 'Log in', cta: 'Get Started' },

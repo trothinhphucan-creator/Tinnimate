@@ -21,7 +21,10 @@ export default function LoginPage() {
       const supabase = createClient()
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) { setError(authError.message); return }
-      router.push('/chat')
+      // Force full page reload so middleware re-evaluates auth cookies
+      router.refresh()
+      const redirect = new URLSearchParams(window.location.search).get('redirect') ?? '/chat'
+      window.location.href = redirect
     } catch {
       setError('Đã xảy ra lỗi. Vui lòng thử lại.')
     } finally {

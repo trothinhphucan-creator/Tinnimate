@@ -8,7 +8,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'TinniMate — Đồng hành cùng ù tai',
+  title: 'TinniMate — Trợ thủ giúp đẩy lùi ù tai',
   description: 'Ứng dụng hỗ trợ người bị ù tai với chatbot AI, liệu pháp âm thanh, và theo dõi tiến triển.',
   manifest: '/manifest.json',
   themeColor: '#3b82f6',
