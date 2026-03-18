@@ -42,6 +42,21 @@ const T = {
         { step: '03', title: 'Cải thiện', desc: 'Theo dõi tiến triển, điều chỉnh liệu pháp, cải thiện mỗi ngày' },
       ],
     },
+    hearingLoss: {
+      title1: 'Ù tai &', title2: 'Nghe kém',
+      stat: '70%',
+      statDesc: 'người bị ù tai có suy giảm thính lực',
+      desc: 'Nghiên cứu cho thấy 70% người bị ù tai (tinnitus) có mức độ nghe kém ở các tần số khác nhau. Phát hiện sớm suy giảm thính lực giúp can thiệp kịp thời và cải thiện chất lượng cuộc sống.',
+      facts: [
+        '🔬 Ù tai thường là dấu hiệu sớm của tổn thương thính giác',
+        '📉 Nghe kém không điều trị có thể làm ù tai nặng hơn',
+        '🏥 Kiểm tra thính lực định kỳ giúp phát hiện vấn đề sớm',
+        '✅ Can thiệp sớm cải thiện 80% trường hợp ù tai do nghe kém',
+      ],
+      cta: 'Kiểm tra thính lực miễn phí',
+      ctaSub: 'Đo thính lực trực tuyến tại hearingtest.vuinghe.com',
+      ctaLink: 'https://hearingtest.vuinghe.com',
+    },
     testimonials: {
       title1: 'Người dùng', title2: 'nói gì',
       items: [
@@ -98,6 +113,21 @@ const T = {
         { step: '02', title: 'Discover', desc: 'AI analyzes and recommends sound therapy, exercises, and assessments' },
         { step: '03', title: 'Improve', desc: 'Track your progress, adjust therapy, and improve every day' },
       ],
+    },
+    hearingLoss: {
+      title1: 'Tinnitus &', title2: 'Hearing Loss',
+      stat: '70%',
+      statDesc: 'of tinnitus sufferers have hearing loss',
+      desc: 'Research shows that 70% of people with tinnitus have some degree of hearing loss across various frequencies. Early detection enables timely intervention and significantly improves quality of life.',
+      facts: [
+        '🔬 Tinnitus is often an early sign of hearing damage',
+        '📉 Untreated hearing loss can worsen tinnitus',
+        '🏥 Regular hearing tests help catch problems early',
+        '✅ Early intervention improves 80% of hearing-related tinnitus cases',
+      ],
+      cta: 'Free Hearing Test',
+      ctaSub: 'Test your hearing online at hearingtest.vuinghe.com',
+      ctaLink: 'https://hearingtest.vuinghe.com',
     },
     testimonials: {
       title1: 'What users', title2: 'say',
@@ -346,6 +376,66 @@ export default function LandingPage() {
               </RevealSection>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Tinnitus & Hearing Loss ── */}
+      <section className="py-20 px-6">
+        <div className="mx-auto max-w-5xl">
+          <RevealSection>
+            <div className="relative overflow-hidden rounded-3xl border border-red-500/20 bg-gradient-to-br from-red-500/10 via-orange-500/5 to-amber-500/5">
+              {/* Decorative glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[100px] rounded-full" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 blur-[80px] rounded-full" />
+              
+              <div className="relative p-8 md:p-12 grid md:grid-cols-2 gap-10 items-center">
+                {/* Left — stat + description */}
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-6">
+                    {t.hearingLoss.title1}{' '}
+                    <span className="bg-gradient-to-r from-red-400 to-amber-400 bg-clip-text text-transparent">{t.hearingLoss.title2}</span>
+                  </h2>
+                  <div className="flex items-baseline gap-3 mb-4">
+                    <span className="text-6xl md:text-7xl font-black bg-gradient-to-r from-red-400 via-orange-400 to-amber-400 bg-clip-text text-transparent">
+                      {t.hearingLoss.stat}
+                    </span>
+                    <span className="text-lg text-slate-300 font-medium max-w-[200px] leading-tight">
+                      {t.hearingLoss.statDesc}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-400 leading-relaxed mb-6">{t.hearingLoss.desc}</p>
+                  <a href={t.hearingLoss.ctaLink} target="_blank" rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-red-500/25 hover:-translate-y-0.5">
+                    👂 {t.hearingLoss.cta}
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </a>
+                  <p className="text-[11px] text-slate-500 mt-2">{t.hearingLoss.ctaSub}</p>
+                </div>
+
+                {/* Right — fact cards */}
+                <div className="space-y-3">
+                  {t.hearingLoss.facts.map((fact: string, i: number) => (
+                    <RevealSection key={i} delay={i * 100}>
+                      <div className="flex items-start gap-3 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 hover:bg-white/[0.06] hover:border-white/10 transition-all">
+                        <span className="text-lg">{fact.slice(0, 2)}</span>
+                        <span className="text-sm text-slate-300">{fact.slice(3)}</span>
+                      </div>
+                    </RevealSection>
+                  ))}
+                  {/* Hearing test image */}
+                  <RevealSection delay={500}>
+                    <div className="relative h-32 rounded-xl overflow-hidden mt-2">
+                      <Image src="/landing/hearing-test.png" alt="Hearing Test" fill className="object-cover opacity-50" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
+                      <div className="absolute bottom-3 left-4 text-xs text-slate-300 font-medium">
+                        🎧 hearingtest.vuinghe.com
+                      </div>
+                    </div>
+                  </RevealSection>
+                </div>
+              </div>
+            </div>
+          </RevealSection>
         </div>
       </section>
 
