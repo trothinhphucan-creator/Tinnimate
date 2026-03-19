@@ -7,10 +7,17 @@ import { createClient } from '@/lib/supabase/client'
 import GoogleSignInButton from '@/components/google-sign-in-button'
 import AppleSignInButton from '@/components/apple-sign-in-button'
 
-// Detect if running inside Capacitor WebView
-function isCapacitor() {
+// Detect if running inside a native WebView (Capacitor, PWA standalone, etc.)
+function isNativeApp() {
   if (typeof window === 'undefined') return false
-  return !!(window as any).Capacitor || navigator.userAgent.includes('CapacitorApp')
+  // PWA standalone mode
+  if (window.matchMedia('(display-mode: standalone)').matches) return true
+  // iOS: WKWebView has AppleWebKit but NOT "Safari/" in UA
+  const ua = navigator.userAgent
+  if (/iPhone|iPad/.test(ua) && /AppleWebKit/.test(ua) && !/Safari\//.test(ua)) return true
+  // Android WebView
+  if (/wv/.test(ua) || /Android.*Version\/[\d.]+/.test(ua)) return true
+  return false
 }
 
 export default function LoginPage() {
@@ -21,7 +28,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [inApp, setInApp] = useState(false)
 
-  useEffect(() => { setInApp(isCapacitor()) }, [])
+  useEffect(() => { setInApp(isNativeApp()) }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
