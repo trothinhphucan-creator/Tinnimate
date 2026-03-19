@@ -19,13 +19,14 @@
     "contentInset": "automatic",
     "backgroundColor": "#020617",
     "preferredContentMode": "mobile",
-    "scheme": "TinniMate"
+    "appendUserAgent": "TinniMateApp"
   },
   "android": {
     "backgroundColor": "#020617",
     "allowMixedContent": false,
     "captureInput": true,
-    "webContentsDebuggingEnabled": false
+    "webContentsDebuggingEnabled": false,
+    "appendUserAgent": "TinniMateApp"
   },
   "plugins": {
     "SplashScreen": {

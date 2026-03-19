@@ -7,17 +7,10 @@ import { createClient } from '@/lib/supabase/client'
 import GoogleSignInButton from '@/components/google-sign-in-button'
 import AppleSignInButton from '@/components/apple-sign-in-button'
 
-// Detect if running inside a native WebView (Capacitor, PWA standalone, etc.)
+// Detect if running inside TinniMate native app (Capacitor adds "TinniMateApp" to UA)
 function isNativeApp() {
   if (typeof window === 'undefined') return false
-  // PWA standalone mode
-  if (window.matchMedia('(display-mode: standalone)').matches) return true
-  // iOS: WKWebView has AppleWebKit but NOT "Safari/" in UA
-  const ua = navigator.userAgent
-  if (/iPhone|iPad/.test(ua) && /AppleWebKit/.test(ua) && !/Safari\//.test(ua)) return true
-  // Android WebView
-  if (/wv/.test(ua) || /Android.*Version\/[\d.]+/.test(ua)) return true
-  return false
+  return navigator.userAgent.includes('TinniMateApp')
 }
 
 export default function LoginPage() {
