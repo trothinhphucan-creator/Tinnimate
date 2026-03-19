@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import GoogleSignInButton from '@/components/google-sign-in-button'
+import AppleSignInButton from '@/components/apple-sign-in-button'
 
 export default function SignupPage() {
   const [name, setName] = useState('')
@@ -59,8 +60,11 @@ export default function SignupPage() {
           <p className="mt-1 text-slate-400 text-sm">Tạo tài khoản miễn phí</p>
         </div>
 
-        {/* Google OAuth — fastest signup path */}
-        <GoogleSignInButton redirectTo="/chat" label="Đăng ký với Google" />
+        {/* OAuth — fastest signup path */}
+        <div className="space-y-2.5">
+          <GoogleSignInButton redirectTo="/chat" label="Đăng ký với Google" />
+          <AppleSignInButton redirectTo="/chat" label="Đăng ký với Apple" />
+        </div>
 
         {/* Divider */}
         <div className="flex items-center gap-3">

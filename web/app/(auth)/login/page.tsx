@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import GoogleSignInButton from '@/components/google-sign-in-button'
+import AppleSignInButton from '@/components/apple-sign-in-button'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,10 +22,10 @@ export default function LoginPage() {
       const supabase = createClient()
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) { setError(authError.message); return }
-      // Force full page reload so middleware re-evaluates auth cookies
-      router.refresh()
+      // Wait for cookies to be set, then redirect
+      await new Promise(r => setTimeout(r, 500))
       const redirect = new URLSearchParams(window.location.search).get('redirect') ?? '/chat'
-      window.location.href = redirect
+      window.location.replace(redirect)
     } catch {
       setError('Đã xảy ra lỗi. Vui lòng thử lại.')
     } finally {
@@ -50,8 +51,11 @@ export default function LoginPage() {
             <p className="mt-1 text-slate-400 text-sm">Đăng nhập vào TinniMate</p>
           </div>
 
-          {/* Google OAuth */}
-          <GoogleSignInButton redirectTo="/chat" />
+          {/* OAuth */}
+          <div className="space-y-2.5">
+            <GoogleSignInButton redirectTo="/chat" />
+            <AppleSignInButton redirectTo="/chat" />
+          </div>
 
           {/* Divider */}
           <div className="flex items-center gap-3 my-6">
