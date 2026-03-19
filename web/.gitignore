@@ -49,3 +49,7 @@ android/capacitor-cordova-android-plugins/build/
 
 # Scripts
 scripts/
+
+# Capacitor native projects (regenerated with npx cap add)
+ios/
+android/
