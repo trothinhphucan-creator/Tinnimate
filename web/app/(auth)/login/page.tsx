@@ -4,8 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { useCapacitorAuth } from '@/hooks/useCapacitorAuth'
 
 export default function LoginPage() {
+  // Handle OAuth deep link callback (when app is re-opened via tinnimate:// scheme)
+  useCapacitorAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -47,10 +50,44 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin
+
+      // Use custom URL scheme for mobile deep link redirect
+      // iOS will intercept tinnimate:// and open the app, where we handle the code exchange
+      const isInCapacitor = typeof window !== 'undefined' &&
+        (navigator.userAgent.includes('TinniMateApp') || !!(window as any).Capacitor)
+      const redirectTo = isInCapacitor
+        ? `tinnimate://auth/callback`
+        : `${siteUrl}/auth/callback?next=/chat`
+
+      // Open OAuth in in-app browser if inside Capacitor (shares cookies with WebView)
+      if (isInCapacitor) {
+        try {
+          const { Browser } = await import('@capacitor/browser')
+          const { data } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+              redirectTo,
+              skipBrowserRedirect: true,
+              ...(provider === 'google' && {
+                queryParams: { access_type: 'offline', prompt: 'select_account' },
+              }),
+            },
+          })
+          if (data.url) {
+            await Browser.open({ url: data.url, windowName: '_self' })
+            setOauthLoading(null)
+            return
+          }
+        } catch {
+          // Fallback to normal flow if @capacitor/browser fails
+        }
+      }
+
+      // Web flow
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${siteUrl}/auth/callback?next=/chat`,
+          redirectTo,
           ...(provider === 'google' && {
             queryParams: { access_type: 'offline', prompt: 'consent' },
           }),
