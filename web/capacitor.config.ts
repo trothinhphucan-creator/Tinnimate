@@ -9,6 +9,15 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://tinnimate.vuinghe.com',
     cleartext: false,
+    allowNavigation: [
+      'tinnimate.vuinghe.com',
+      '*.supabase.co',
+      '*.supabase.com',
+      'accounts.google.com',
+      '*.google.com',
+      'appleid.apple.com',
+      '*.apple.com',
+    ],
   },
 
   // iOS-specific settings
@@ -17,6 +26,7 @@ const config: CapacitorConfig = {
     backgroundColor: '#020617',
     preferredContentMode: 'mobile',
     scheme: 'TinniMate',
+    appendUserAgent: 'TinniMateApp',
   },
 
   // Android-specific settings
@@ -25,6 +35,7 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
     captureInput: true,
     webContentsDebuggingEnabled: false,
+    appendUserAgent: 'TinniMateApp',
   },
 
   // Plugins
