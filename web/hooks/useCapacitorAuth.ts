@@ -40,7 +40,7 @@ export function useCapacitorAuth(onSuccess?: () => void) {
       try {
         const { App } = await import('@capacitor/app')
         const { remove } = await App.addListener('appUrlOpen', async ({ url }) => {
-          if (url.includes('auth/callback') || url.includes('tinnimate://')) {
+          if (url.includes('auth/callback') || url.startsWith('tinnimate://')) {
             await handleUrl(url)
           }
         })
@@ -51,19 +51,10 @@ export function useCapacitorAuth(onSuccess?: () => void) {
       }
     }
 
-    // Also handle web-based callback (hash fragment from Supabase)
-    const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        window.location.href = '/chat'
-      }
-    })
-
     let removeListener: (() => void) | undefined
     setupCapacitorListener().then(fn => { removeListener = fn })
 
     return () => {
-      subscription.unsubscribe()
       removeListener?.()
     }
   }, [handleUrl])
