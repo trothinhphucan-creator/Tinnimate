@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Prevent WKWebView from caching HTML pages — forces fresh content after deploy
+        source: '/((?!_next/static|_next/image|icons|sounds|.*\\..+).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
+        ],
+      },
+      {
         source: '/(.*)',
         headers: [
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
