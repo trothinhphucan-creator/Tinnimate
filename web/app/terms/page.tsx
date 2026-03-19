@@ -136,7 +136,7 @@ export default function TermsPage() {
           </h2>
           <p className="mt-2 text-white">
             📧 support@vuinghe.com<br />
-            🌐 tinnitus.vuinghe.com
+            🌐 tinnimate.vuinghe.com
           </p>
         </section>
       </div>

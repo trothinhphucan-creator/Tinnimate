@@ -134,7 +134,7 @@ export default function PrivacyPage() {
           </p>
           <p className="mt-2 text-white">
             📧 privacy@vuinghe.com<br />
-            🌐 tinnitus.vuinghe.com
+            🌐 tinnimate.vuinghe.com
           </p>
         </section>
 

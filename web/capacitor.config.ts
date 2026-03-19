@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
 
   // Live reload from production server
   server: {
-    url: 'https://tinnitus.vuinghe.com',
+    url: 'https://tinnimate.vuinghe.com',
     cleartext: false,
   },
 
