@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import Link from "next/link"
 import { Settings, FileText, Database, MessageSquare, Bot, Cpu, CreditCard, UsersRound } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

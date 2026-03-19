@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { PromptEditor } from "@/components/admin/PromptEditor"
 import { createServiceClient } from "@/lib/supabase/server"
 import type { SystemPrompt } from "@/types"

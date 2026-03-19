@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { TrainingChat } from "@/components/admin/TrainingChat"
 import { createServiceClient } from "@/lib/supabase/server"
 import { TRAINING_MODE_FALLBACK } from "@/lib/ai/prompts"

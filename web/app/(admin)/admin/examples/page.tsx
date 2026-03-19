@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { ExamplesTable } from "@/components/admin/ExamplesTable"
 import { createServiceClient } from "@/lib/supabase/server"
 import type { FewShotExample } from "@/types"

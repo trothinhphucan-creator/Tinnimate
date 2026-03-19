@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { KnowledgeUploader } from "@/components/admin/KnowledgeUploader"
 import { createServiceClient } from "@/lib/supabase/server"
 import type { KnowledgeDoc } from "@/types"

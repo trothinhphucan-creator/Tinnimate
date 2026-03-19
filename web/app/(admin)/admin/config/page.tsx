@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { ConfigPanel } from "@/components/admin/ConfigPanel"
 import type { AdminConfig } from "@/types"
 
