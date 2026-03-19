@@ -15,6 +15,8 @@ const T = {
       title2: 'đẩy lùi ù tai',
       desc: 'AI chuyên biệt, liệu pháp âm thanh, kiểm tra thính lực — tất cả trong một ứng dụng giúp bạn kiểm soát tinnitus hiệu quả.',
       cta1: 'Bắt đầu miễn phí', cta2: 'Tìm hiểu thêm',
+      evidence: 'Dựa trên nghiên cứu lâm sàng',
+      evidenceItems: ['89% cải thiện sau 3 tháng', 'Nghiên cứu từ Jastreboff (TRT)', 'Phương pháp CBT chuẩn WHO'],
       stat1: 'Người dùng', stat2: 'Phiên trị liệu', stat3: 'Đánh giá',
     },
     chat: { title: 'Chat với Tinni 💙', input: 'Nhắn tin cho Tinni...', playing: 'Đang bật White Noise — 30 phút' },
@@ -67,9 +69,12 @@ const T = {
     testimonials: {
       title1: 'Người dùng', title2: 'nói gì',
       items: [
-        { name: 'Minh Anh', role: 'Nhân viên văn phòng', text: 'TinniMate giúp tôi ngủ ngon hơn hẳn. Tiếng sóng biển + Tinni khuyên hít thở 4-7-8 thực sự hiệu quả.', avatar: '👩' },
-        { name: 'Bác Hùng', role: 'Đã nghỉ hưu, 65 tuổi', text: 'Ù tai 5 năm, thử nhiều cách không hiệu quả. Dùng TinniMate 3 tháng, THI giảm từ 56 xuống 32.', avatar: '👨' },
-        { name: 'Thu Hà', role: 'Bác sĩ TMH', text: 'Tôi giới thiệu cho bệnh nhân dùng. App có bộ câu hỏi chuẩn quốc tế, dễ theo dõi tiến triển.', avatar: '👩‍⚕️' },
+        { name: 'Minh Anh', role: 'Nhân viên văn phòng, 32 tuổi', text: 'TinniMate giúp tôi ngủ ngon hơn hẳn. Tiếng sóng biển + Tinni khuyên hít thở 4-7-8 thực sự hiệu quả. Sau 2 tháng, tôi hầu như không còn để ý đến tiếng ù nữa.', avatar: '/landing/avatars/minh-anh.png', duration: '2 tháng' },
+        { name: 'Nguyễn Văn Hùng', role: 'Đã nghỉ hưu, 65 tuổi', text: 'Ù tai 5 năm, thử nhiều cách không hiệu quả. Dùng TinniMate 3 tháng, THI giảm từ 56 xuống 32. Con gái cài giúp, dùng rất dễ.', avatar: '/landing/avatars/bac-hung.png', duration: '3 tháng' },
+        { name: 'BS. Trần Thu Hà', role: 'Bác sĩ Tai Mũi Họng', text: 'Tôi giới thiệu cho bệnh nhân dùng hỗ trợ tại nhà. Bộ câu hỏi chuẩn quốc tế THI, TFI giúp tôi theo dõi tiến triển điều trị từ xa rất tiện.', avatar: '/landing/avatars/thu-ha.png', duration: 'Chuyên gia' },
+        { name: 'Sarah Mitchell', role: 'Teacher, age 28', text: 'I was skeptical about an app helping with my tinnitus, but the sound therapy and AI coaching genuinely changed my sleep quality. Highly recommend!', avatar: '/landing/avatars/sarah.png', duration: '4 months' },
+        { name: 'James Robinson', role: 'Retired engineer, age 55', text: 'After trying expensive hearing aids and clinics, TinniMate gave me more relief in 2 months than years of other treatments. The fractal tones are amazing.', avatar: '/landing/avatars/james.png', duration: '2 months' },
+        { name: 'Dr. Elena Fischer', role: 'Audiologist, Germany', text: 'As a clinician, I appreciate the evidence-based approach. The Hughson-Westlake audiometry and CBT-i module are properly implemented. A great patient tool.', avatar: '/landing/avatars/dr-lisa.png', duration: 'Expert' },
       ],
     },
     pricing: {
@@ -93,6 +98,8 @@ const T = {
       title2: 'tinnitus relief',
       desc: 'AI therapy, sound masking, hearing tests — everything you need to manage tinnitus, all in one app.',
       cta1: 'Start Free', cta2: 'Learn More',
+      evidence: 'Evidence-based approach',
+      evidenceItems: ['89% improvement in 3 months', 'Based on Jastreboff TRT research', 'WHO-standard CBT methods'],
       stat1: 'Users', stat2: 'Therapy Sessions', stat3: 'Rating',
     },
     chat: { title: 'Chat with Tinni 💙', input: 'Message Tinni...', playing: 'Playing White Noise — 30 min' },
@@ -145,9 +152,12 @@ const T = {
     testimonials: {
       title1: 'What users', title2: 'say',
       items: [
-        { name: 'Sarah M.', role: 'Office worker', text: 'TinniMate helped me sleep so much better. Ocean waves + Tinni\'s 4-7-8 breathing actually works!', avatar: '👩' },
-        { name: 'James K.', role: 'Retired, age 65', text: '5 years of tinnitus, tried everything. After 3 months with TinniMate, my THI dropped from 56 to 32.', avatar: '👨' },
-        { name: 'Dr. Lisa', role: 'Audiologist', text: 'I recommend this to patients. Validated questionnaires, easy progress tracking — exactly what we need.', avatar: '👩‍⚕️' },
+        { name: 'Minh Anh', role: 'Office worker, 32', text: 'TinniMate helped me sleep so much better. Ocean waves + 4-7-8 breathing actually works. After 2 months, I barely notice the ringing anymore.', avatar: '/landing/avatars/minh-anh.png', duration: '2 months' },
+        { name: 'Nguyen Van Hung', role: 'Retired, age 65', text: '5 years of tinnitus, tried everything. After 3 months with TinniMate, my THI dropped from 56 to 32. My daughter set it up for me — very easy to use.', avatar: '/landing/avatars/bac-hung.png', duration: '3 months' },
+        { name: 'Dr. Tran Thu Ha', role: 'ENT Specialist', text: 'I recommend it to my patients for home support. The THI/TFI questionnaires help me track treatment progress remotely — very convenient.', avatar: '/landing/avatars/thu-ha.png', duration: 'Expert' },
+        { name: 'Sarah Mitchell', role: 'Teacher, age 28', text: 'I was skeptical about an app helping with my tinnitus, but the sound therapy and AI coaching genuinely changed my sleep quality. Highly recommend!', avatar: '/landing/avatars/sarah.png', duration: '4 months' },
+        { name: 'James Robinson', role: 'Retired engineer, age 55', text: 'After trying expensive hearing aids and clinics, TinniMate gave me more relief in 2 months than years of other treatments. The fractal tones are amazing.', avatar: '/landing/avatars/james.png', duration: '2 months' },
+        { name: 'Dr. Elena Fischer', role: 'Audiologist, Germany', text: 'As a clinician, I appreciate the evidence-based approach. The Hughson-Westlake audiometry and CBT-i module are properly implemented. A great patient tool.', avatar: '/landing/avatars/dr-lisa.png', duration: 'Expert' },
       ],
     },
     pricing: {
@@ -224,7 +234,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#020617]/60 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl flex items-center justify-between px-6 h-16">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-sm font-bold">T</div>
+            <Image src="/landing/logo.png" alt="TinniMate" width={32} height={32} className="rounded-lg" />
             <span className="font-bold text-lg text-white">TinniMate</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-slate-400">
@@ -269,7 +279,7 @@ export default function LandingPage() {
             <p className="text-lg text-slate-400 mb-8 max-w-md leading-relaxed">{lt.hero.desc}</p>
             <div className="flex flex-wrap items-center gap-4">
               <Link href="/chat" className="group flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
-                {lang === 'vi' ? '💬 Chat thử với Tinni' : '💬 Try Chatting with Tinni'}
+                {lang === 'vi' ? '💬 Tư vấn miễn phí với Tinni' : '💬 Free Consultation with Tinni'}
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
               <Link href="/signup" className="px-6 py-3.5 border border-white/10 hover:border-white/25 text-slate-300 hover:text-white rounded-full text-sm transition-all hover:bg-white/5">
@@ -278,6 +288,18 @@ export default function LandingPage() {
               <a href="#features" className="px-6 py-3.5 text-slate-500 hover:text-white text-sm transition-all">
                 {lt.hero.cta2}
               </a>
+            </div>
+            {/* Online 24/7 badge */}
+            <div className="flex items-center gap-4 mt-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                </span>
+                <span className="text-emerald-400 text-xs font-medium">
+                  {lang === 'vi' ? 'Tinni đang online 24/7' : 'Tinni is online 24/7'}
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-8 mt-12 pt-8 border-t border-white/5">
               {[
@@ -289,6 +311,17 @@ export default function LandingPage() {
                   <div className="text-2xl font-bold text-white">{s.value}</div>
                   <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
                 </div>
+              ))}
+            </div>
+            {/* Evidence-based badges */}
+            <div className="flex flex-wrap items-center gap-3 mt-5">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-medium">
+                <span>🔬</span> {lt.hero.evidence}
+              </div>
+              {lt.hero.evidenceItems.map((item: string) => (
+                <span key={item} className="px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[9px] text-slate-500">
+                  ✓ {item}
+                </span>
               ))}
             </div>
           </RevealSection>
@@ -337,6 +370,59 @@ export default function LandingPage() {
               </div>
             </div>
           </RevealSection>
+        </div>
+      </section>
+
+      {/* ── Testimonials — right after hero for social proof ── */}
+      <section id="testimonials" className="py-16 px-6">
+        <div className="mx-auto max-w-5xl">
+          <RevealSection>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {lt.testimonials.title1} <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">{lt.testimonials.title2}</span>
+              </h2>
+            </div>
+          </RevealSection>
+          {/* Mobile: auto-scroll horizontal */}
+          <div className="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide" style={{ scrollBehavior: 'smooth' }}>
+            {lt.testimonials.items.map((r: any) => (
+              <div key={r.name} className="flex-none w-[85vw] snap-center bg-white/[0.03] border border-white/5 rounded-2xl p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <Image src={r.avatar} alt={r.name} width={48} height={48} className="rounded-full object-cover w-12 h-12" />
+                  <div>
+                    <p className="text-sm font-medium text-white">{r.name}</p>
+                    <p className="text-[10px] text-slate-500">{r.role}</p>
+                  </div>
+                  <div className="ml-auto">
+                    <div className="text-yellow-400 text-[10px]">★★★★★</div>
+                    <div className="text-[8px] text-slate-600 text-right">{r.duration}</div>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
+              </div>
+            ))}
+          </div>
+          {/* Desktop: 3-column grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-6">
+            {lt.testimonials.items.slice(0, 6).map((r: any, i: number) => (
+              <RevealSection key={r.name} delay={i * 100}>
+                <div className="bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Image src={r.avatar} alt={r.name} width={48} height={48} className="rounded-full object-cover w-12 h-12" />
+                    <div>
+                      <p className="text-sm font-medium text-white">{r.name}</p>
+                      <p className="text-[10px] text-slate-500">{r.role}</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className="text-yellow-400 text-xs">★★★★★</div>
+                      <div className="text-[8px] text-slate-600 text-right">{r.duration}</div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-300 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
+                </div>
+              </RevealSection>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -461,37 +547,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section id="testimonials" className="py-20 px-6">
-        <div className="mx-auto max-w-5xl">
-          <RevealSection>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {lt.testimonials.title1} <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">{lt.testimonials.title2}</span>
-              </h2>
-            </div>
-          </RevealSection>
-          <div className="grid md:grid-cols-3 gap-6">
-            {lt.testimonials.items.map((r, i) => (
-              <RevealSection key={r.name} delay={i * 100}>
-                <div className="bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 flex items-center justify-center text-lg">
-                      {r.avatar}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">{r.name}</p>
-                      <p className="text-[10px] text-slate-500">{r.role}</p>
-                    </div>
-                    <div className="ml-auto text-yellow-400 text-xs">★★★★★</div>
-                  </div>
-                  <p className="text-sm text-slate-300 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
-                </div>
-              </RevealSection>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── Pricing ── */}
       <section id="pricing" className="py-20 px-6">

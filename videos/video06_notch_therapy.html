@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{width:420px;height:746px;overflow:hidden;background:#020617;font-family:'Segoe UI',sans-serif;color:#fff}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;opacity:0}
+.scene.s1{opacity:0;transform:translateY(30px)}.scene.s2{opacity:0;transform:translateY(30px)}.scene.s3{opacity:0;transform:translateY(30px)}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes showHide{0%{opacity:0;transform:translateY(30px)}10%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-15px)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}@keyframes slideUp{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:pulse 4s infinite}
+.orb1{top:-10%;left:10%;width:280px;height:280px;background:rgba(6,182,212,.15)}
+.orb2{bottom:5%;right:-10%;width:220px;height:220px;background:rgba(234,179,8,.1);animation-delay:2s}
+.target-icon{width:80px;height:80px;border:3px solid rgba(6,182,212,.4);border-top-color:#06b6d4;border-radius:50%;animation:spin 3s linear infinite;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.target-inner{font-size:36px;animation:none!important}
+.title{font-size:22px;font-weight:800;background:linear-gradient(135deg,#06b6d4,#eab308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:slideUp .6s .8s both}
+.sub{font-size:13px;color:#94a3b8;animation:slideUp .6s 1.1s both;max-width:280px}
+.how-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:20px;max-width:320px;width:100%;animation:slideUp 0.5s 10.8s both}
+.how-title{font-size:16px;font-weight:700;color:#06b6d4;margin-bottom:12px}
+.how-text{font-size:12px;color:#cbd5e1;line-height:1.7;text-align:left}
+.how-text b{color:#eab308}
+.freq-bar{display:flex;align-items:end;gap:4px;height:60px;margin:16px auto 0;justify-content:center}
+.freq-bar div{width:12px;background:linear-gradient(180deg,#06b6d4,rgba(6,182,212,.2));border-radius:3px}
+.freq-bar div:nth-child(1){height:20px}.freq-bar div:nth-child(2){height:35px}.freq-bar div:nth-child(3){height:50px}
+.freq-bar div:nth-child(4){height:10px;background:linear-gradient(180deg,#ef4444,rgba(239,68,68,.2))}
+.freq-bar div:nth-child(5){height:50px}.freq-bar div:nth-child(6){height:35px}.freq-bar div:nth-child(7){height:20px}
+.notch-label{font-size:9px;color:#ef4444;margin-top:4px}
+.cta-btn{margin-top:20px;background:linear-gradient(135deg,#06b6d4,#eab308);border:none;color:#fff;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:700;animation:slideUp 0.5s 21s both}
+.watermark{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.15)}
+</style></head><body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+<div class="scene s1">
+  <div class="target-icon"><div class="target-inner">🎯</div></div>
+  <div class="title">Notch Therapy<br>Công nghệ mới trị ù tai</div>
+  <div class="sub">Liệu pháp âm thanh nhắm đúng tần số ù tai — kích thích não bộ tự giảm tiếng ù</div>
+</div>
+<div class="scene s2">
+  <div class="how-card">
+    <div class="how-title">🔬 Nguyên lý khoa học</div>
+    <div class="how-text">
+      1. Xác định <b>tần số ù tai</b> của bạn (VD: 4000Hz)<br><br>
+      2. Phát âm thanh <b>cắt bỏ (notch)</b> đúng tần số đó<br><br>
+      3. Não bộ dần <b>giảm phản ứng</b> với tần số ù<br><br>
+      Nghiên cứu cho thấy giảm <b>25-50% cường độ ù</b> sau 3-6 tháng
+    </div>
+    <div class="freq-bar"><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="notch-label">↑ Notch tại tần số ù</div>
+  </div>
+</div>
+<div class="scene s3">
+  <div class="target-icon" style="border-color:rgba(234,179,8,.4);border-top-color:#eab308"><div class="target-inner">✨</div></div>
+  <div class="title" style="animation-delay:10.5s">Thử Notch Therapy<br>ngay trên TinniMate</div>
+  <div class="cta-btn">🎯 Bắt đầu trị liệu →</div>
+</div>
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

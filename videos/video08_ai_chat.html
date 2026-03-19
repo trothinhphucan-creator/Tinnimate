@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{width:420px;height:746px;overflow:hidden;background:#020617;font-family:'Segoe UI',sans-serif;color:#fff}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;opacity:0}
+.scene.s1{opacity:0;transform:translateY(30px)}.scene.s2{opacity:0;transform:translateY(30px)}.scene.s3{opacity:0;transform:translateY(30px)}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes showHide{0%{opacity:0;transform:translateY(30px)}10%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-15px)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}@keyframes slideUp{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes wave{0%{transform:scaleY(.3)}50%{transform:scaleY(1)}100%{transform:scaleY(.3)}}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:pulse 4s infinite}
+.orb1{top:0;left:-15%;width:280px;height:280px;background:rgba(59,130,246,.15)}
+.orb2{bottom:10%;right:-10%;width:220px;height:220px;background:rgba(16,185,129,.12);animation-delay:2s}
+.phone-frame{width:200px;height:380px;border:2px solid rgba(255,255,255,.1);border-radius:24px;overflow:hidden;background:rgba(255,255,255,.02);margin-bottom:16px;padding:12px;animation:slideUp .6s .7s both}
+.phone-header{display:flex;align-items:center;gap:6px;margin-bottom:12px}
+.phone-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6)}
+.phone-title{font-size:10px;color:#94a3b8}
+.chat-msg{padding:8px 10px;border-radius:10px;font-size:9px;margin-bottom:6px;max-width:85%;line-height:1.4}
+.msg-bot{background:rgba(255,255,255,.05);color:#cbd5e1;border:1px solid rgba(255,255,255,.05)}
+.msg-user{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;margin-left:auto}
+.sound-widget{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:8px;margin-top:4px}
+.sw-bars{display:flex;gap:2px;align-items:center;justify-content:center;height:20px}
+.sw-bars div{width:3px;background:#10b981;border-radius:2px;animation:wave 1s infinite}
+.sw-bars div:nth-child(1){height:8px;animation-delay:0s}.sw-bars div:nth-child(2){height:14px;animation-delay:.1s}
+.sw-bars div:nth-child(3){height:18px;animation-delay:.2s}.sw-bars div:nth-child(4){height:10px;animation-delay:.15s}
+.sw-bars div:nth-child(5){height:16px;animation-delay:.05s}
+.sw-label{font-size:8px;color:#10b981;margin-top:4px;text-align:center}
+.title{font-size:22px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:slideUp .6s .9s both}
+.sub{font-size:13px;color:#94a3b8;animation:slideUp .6s 1.2s both;max-width:280px}
+.feature-list{display:flex;flex-direction:column;gap:8px;max-width:300px;width:100%}
+.feat{display:flex;align-items:center;gap:10px;font-size:12px;color:#e2e8f0}
+.feat:nth-child(1){animation:slideUp 0.5s 10.8s both}.feat:nth-child(2){animation:slideUp 0.5s 11s both}
+.feat:nth-child(3){animation:slideUp 0.5s 21.7s both}.feat:nth-child(4){animation:slideUp 0.5s 11.4s both}
+.feat:nth-child(5){animation:slideUp 0.5s 11.6s both}.feat:nth-child(6){animation:slideUp .4s 6.3s both}
+.feat-check{color:#10b981;font-size:16px}
+.cta-btn{margin-top:20px;background:linear-gradient(135deg,#3b82f6,#10b981);border:none;color:#fff;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:700;animation:slideUp 0.5s 21s both}
+.watermark{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.15)}
+</style></head><body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+<div class="scene s1">
+  <div class="phone-frame">
+    <div class="phone-header"><div class="phone-dot"></div><div class="phone-title">Tinni 💙</div></div>
+    <div class="chat-msg msg-bot">Xin chào! Hôm nay bạn cảm thấy thế nào?</div>
+    <div class="chat-msg msg-user">Tai tôi ù nhiều quá 😔</div>
+    <div class="chat-msg msg-bot">Tôi hiểu. Để tôi bật White Noise giúp bạn thư giãn nhé?</div>
+    <div class="sound-widget"><div class="sw-bars"><div></div><div></div><div></div><div></div><div></div></div><div class="sw-label">🎧 White Noise — 30 phút</div></div>
+  </div>
+  <div class="title">AI hiểu bạn<br>24/7</div>
+  <div class="sub">Chat với Tinni — AI chuyên biệt về ù tai, luôn sẵn sàng hỗ trợ</div>
+</div>
+<div class="scene s2">
+  <div class="title" style="font-size:18px;margin-bottom:14px;animation-delay:10.7s">Tinni có thể giúp</div>
+  <div class="feature-list">
+    <div class="feat"><div class="feat-check">✓</div>Bật âm thanh trị liệu ngay trong chat</div>
+    <div class="feat"><div class="feat-check">✓</div>Hướng dẫn hít thở & thư giãn</div>
+    <div class="feat"><div class="feat-check">✓</div>Làm bài kiểm tra thính lực</div>
+    <div class="feat"><div class="feat-check">✓</div>Phân tích kết quả trắc nghiệm</div>
+    <div class="feat"><div class="feat-check">✓</div>Tư vấn y tế cá nhân hóa</div>
+    <div class="feat"><div class="feat-check">✓</div>Nhắc nhở check-in mỗi ngày</div>
+  </div>
+</div>
+<div class="scene s3">
+  <div class="phone-frame" style="height:auto;padding:20px;animation-delay:10.3s">
+    <div style="font-size:36px;margin-bottom:8px">💙</div>
+    <div style="font-size:16px;font-weight:700;color:#fff">Bạn có thể chat thử<br>ngay bây giờ!</div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:4px">2 tin nhắn miễn phí • Không cần đăng ký</div>
+  </div>
+  <div class="cta-btn">💬 Chat với Tinni →</div>
+</div>
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

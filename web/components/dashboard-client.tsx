@@ -62,6 +62,30 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+/* Daily tips — rotates based on date */
+const DAILY_TIPS = [
+  { vi: '☕ Caffeine có thể làm ù tai tệ hơn. Hãy thử giảm cà phê trong 1 tuần để xem có khác biệt.', en: '☕ Caffeine can worsen tinnitus. Try reducing coffee for a week and see if it makes a difference.' },
+  { vi: '🌙 Nghe âm thanh trị liệu 30 phút trước ngủ giúp não thư giãn và dễ ngủ hơn.', en: '🌙 Listening to therapy sounds 30 minutes before bed helps your brain relax and fall asleep easier.' },
+  { vi: '🧘 Stress là nguyên nhân phổ biến làm ù tai nặng hơn. Hãy thử bài tập thở 4-7-8 mỗi ngày.', en: '🧘 Stress is a common trigger for louder tinnitus. Try the 4-7-8 breathing exercise daily.' },
+  { vi: '💧 Uống đủ nước! Mất nước có thể làm tăng cường độ ù tai. Mục tiêu: 2 lít/ngày.', en: '💧 Stay hydrated! Dehydration can increase tinnitus intensity. Aim for 2 liters per day.' },
+  { vi: '🎧 Sử dụng âm thanh nền nhẹ (mưa, sóng biển) khi làm việc để giảm sự chú ý vào tiếng ù.', en: '🎧 Use soft background sounds (rain, ocean) while working to reduce focus on the ringing.' },
+  { vi: '📱 Hạn chế xem màn hình trước khi ngủ 30 phút. Ánh sáng xanh làm rối loạn giấc ngủ.', en: '📱 Limit screen time 30 minutes before bed. Blue light disrupts sleep quality.' },
+  { vi: '🎵 Âm nhạc cổ điển hoặc lo-fi có thể giúp che phủ ù tai tự nhiên hơn white noise thuần túy.', en: '🎵 Classical or lo-fi music can mask tinnitus more naturally than pure white noise.' },
+  { vi: '🎽 Vận động đều đặn giúp cải thiện tuần hoàn máu, gián tiếp giảm ù tai. 30 phút đi bộ/ngày.', en: '🎽 Regular exercise improves blood circulation, which can indirectly reduce tinnitus. Try 30 min walks daily.' },
+  { vi: '🥂 Giảm muối có thể giúp giảm ù tai, đặc biệt nếu bạn bị bệnh Ménière.', en: '🥂 Reducing salt intake can help with tinnitus, especially if you have Ménière\'s disease.' },
+  { vi: '📚 Ghi nhận hàng ngày giúp bạn nhận ra pattern: khi nào ù nhiều, khi nào ít — từ đó điều chỉnh lối sống.', en: '📚 Daily logging helps you spot patterns: when tinnitus is loud vs. quiet — so you can adjust your lifestyle.' },
+  { vi: '😴 Thử nằm nghiêng về bên tai ít ù hơn khi ngủ, kết hợp với âm thanh trị liệu.', en: '😴 Try sleeping on the side with less tinnitus, combined with therapy sounds.' },
+  { vi: '🧠 Habituation (thích nghi) mất trung bình 3-6 tháng. Kiên nhẫn — bạn sẽ quen dần!', en: '🧠 Habituation takes an average of 3-6 months. Be patient — your brain will gradually adapt!' },
+  { vi: '🌿 Thử tiền tinh dầu lavender, bạc hà để thư giãn. Mùi hương tốt giúp giảm stress gây ù tai.', en: '🌿 Try lavender or peppermint essential oils for relaxation. Pleasant scents can reduce stress-related tinnitus.' },
+  { vi: '👥 Tham gia cộng đồng người ù tai. Chia sẻ kinh nghiệm giúp bạn không cảm thấy cô đơn.', en: '👥 Join tinnitus communities. Sharing experiences helps you feel less alone.' },
+]
+
+function getDailyTip(lang: 'vi' | 'en') {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+  const tip = DAILY_TIPS[dayOfYear % DAILY_TIPS.length]
+  return tip[lang]
+}
+
 export default function DashboardClient({ data }: DashboardClientProps) {
   const { lang } = useLangStore()
   const d = t(lang)
@@ -125,6 +149,54 @@ export default function DashboardClient({ data }: DashboardClientProps) {
           <span className="text-xs text-slate-400 capitalize">{data.tier}</span>
         </div>
       </div>
+
+      {/* Daily Tip */}
+      <div className="mb-6 sm:mb-8 p-4 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 backdrop-blur border border-emerald-500/15 rounded-2xl">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-sm flex-shrink-0">💡</div>
+          <div>
+            <p className="text-emerald-400 text-xs font-medium mb-0.5">{isEn ? 'Tip of the Day' : 'Mẹo hôm nay'}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">{getDailyTip(lang)}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Onboarding nudge for new users */}
+      {checkins.length === 0 && assessments.length === 0 && therapyCount === 0 && (
+        <div className="mb-6 sm:mb-8 p-5 bg-gradient-to-br from-blue-500/10 via-violet-500/5 to-transparent border border-blue-500/20 rounded-2xl">
+          <h3 className="text-white font-semibold text-sm mb-2">
+            {isEn ? '🌟 Start your tinnitus management journey!' : '🌟 Bắt đầu hành trình kiểm soát ù tai!'}
+          </h3>
+          <p className="text-slate-400 text-xs mb-4">
+            {isEn
+              ? 'Here are 3 simple steps to get started. Each one takes less than 5 minutes:'
+              : 'Dưới đây là 3 bước đơn giản để bắt đầu. Mỗi bước mất chưa đầy 5 phút:'}
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <Link href="/chat" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-blue-500/30 rounded-xl transition-all">
+              <span className="text-xl">💬</span>
+              <div>
+                <p className="text-white text-xs font-medium">{isEn ? '1. Talk to Tinni' : '1. Nói chuyện với Tinni'}</p>
+                <p className="text-slate-600 text-[9px]">{isEn ? 'Share your symptoms' : 'Chia sẻ triệu chứng'}</p>
+              </div>
+            </Link>
+            <Link href="/hearing-test" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all">
+              <span className="text-xl">🎧</span>
+              <div>
+                <p className="text-white text-xs font-medium">{isEn ? '2. Test your hearing' : '2. Kiểm tra thính lực'}</p>
+                <p className="text-slate-600 text-[9px]">{isEn ? '5 minutes, free' : '5 phút, miễn phí'}</p>
+              </div>
+            </Link>
+            <Link href="/therapy" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-violet-500/30 rounded-xl transition-all">
+              <span className="text-xl">🎵</span>
+              <div>
+                <p className="text-white text-xs font-medium">{isEn ? '3. Try sound therapy' : '3. Nghe âm thanh trị liệu'}</p>
+                <p className="text-slate-600 text-[9px]">{isEn ? 'Mask the ringing' : 'Che phủ tiếng ù'}</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">

@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { Play, Square, Volume2, Target } from 'lucide-react'
 import { PremiumGate } from '@/components/premium-gate'
+import { AuthGate } from '@/components/auth-gate'
 
 export default function NotchTherapyPage() {
   const { lang } = useLangStore()
@@ -109,6 +110,12 @@ export default function NotchTherapyPage() {
   const barHeights = useMemo(() => Array.from({ length: 40 }, () => 30 + Math.random() * 55), [])
 
   return (
+    <AuthGate feature="Notch Therapy" featureVi="Liệu Pháp Lọc Âm" emoji="🎯"
+      previewItems={[
+        { emoji: '🎵', label: 'Lọc tần số' },
+        { emoji: '📉', label: 'Giảm ù tai' },
+        { emoji: '⚙️', label: 'Cá nhân hóa' },
+      ]}>
     <PremiumGate feature="Notch Therapy" featureVi="Liệu Pháp Lọc Âm">
     <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-6">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -290,5 +297,6 @@ export default function NotchTherapyPage() {
       </div>
     </div>
     </PremiumGate>
+    </AuthGate>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { Play, Square, Volume2, Plus, X, Layers } from 'lucide-react'
 import { PremiumGate } from '@/components/premium-gate'
+import { AuthGate } from '@/components/auth-gate'
 
 const SOUNDS = [
   { key: 'white', emoji: '〰️', vi: 'Ồn trắng', en: 'White Noise' },
@@ -132,6 +133,12 @@ export default function SoundMixerPage() {
   const availableSounds = SOUNDS.filter(s => !layers.some(l => l.key === s.key))
 
   return (
+    <AuthGate feature="Sound Mixer" featureVi="Trộn Âm Thanh" emoji="🏛️"
+      previewItems={[
+        { emoji: '〰️', label: 'White noise' },
+        { emoji: '🌧️', label: 'Rain' },
+        { emoji: '🌊', label: 'Ocean' },
+      ]}>
     <PremiumGate feature="Sound Mixer" featureVi="Trộn Âm Thanh">
     <div className="h-full overflow-y-auto p-4 sm:p-6 md:p-8 max-w-md mx-auto">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -224,5 +231,6 @@ export default function SoundMixerPage() {
       )}
     </div>
     </PremiumGate>
+    </AuthGate>
   )
 }

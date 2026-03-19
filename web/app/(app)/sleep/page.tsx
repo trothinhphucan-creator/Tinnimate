@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Moon, Play, Square, Volume2 } from 'lucide-react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { PremiumGate } from '@/components/premium-gate'
+import { AuthGate } from '@/components/auth-gate'
 
 const SLEEP_SOUNDS = [
   { key: 'brown_noise', emoji: '🟤', vi: 'Tiếng ồn nâu', en: 'Brown Noise' },
@@ -98,6 +99,12 @@ export default function SleepPage() {
   const formatTime = (s: number) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`
 
   return (
+    <AuthGate feature="Sleep Mode" featureVi="Chế Độ Ngủ" emoji="🌙"
+      previewItems={[
+        { emoji: '🟤', label: 'Ồn nâu' },
+        { emoji: '🌧️', label: 'Tiếng mưa' },
+        { emoji: '⏰', label: 'Hẹn giờ' },
+      ]}>
     <PremiumGate feature="Sleep Mode" featureVi="Chế Độ Ngủ">
     <div className="h-full overflow-y-auto flex flex-col items-center justify-center p-6 relative">
       {/* Ambient background */}
@@ -206,5 +213,6 @@ export default function SleepPage() {
       </div>
     </div>
     </PremiumGate>
+    </AuthGate>
   )
 }

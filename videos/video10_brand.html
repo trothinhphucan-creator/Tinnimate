@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{width:420px;height:746px;overflow:hidden;background:#020617;font-family:'Segoe UI',sans-serif;color:#fff}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;opacity:0}
+.scene.s1{opacity:0;transform:translateY(30px)}.scene.s2{opacity:0;transform:translateY(30px)}.scene.s3{opacity:0;transform:translateY(30px)}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes showHide{0%{opacity:0;transform:translateY(30px)}10%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-15px)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}@keyframes slideUp{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 30px rgba(59,130,246,.3)}50%{box-shadow:0 0 80px rgba(139,92,246,.6)}}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:pulse 4s infinite}
+.orb1{top:-10%;left:-10%;width:300px;height:300px;background:rgba(59,130,246,.15)}
+.orb2{bottom:-5%;right:-15%;width:250px;height:250px;background:rgba(139,92,246,.15);animation-delay:2s}
+.orb3{top:40%;left:50%;width:200px;height:200px;background:rgba(236,72,153,.08);animation-delay:3s}
+.logo{width:80px;height:80px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;margin-bottom:16px;animation:glow 3s 1s infinite,slideUp .6s .7s both}
+.brand{font-size:32px;font-weight:900;color:#fff;animation:slideUp .5s 1s both}
+.tagline{font-size:14px;background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:600;animation:slideUp .5s 1.3s both}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px;width:100%}
+.fg-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px 8px;font-size:24px}
+.fg-item span{display:block;font-size:9px;color:#94a3b8;margin-top:4px}
+.fg-item:nth-child(1){animation:slideUp 0.5s 10.7s both}.fg-item:nth-child(2){animation:slideUp 0.5s 10.8s both}
+.fg-item:nth-child(3){animation:slideUp 0.5s 21.4s both}.fg-item:nth-child(4){animation:slideUp 0.5s 11s both}
+.fg-item:nth-child(5){animation:slideUp 0.5s 11.1s both}.fg-item:nth-child(6){animation:slideUp 0.5s 21.7s both}
+.fg-item:nth-child(7){animation:slideUp 0.5s 11.3s both}.fg-item:nth-child(8){animation:slideUp 0.5s 11.4s both}
+.fg-item:nth-child(9){animation:slideUp 0.5s 22s both}
+.free-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:50px;padding:8px 16px;font-size:12px;color:#10b981;font-weight:600;margin-top:14px;animation:slideUp 0.5s 11.7s both}
+.cta-btn{margin-top:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:none;color:#fff;padding:16px 40px;border-radius:50px;font-size:16px;font-weight:700;animation:slideUp 0.5s 21s both,glow 2s 11s infinite}
+.url{font-size:12px;color:#60a5fa;margin-top:12px;font-weight:500;animation:slideUp .5s 11s both}
+.watermark{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.15)}
+</style></head><body>
+<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+<div class="scene s1">
+  <div class="logo">T</div>
+  <div class="brand">TinniMate</div>
+  <div class="tagline">Trợ thủ giúp đẩy lùi ù tai</div>
+</div>
+<div class="scene s2">
+  <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;animation:slideUp .4s 5.1s both">Tất cả trong 1 ứng dụng</div>
+  <div class="feature-grid">
+    <div class="fg-item">💬<span>AI Chat</span></div>
+    <div class="fg-item">🎧<span>Sound</span></div>
+    <div class="fg-item">👂<span>Hearing</span></div>
+    <div class="fg-item">📋<span>Quiz</span></div>
+    <div class="fg-item">🧘<span>Relax</span></div>
+    <div class="fg-item">🎯<span>Notch</span></div>
+    <div class="fg-item">🧠<span>CBT-i</span></div>
+    <div class="fg-item">🌙<span>Sleep</span></div>
+    <div class="fg-item">📊<span>Track</span></div>
+  </div>
+  <div class="free-badge">✨ Dùng thử miễn phí</div>
+</div>
+<div class="scene s3">
+  <div class="logo" style="animation-delay:10.3s">T</div>
+  <div class="brand" style="animation-delay:10.5s">Bắt đầu ngay</div>
+  <div class="cta-btn">💙 tinnitus.vuinghe.com</div>
+  <div class="url">Không cần tải app • Chạy trên trình duyệt</div>
+</div>
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

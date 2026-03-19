@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { width:420px; height:746px; overflow:hidden; background:#020617; font-family:'Segoe UI',sans-serif; color:#fff; }
+.scene { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 24px; opacity:0; }
+.scene.s1{opacity:0;transform:translateY(30px)}
+.scene.s2{opacity:0;transform:translateY(30px)}
+.scene.s3{opacity:0;transform:translateY(30px)}
+
+@keyframes fadeIn { 0%{opacity:0;transform:translateY(30px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+@keyframes slideUp { 0%{opacity:0;transform:translateY(40px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes wave { 0%{transform:scaleY(0.3)} 50%{transform:scaleY(1)} 100%{transform:scaleY(0.3)} }
+@keyframes glow { 0%,100%{box-shadow:0 0 20px rgba(16,185,129,0.3)} 50%{box-shadow:0 0 50px rgba(16,185,129,0.6)} }
+
+.orb { position:absolute; border-radius:50%; filter:blur(80px); animation:pulse 4s infinite; }
+.orb1 { top:-15%; left:-10%; width:300px; height:300px; background:rgba(16,185,129,0.15); }
+.orb2 { bottom:10%; right:-20%; width:250px; height:250px; background:rgba(59,130,246,0.12); animation-delay:2s; }
+
+/* Scene 1 */
+.sound-bars { display:flex; gap:6px; align-items:center; justify-content:center; height:80px; margin-bottom:20px; }
+.bar { width:8px; background:linear-gradient(180deg,#10b981,#3b82f6); border-radius:4px; animation:wave 1.2s infinite; }
+.bar:nth-child(1){height:30px;animation-delay:0s} .bar:nth-child(2){height:50px;animation-delay:0.1s}
+.bar:nth-child(3){height:70px;animation-delay:0.2s} .bar:nth-child(4){height:45px;animation-delay:0.3s}
+.bar:nth-child(5){height:60px;animation-delay:0.15s} .bar:nth-child(6){height:35px;animation-delay:0.25s}
+.bar:nth-child(7){height:55px;animation-delay:0.05s}
+
+.title { font-size:26px; font-weight:800; background:linear-gradient(135deg,#10b981,#3b82f6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; animation:slideUp 0.6s 0.8s both; }
+.sub { font-size:13px; color:#94a3b8; animation:slideUp 0.6s 1.2s both; }
+
+/* Scene 2 - Sound types */
+.sound-list { display:flex; flex-direction:column; gap:10px; max-width:320px; width:100%; }
+.sound-item { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding:14px 16px; border-radius:14px; }
+.sound-item:nth-child(1) { animation:slideUp 0.5s 10.7s both; }
+.sound-item:nth-child(2) { animation:slideUp 0.5s 11s both; }
+.sound-item:nth-child(3) { animation:slideUp 0.5s 11.3s both; }
+.sound-item:nth-child(4) { animation:slideUp 0.5s 11.6s both; }
+.sound-emoji { font-size:28px; }
+.sound-info .name { font-size:14px; font-weight:600; color:#f8fafc; }
+.sound-info .desc { font-size:10px; color:#64748b; }
+
+/* Scene 3 - CTA */
+.moon { font-size:64px; margin-bottom:16px; animation:slideUp 0.5s 20.8s both; }
+.cta-text { font-size:20px; font-weight:700; color:#fff; margin-bottom:8px; animation:slideUp 0.5s 21.1s both; }
+.cta-sub2 { font-size:12px; color:#10b981; font-weight:600; animation:slideUp 0.5s 21.4s both; }
+.cta-btn { margin-top:24px; background:linear-gradient(135deg,#10b981,#3b82f6); border:none; color:#fff; padding:14px 32px; border-radius:50px; font-size:14px; font-weight:700; animation:slideUp 0.5s 21.7s both, glow 2s 22s infinite; }
+
+.watermark { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:10px; color:rgba(255,255,255,0.15); }
+</style></head>
+<body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+
+<!-- Scene 1 -->
+<div class="scene s1">
+  <div class="sound-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+  <div class="title">White Noise<br>giúp bạn ngủ ngon</div>
+  <div class="sub">Âm thanh trị liệu che phủ tiếng ù tai<br>giúp não bộ thư giãn và dễ ngủ hơn</div>
+</div>
+
+<!-- Scene 2 -->
+<div class="scene s2">
+  <div class="title" style="font-size:18px;margin-bottom:16px;animation-delay:10.7s">11 âm thanh trị liệu</div>
+  <div class="sound-list">
+    <div class="sound-item"><div class="sound-emoji">🌊</div><div class="sound-info"><div class="name">White • Pink • Brown Noise</div><div class="desc">Che phủ tiếng ù hiệu quả nhất</div></div></div>
+    <div class="sound-item"><div class="sound-emoji">🌧️</div><div class="sound-info"><div class="name">Mưa • Sóng biển • Rừng đêm</div><div class="desc">Âm thanh tự nhiên giúp thư giãn</div></div></div>
+    <div class="sound-item"><div class="sound-emoji">🔥</div><div class="sound-info"><div class="name">Lửa trại</div><div class="desc">ASMR chữa lành, giảm stress</div></div></div>
+    <div class="sound-item"><div class="sound-emoji">🧠</div><div class="sound-info"><div class="name">Binaural Beats (Alpha/Theta/Delta)</div><div class="desc">Kích thích sóng não qua tai nghe</div></div></div>
+  </div>
+</div>
+
+<!-- Scene 3 - CTA -->
+<div class="scene s3">
+  <div class="moon">🌙</div>
+  <div class="cta-text">Nghe thử ngay đêm nay</div>
+  <div class="cta-sub2">Miễn phí • Không cần tải app</div>
+  <div class="cta-btn">🎧 Bật âm thanh trị liệu →</div>
+</div>
+
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

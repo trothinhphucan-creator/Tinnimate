@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { width:420px; height:746px; overflow:hidden; background:#020617; font-family:'Segoe UI',sans-serif; color:#fff; }
+.scene { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 24px; opacity:0; }
+.scene.s1{opacity:0;transform:translateY(30px)}
+.scene.s2{opacity:0;transform:translateY(30px)}
+.scene.s3{opacity:0;transform:translateY(30px)}
+.scene.s4{opacity:0;transform:translateY(30px)}
+
+@keyframes fadeIn { 0%{opacity:0;transform:translateY(30px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.6} }
+@keyframes slideUp { 0%{opacity:0;transform:translateY(50px)} 100%{opacity:1;transform:translateY(0)} }
+@keyframes glow { 0%,100%{box-shadow:0 0 20px rgba(59,130,246,0.3)} 50%{box-shadow:0 0 60px rgba(59,130,246,0.6)} }
+@keyframes typeIn { from{width:0} to{width:100%} }
+@keyframes scaleIn { 0%{transform:scale(0)} 100%{transform:scale(1)} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+/* Background orbs */
+.orb { position:absolute; border-radius:50%; filter:blur(80px); animation:pulse 4s infinite; }
+.orb1 { top:-10%; left:-20%; width:300px; height:300px; background:rgba(59,130,246,0.15); }
+.orb2 { bottom:-5%; right:-15%; width:250px; height:250px; background:rgba(139,92,246,0.15); animation-delay:2s; }
+.orb3 { top:40%; right:-10%; width:200px; height:200px; background:rgba(236,72,153,0.1); animation-delay:3s; }
+
+/* Scene 1 - Question */
+.big-emoji { font-size:72px; margin-bottom:16px; animation: scaleIn 0.6s 1s both, float 3s 1.5s infinite; }
+.title1 { font-size:28px; font-weight:800; background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; animation: slideUp 0.6s 1.2s both; }
+.subtitle1 { font-size:14px; color:#94a3b8; max-width:280px; animation: slideUp 0.6s 1.5s both; }
+
+/* Scene 2 - Definition */
+.medical-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:24px; max-width:320px; animation: slideUp 0.6s 4.3s both; }
+.card-icon { font-size:42px; margin-bottom:12px; }
+.card-title { font-size:18px; font-weight:700; color:#f8fafc; margin-bottom:8px; }
+.card-text { font-size:13px; color:#94a3b8; line-height:1.6; }
+.highlight { color:#60a5fa; font-weight:600; }
+
+/* Scene 3 - Stats */
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:320px; animation: slideUp 0.6s 8.3s both; }
+.stat-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:16px; text-align:center; }
+.stat-num { font-size:32px; font-weight:800; background:linear-gradient(135deg,#f472b6,#fb923c); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.stat-label { font-size:10px; color:#64748b; margin-top:4px; }
+
+/* Scene 4 - CTA */
+.cta-logo { width:64px; height:64px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; margin:0 auto 16px; animation: glow 2s 12.5s infinite, scaleIn 0.5s 12.3s both; }
+.cta-title { font-size:24px; font-weight:800; color:#fff; margin-bottom:4px; animation: slideUp 0.5s 12.6s both; }
+.cta-sub { font-size:13px; color:#60a5fa; font-weight:600; animation: slideUp 0.5s 12.8s both; }
+.cta-btn { margin-top:20px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border:none; color:#fff; padding:14px 32px; border-radius:50px; font-size:14px; font-weight:700; animation: slideUp 0.5s 13s both; }
+
+/* Watermark */
+.watermark { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:10px; color:rgba(255,255,255,0.15); letter-spacing:1px; }
+</style></head>
+<body>
+<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+
+<!-- Scene 1: Hook -->
+<div class="scene s1">
+  <div class="big-emoji">👂</div>
+  <div class="title1">Ù tai là gì?</div>
+  <div class="subtitle1">Bạn có nghe tiếng "ri ri" trong tai không?<br>Đó có thể là tinnitus.</div>
+</div>
+
+<!-- Scene 2: Definition -->
+<div class="scene s2">
+  <div class="medical-card">
+    <div class="card-icon">🔬</div>
+    <div class="card-title">Tinnitus (Ù tai)</div>
+    <div class="card-text">
+      Là tình trạng <span class="highlight">nghe tiếng không có nguồn phát</span> bên ngoài.
+      <br><br>
+      Có thể là tiếng ri ri, vo ve, ù ù — liên tục hoặc từng đợt.
+      <br><br>
+      <span class="highlight">Không phải bệnh</span>, mà là triệu chứng của nhiều nguyên nhân khác nhau.
+    </div>
+  </div>
+</div>
+
+<!-- Scene 3: Stats -->
+<div class="scene s3">
+  <div class="title1" style="margin-bottom:16px;animation-delay:8.3s">Con số đáng quan tâm</div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">15%</div><div class="stat-label">Dân số thế giới<br>bị ù tai</div></div>
+    <div class="stat-card"><div class="stat-num">70%</div><div class="stat-label">Ù tai kèm<br>nghe kém</div></div>
+    <div class="stat-card"><div class="stat-num">50M</div><div class="stat-label">Người mỹ<br>bị tinnitus</div></div>
+    <div class="stat-card"><div class="stat-num">80%</div><div class="stat-label">Cải thiện khi<br>can thiệp sớm</div></div>
+  </div>
+</div>
+
+<!-- Scene 4: CTA -->
+<div class="scene s4">
+  <div class="cta-logo">T</div>
+  <div class="cta-title">TinniMate</div>
+  <div class="cta-sub">Trợ thủ giúp đẩy lùi ù tai</div>
+  <div class="cta-btn">Chat thử miễn phí →</div>
+</div>
+
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

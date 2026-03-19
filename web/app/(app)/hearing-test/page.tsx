@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Ear, ChevronRight, Volume2, RotateCcw } from 'lucide-react'
+import { AuthGate } from '@/components/auth-gate'
 
 type TestStep = 'intro' | 'calibration' | 'testing' | 'results'
 
@@ -153,6 +154,12 @@ export default function HearingTestPage() {
   }
 
   return (
+    <AuthGate feature="Hearing Test" featureVi="Kiểm Tra Thính Lực" emoji="👂"
+      previewItems={[
+        { emoji: '🎧', label: 'Pure tone test' },
+        { emoji: '📊', label: 'Audiogram' },
+        { emoji: '📋', label: 'Kết quả chi tiết' },
+      ]}>
     <div className="h-full overflow-y-auto p-6 md:p-8 max-w-2xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white mb-1">👂 Kiểm tra thính lực</h1>
@@ -274,6 +281,76 @@ export default function HearingTestPage() {
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> &gt;55 dB Giảm nặng</span>
           </div>
 
+          {/* Personalized plain-language summary */}
+          {(() => {
+            const entries = Object.entries(results).map(([f, db]) => ({ freq: Number(f), db: db as number }))
+            const avgDb = entries.length > 0 ? entries.reduce((s, e) => s + e.db, 0) / entries.length : 0
+            const worstFreqs = entries.filter(e => e.db > 25).sort((a, b) => b.db - a.db)
+            const hasLoss = worstFreqs.length > 0
+            const highFreqLoss = entries.filter(e => e.freq >= 4000 && e.db > 25)
+
+            let summaryText: string
+            let summaryColor: string
+            let summaryIcon: string
+            if (avgDb <= 20) {
+              summaryText = 'Thính lực của bạn ở mức BÌNH THƯỜNG. Tiếp tục bảo vệ tai và kiểm tra định kỳ mỗi 6 tháng.'
+              summaryColor = 'from-green-500/10 to-emerald-500/5 border-green-500/20'
+              summaryIcon = '✅'
+            } else if (avgDb <= 40) {
+              summaryText = 'Thính lực của bạn GIẢM NHẸ ở một số tần số. Đây là mức phổ biến và có thể cải thiện. Nên đến bác sĩ TMH để đánh giá chính xác.'
+              summaryColor = 'from-yellow-500/10 to-amber-500/5 border-yellow-500/20'
+              summaryIcon = '⚠️'
+            } else if (avgDb <= 55) {
+              summaryText = 'Thính lực của bạn GIẢM TRUNG BÌNH. Bạn nên đặt lịch khám bác sĩ Tai Mũi Họng sớm để được tư vấn và can thiệp kịp thời.'
+              summaryColor = 'from-orange-500/10 to-red-500/5 border-orange-500/20'
+              summaryIcon = '🏥'
+            } else {
+              summaryText = 'Thính lực của bạn GIẢM NẶNG. Hãy đến bác sĩ chuyên khoa TMH NGAY để được chẩn đoán và điều trị. Phát hiện sớm rất quan trọng!'
+              summaryColor = 'from-red-500/10 to-rose-500/5 border-red-500/20'
+              summaryIcon = '🚨'
+            }
+
+            return (
+              <div className="mb-6 space-y-3">
+                {/* Summary card */}
+                <div className={`p-4 rounded-xl border bg-gradient-to-br ${summaryColor}`}>
+                  <p className="text-white text-sm font-medium mb-1">{summaryIcon} Kết quả tóm tắt</p>
+                  <p className="text-slate-300 text-xs leading-relaxed">{summaryText}</p>
+                </div>
+
+                {/* Next step suggestions */}
+                <div className="p-4 bg-blue-500/5 border border-blue-500/15 rounded-xl">
+                  <p className="text-blue-400 text-xs font-medium mb-3">🎯 Gợi ý tiếp theo cho bạn:</p>
+                  <div className="space-y-2">
+                    {highFreqLoss.length > 0 && (
+                      <a href="/notch-therapy" className="flex items-center gap-3 p-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-violet-500/30 rounded-lg transition-all group">
+                        <span className="text-lg">🎵</span>
+                        <div>
+                          <p className="text-white text-xs font-medium group-hover:text-violet-300">Thử Liệu pháp Lọc Âm (Notch Therapy)</p>
+                          <p className="text-slate-600 text-[9px]">Nghe kém ở tần {highFreqLoss[0].freq} Hz — Notch Therapy có thể giúp giảm ù tai tại tần số này</p>
+                        </div>
+                      </a>
+                    )}
+                    <a href="/therapy" className="flex items-center gap-3 p-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-emerald-500/30 rounded-lg transition-all group">
+                      <span className="text-lg">🎧</span>
+                      <div>
+                        <p className="text-white text-xs font-medium group-hover:text-emerald-300">Nghe âm thanh trị liệu</p>
+                        <p className="text-slate-600 text-[9px]">{hasLoss ? 'Dùng âm thanh che phủ tiếng ù, giúp não thư giãn' : 'Duy trì thói quen nghe âm thanh thiên nhiên để phòng ngừa'}</p>
+                      </div>
+                    </a>
+                    <a href="/chat" className="flex items-center gap-3 p-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-blue-500/30 rounded-lg transition-all group">
+                      <span className="text-lg">💬</span>
+                      <div>
+                        <p className="text-white text-xs font-medium group-hover:text-blue-300">Nói chuyện với Tinni</p>
+                        <p className="text-slate-600 text-[9px]">Chia sẻ kết quả và nhận tư vấn cá nhân hóa</p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+
           <p className="text-slate-400 text-sm text-center mb-6">
             ⚠️ Kết quả chỉ mang tính tham khảo. Hãy đến bác sĩ tai mũi họng để kiểm tra chính xác.
           </p>
@@ -287,5 +364,6 @@ export default function HearingTestPage() {
         </div>
       )}
     </div>
+    </AuthGate>
   )
 }

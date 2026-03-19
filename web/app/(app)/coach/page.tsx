@@ -10,6 +10,8 @@ interface CoachTip {
   titleVi: string
   desc: string
   descVi: string
+  why: string
+  whyVi: string
   action: string
   actionVi: string
   href: string
@@ -23,6 +25,8 @@ const DAILY_TIPS: CoachTip[] = [
     title: 'Try Sound Therapy', titleVi: 'Thử Âm Thanh Trị Liệu',
     desc: 'Listen to personalized sounds for 30 minutes to reduce tinnitus perception.',
     descVi: 'Nghe âm thanh cá nhân hóa 30 phút để giảm cảm nhận ù tai.',
+    why: 'Sound therapy helps your brain habituate to tinnitus — after 3-6 months, most people notice the ringing less.',
+    whyVi: 'Âm thanh trị liệu giúp não thích nghi với ù tai (habituation) — sau 3-6 tháng, hầu hết mọi người ít để ý tiếng ù hơn.',
     action: 'Start Therapy →', actionVi: 'Bắt đầu trị liệu →', href: '/therapy',
   },
   {
@@ -30,27 +34,35 @@ const DAILY_TIPS: CoachTip[] = [
     title: 'Notch Therapy Session', titleVi: 'Phiên Lọc Âm',
     desc: 'Notch therapy can reduce tinnitus loudness by 25% over time. Do a session today!',
     descVi: 'Liệu pháp lọc âm giảm ù tai đến 25%. Hãy thực hiện hôm nay!',
+    why: 'Notch therapy works by filtering your tinnitus frequency, triggering neuroplasticity to reduce neural overactivity.',
+    whyVi: 'Lọc âm hoạt động bằng cách lọc tần số ù tai, kích thích tính dẻ o của não để giảm hoạt động thần kinh quá mức.',
     action: 'Start Notch →', actionVi: 'Bắt đầu lọc →', href: '/notch-therapy',
   },
   {
     emoji: '📝', icon: BarChart2, color: 'from-amber-500 to-orange-500',
-    title: 'Daily Check-in', titleVi: 'Check-in Hôm Nay',
+    title: 'Daily Check-in', titleVi: 'Ghi Nhận Hôm Nay',
     desc: 'Track your mood, sleep, and tinnitus level. Consistency builds powerful insights.',
     descVi: 'Ghi nhận tâm trạng, giấc ngủ, mức ù tai. Kiên trì tạo insight mạnh mẽ.',
-    action: 'Check in now →', actionVi: 'Check-in ngay →', href: '/chat',
+    why: 'Tracking patterns helps you identify triggers. Studies show journaling alone reduces tinnitus distress by 15-20%.',
+    whyVi: 'Theo dõi pattern giúp nhận ra tác nhân. Nghiên cứu chỉ ra ghi chép giúp giảm 15-20% khó chịu do ù tai.',
+    action: 'Check in now →', actionVi: 'Ghi nhận ngay →', href: '/chat',
   },
   {
     emoji: '🧠', icon: Brain, color: 'from-violet-500 to-purple-500',
-    title: 'CBT-i Exercise', titleVi: 'Bài Tập CBT-i',
+    title: 'CBT-i Exercise', titleVi: 'Bài Tập Cải Thiện Giấc Ngủ',
     desc: "Challenge negative thoughts about tinnitus. It's proven to reduce distress by 40-60%.",
     descVi: 'Thách thức suy nghĩ tiêu cực. Đã chứng minh giảm 40-60% khó chịu.',
-    action: 'Start CBT-i →', actionVi: 'Bắt đầu CBT-i →', href: '/cbti',
+    why: 'CBT helps you reframe how you perceive tinnitus. When the emotional reaction decreases, the perceived volume often drops too.',
+    whyVi: 'Bài tập nhận thức giúp bạn thay đổi cách nhìn về ù tai. Khi phản ứng cảm xúc giảm, cường độ cảm nhận cũng giảm theo.',
+    action: 'Start CBT-i →', actionVi: 'Bắt đầu →', href: '/cbti',
   },
   {
     emoji: '🌙', icon: Moon, color: 'from-indigo-500 to-violet-500',
     title: 'Wind Down Tonight', titleVi: 'Thư Giãn Tối Nay',
     desc: 'Use sleep mode with brown noise 30 minutes before bed for better sleep quality.',
     descVi: 'Dùng chế độ ngủ với ồn nâu 30 phút trước ngủ để ngủ ngon hơn.',
+    why: 'Sleep deprivation makes tinnitus louder. Brown noise has the ideal frequency profile for masking tinnitus during sleep.',
+    whyVi: 'Thiếu ngủ làm ù tai to hơn. Ồn nâu có tần số lý tưởng để che phủ ù tai khi ngủ.',
     action: 'Sleep Mode →', actionVi: 'Chế độ ngủ →', href: '/sleep',
   },
   {
@@ -58,6 +70,8 @@ const DAILY_TIPS: CoachTip[] = [
     title: 'Learn About Tinnitus', titleVi: 'Tìm Hiểu Về Ù Tai',
     desc: 'Knowledge is power. Read about how sound therapy works and why it helps.',
     descVi: 'Kiến thức là sức mạnh. Đọc về cách liệu pháp âm thanh hoạt động.',
+    why: 'Understanding tinnitus reduces fear and anxiety about it. Counseling/education alone has a 30% improvement rate.',
+    whyVi: 'Hiểu ù tai giảm sợ hãi và lo lắng. Riêng tư vấn/giáo dục đã cải thiện 30% trường hợp.',
     action: 'Read Blog →', actionVi: 'Đọc Blog →', href: '/blog',
   },
 ]
@@ -118,6 +132,7 @@ export default function CoachPage() {
                   {isEn ? tip.title : tip.titleVi}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{isEn ? tip.desc : tip.descVi}</p>
+                <p className="text-[9px] text-slate-600 mt-1 leading-relaxed">💡 {isEn ? tip.why : tip.whyVi}</p>
                 <span className="inline-block mt-2 text-[10px] text-blue-400 group-hover:text-blue-300">
                   {isEn ? tip.action : tip.actionVi}
                 </span>

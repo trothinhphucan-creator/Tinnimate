@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 }
 
+import { CookieConsentWrapper } from '@/components/cookie-consent-wrapper'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,6 +35,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased bg-slate-950 text-slate-100`}>
         {children}
+        <CookieConsentWrapper />
       </body>
     </html>
   )

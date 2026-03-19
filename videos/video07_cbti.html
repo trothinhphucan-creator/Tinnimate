@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{width:420px;height:746px;overflow:hidden;background:#020617;font-family:'Segoe UI',sans-serif;color:#fff}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;opacity:0}
+.scene.s1{opacity:0;transform:translateY(30px)}.scene.s2{opacity:0;transform:translateY(30px)}.scene.s3{opacity:0;transform:translateY(30px)}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes showHide{0%{opacity:0;transform:translateY(30px)}10%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-15px)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}@keyframes slideUp{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:pulse 4s infinite}
+.orb1{top:5%;left:-15%;width:280px;height:280px;background:rgba(168,85,247,.15)}
+.orb2{bottom:-5%;right:-10%;width:250px;height:250px;background:rgba(59,130,246,.1);animation-delay:2s}
+.emoji-big{font-size:56px;margin-bottom:16px;animation:slideUp .5s .7s both}
+.title{font-size:22px;font-weight:800;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:slideUp .6s .9s both}
+.sub{font-size:13px;color:#94a3b8;animation:slideUp .6s 1.2s both;max-width:280px}
+.week-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:320px;width:100%}
+.week{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:14px;text-align:left}
+.week:nth-child(1){animation:slideUp 0.5s 10.7s both}.week:nth-child(2){animation:slideUp 0.5s 21.4s both}
+.week:nth-child(3){animation:slideUp 0.5s 11.1s both}.week:nth-child(4){animation:slideUp 0.5s 11.3s both}
+.week-num{font-size:10px;color:#a855f7;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.week-title{font-size:13px;font-weight:600;color:#f8fafc;margin-bottom:4px}
+.week-desc{font-size:10px;color:#64748b;line-height:1.4}
+.progress{width:100%;max-width:300px;margin-top:16px}
+.progress-bar{height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#a855f7,#3b82f6);border-radius:3px;width:0;animation:fillBar 2s 10.5s forwards}
+@keyframes fillBar{to{width:100%}}
+.progress-label{display:flex;justify-content:space-between;font-size:10px;color:#64748b;margin-top:4px}
+.cta-btn{margin-top:16px;background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:700;animation:slideUp 0.5s 20.8s both}
+.watermark{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.15)}
+</style></head><body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+<div class="scene s1">
+  <div class="emoji-big">🧠</div>
+  <div class="title">CBT-i: Ngủ ngon<br>không cần thuốc</div>
+  <div class="sub">Liệu pháp hành vi nhận thức cho mất ngủ — được WHO khuyến nghị đầu tay thay cho thuốc ngủ</div>
+</div>
+<div class="scene s2">
+  <div class="title" style="font-size:16px;margin-bottom:14px;animation-delay:10.6s">Chương trình 4 tuần</div>
+  <div class="week-grid">
+    <div class="week"><div class="week-num">Tuần 1</div><div class="week-title">Nhật ký giấc ngủ</div><div class="week-desc">Ghi chép thói quen ngủ, nhận diện vấn đề</div></div>
+    <div class="week"><div class="week-num">Tuần 2</div><div class="week-title">Hạn chế giấc ngủ</div><div class="week-desc">Tối ưu thời gian nằm trên giường</div></div>
+    <div class="week"><div class="week-num">Tuần 3</div><div class="week-title">Kiểm soát kích thích</div><div class="week-desc">Xây dựng liên kết giường = ngủ</div></div>
+    <div class="week"><div class="week-num">Tuần 4</div><div class="week-title">Tái cấu trúc nhận thức</div><div class="week-desc">Thay đổi suy nghĩ tiêu cực về giấc ngủ</div></div>
+  </div>
+</div>
+<div class="scene s3">
+  <div class="emoji-big" style="animation-delay:10.3s">😴</div>
+  <div class="title" style="animation-delay:10.5s">12 bài tập chi tiết<br>miễn phí trên TinniMate</div>
+  <div class="progress"><div class="progress-bar"><div class="progress-fill"></div></div><div class="progress-label"><span>Tuần 1</span><span>Tuần 4</span></div></div>
+  <div class="cta-btn">🧠 Bắt đầu CBT-i →</div>
+</div>
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

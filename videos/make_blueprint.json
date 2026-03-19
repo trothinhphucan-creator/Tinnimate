@@ -1,0 +1,204 @@
+{
+  "name": "TinniMate TikTok Auto-Post",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:searchRows",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": null
+      },
+      "mapper": {
+        "from": "drive",
+        "sheetId": "Videos",
+        "includesHeaders": "yes",
+        "sortOrder": "asc",
+        "limit": "1",
+        "filter": [
+          {
+            "a": "D",
+            "o": "text:equal",
+            "b": "pending"
+          }
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0,
+          "name": "Search Pending Videos"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "google-drive:getAFile",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": null
+      },
+      "mapper": {
+        "select": "search",
+        "query": "name = '{{1.A}}' and '1znGYylSMMMItQ7NyvpmXza3w7POrpuHO' in parents"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0,
+          "name": "Find Video in Drive"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "google-drive:downloadAFile",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": null
+      },
+      "mapper": {
+        "fileId": "{{2.id}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0,
+          "name": "Download Video"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{parameters.tiktok_access_token}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": "{\"post_info\":{\"title\":\"{{1.B}}\",\"description\":\"{{1.C}}\",\"privacy_level\":\"PUBLIC_TO_EVERYONE\",\"disable_comment\":false,\"disable_duet\":false,\"disable_stitch\":false},\"source_info\":{\"source\":\"FILE_UPLOAD\",\"video_size\":{{3.size}}}}",
+        "parseResponse": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0,
+          "name": "TikTok: Init Upload"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "http:ActionSendDataBinary",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "url": "{{4.data.upload_url}}",
+        "method": "PUT",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "video/mp4"
+          },
+          {
+            "name": "Content-Range",
+            "value": "bytes 0-{{3.size - 1}}/{{3.size}}"
+          }
+        ],
+        "data": "{{3.data}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0,
+          "name": "TikTok: Upload Video"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://open.tiktokapis.com/v2/post/publish/status/fetch/",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{parameters.tiktok_access_token}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": "{\"publish_id\":\"{{4.data.publish_id}}\"}",
+        "parseResponse": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0,
+          "name": "TikTok: Check Status"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "google-sheets:updateRow",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": null
+      },
+      "mapper": {
+        "from": "drive",
+        "sheetId": "Videos",
+        "includesHeaders": "yes",
+        "rowNumber": "{{1.__ROW_NUMBER__}}",
+        "values": {
+          "D": "posted",
+          "E": "{{formatDate(now; \"YYYY-MM-DD HH:mm:ss\")}}"
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0,
+          "name": "Update Sheet: Posted"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com"
+  },
+  "scheduling": {
+    "type": "interval",
+    "interval": 360
+  }
+}

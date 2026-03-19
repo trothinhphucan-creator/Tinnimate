@@ -6,11 +6,12 @@ import { THERAPY_PRESETS } from '@/lib/audio/therapy-presets'
 import { useAudioEngine } from '@/hooks/use-audio-engine'
 import { useLangStore } from '@/stores/use-lang-store'
 import { t } from '@/lib/i18n'
+import { AuthGate } from '@/components/auth-gate'
 import type { TherapySound } from '@/types'
 
 export default function TherapyPage() {
   const { isPlaying, activeSound, volume, toggle, stop, updateVolume } = useAudioEngine()
-  const [timerMin, setTimerMin] = useState<15 | 30 | 60>(30)
+  const [timerMin, setTimerMin] = useState<number>(30)
   const [elapsed, setElapsed] = useState(0)
 
   const { lang } = useLangStore()
@@ -18,7 +19,9 @@ export default function TherapyPage() {
 
   const categories = [
     { label: d.therapy.categories.noise, color: 'from-blue-500 to-cyan-400', sounds: ['white_noise', 'pink_noise', 'brown_noise'] as TherapySound[] },
-    { label: d.therapy.categories.nature, color: 'from-emerald-500 to-teal-400', sounds: ['rain', 'ocean', 'forest', 'campfire'] as TherapySound[] },
+    { label: d.therapy.categories.nature, color: 'from-emerald-500 to-teal-400', sounds: ['rain', 'ocean', 'forest', 'campfire', 'birds', 'creek', 'thunder', 'wind'] as TherapySound[] },
+    { label: d.therapy.categories.healing, color: 'from-amber-500 to-orange-400', sounds: ['singing_bowl', 'wind_chimes', 'om_drone', 'heartbeat'] as TherapySound[] },
+    { label: d.therapy.categories.ambient, color: 'from-lime-500 to-green-400', sounds: ['crickets'] as TherapySound[] },
     { label: d.therapy.categories.binaural, color: 'from-violet-500 to-purple-400', sounds: ['binaural_alpha', 'binaural_theta', 'binaural_delta'] as TherapySound[] },
     { label: d.therapy.categories.notch, color: 'from-pink-500 to-rose-400', sounds: ['notch_therapy'] as TherapySound[] },
   ]
@@ -28,7 +31,7 @@ export default function TherapyPage() {
     const interval = setInterval(() => {
       setElapsed(prev => {
         const next = prev + 1
-        if (next >= timerMin * 60) { stop(); return 0 }
+        if (timerMin > 0 && next >= timerMin * 60) { stop(); return 0 }
         return next
       })
     }, 1000)
@@ -46,10 +49,16 @@ export default function TherapyPage() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
-  const remaining = timerMin * 60 - elapsed
-  const progress = elapsed / (timerMin * 60)
+  const remaining = timerMin > 0 ? timerMin * 60 - elapsed : 0
+  const progress = timerMin > 0 ? elapsed / (timerMin * 60) : 0
 
   return (
+    <AuthGate feature="Sound Therapy" featureVi="Âm Thanh Trị Liệu" emoji="🎵"
+      previewItems={[
+        { emoji: '〰️', label: 'White noise' },
+        { emoji: '🌊', label: 'Ocean waves' },
+        { emoji: '🧠', label: 'Binaural beats' },
+      ]}>
     <div className="h-full overflow-y-auto p-6 md:p-8 max-w-5xl mx-auto relative">
       {/* Background glow */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -119,13 +128,13 @@ export default function TherapyPage() {
             </div>
             <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
               <Timer size={12} className="text-slate-500 ml-2" />
-              {([15, 30, 60] as const).map(m => (
+              {([15, 30, 60, 120, 0] as const).map(m => (
                 <button key={m} onClick={() => setTimerMin(m)}
                   className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
                     timerMin === m
                       ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow'
                       : 'text-slate-400 hover:text-white'
-                  }`}>{m}p</button>
+                  }`}>{m === 0 ? '∞' : `${m}p`}</button>
               ))}
             </div>
           </div>
@@ -171,8 +180,18 @@ export default function TherapyPage() {
         ))}
       </div>
 
+      {/* Volume recommendation */}
+      <div className="mt-6 p-4 bg-amber-500/5 backdrop-blur border border-amber-500/15 rounded-2xl">
+        <p className="text-amber-400 text-xs font-medium mb-1">🔊 {lang === 'vi' ? 'Khuyến nghị âm lượng' : 'Volume Recommendation'}</p>
+        <p className="text-slate-500 text-[11px] leading-relaxed">
+          {lang === 'vi'
+            ? 'Vặn nhỏ vừa đủ để che phủ tiếng ù — không nên to hơn tiếng ù. Nghe ở mức thấp giúp não dần quen (habituation) hiệu quả hơn.'
+            : 'Set volume just loud enough to partially mask the ringing — not louder. Low-level sound helps your brain habituate more effectively.'}
+        </p>
+      </div>
+
       {/* Tips */}
-      <div className="mt-10 p-5 bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl">
+      <div className="mt-4 p-5 bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl">
         <p className="text-slate-400 text-sm">
           💡 <strong className="text-slate-200">{lang === 'vi' ? 'Mẹo' : 'Tip'}:</strong>{' '}
           {lang === 'vi'
@@ -181,5 +200,6 @@ export default function TherapyPage() {
         </p>
       </div>
     </div>
+    </AuthGate>
   )
 }

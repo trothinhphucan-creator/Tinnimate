@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{width:420px;height:746px;overflow:hidden;background:#020617;font-family:'Segoe UI',sans-serif;color:#fff}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;opacity:0}
+.scene.s1{opacity:0;transform:translateY(30px)}.scene.s2{opacity:0;transform:translateY(30px)}.scene.s3{opacity:0;transform:translateY(30px)}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes showHide{0%{opacity:0;transform:translateY(30px)}10%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-15px)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}@keyframes slideUp{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes countUp{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:pulse 4s infinite}
+.orb1{top:10%;left:-20%;width:300px;height:300px;background:rgba(239,68,68,.12)}
+.orb2{bottom:-10%;right:-10%;width:250px;height:250px;background:rgba(251,146,60,.1);animation-delay:2s}
+.big-num{font-size:120px;font-weight:900;background:linear-gradient(135deg,#ef4444,#f97316,#eab308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;animation:countUp .8s 1s both}
+.title{font-size:22px;font-weight:800;color:#fff;margin-top:8px;margin-bottom:8px;animation:slideUp .6s 1.3s both}
+.sub{font-size:13px;color:#94a3b8;animation:slideUp .6s 1.6s both;max-width:280px}
+.fact-list{display:flex;flex-direction:column;gap:10px;max-width:320px;width:100%}
+.fact{display:flex;align-items:start;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);padding:12px 14px;border-radius:12px;text-align:left}
+.fact:nth-child(1){animation:slideUp 0.5s 10.8s both}.fact:nth-child(2){animation:slideUp 0.5s 11.1s both}
+.fact:nth-child(3){animation:slideUp 0.5s 11.4s both}.fact:nth-child(4){animation:slideUp 0.5s 11.7s both}
+.fact-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.fact-text{font-size:12px;color:#cbd5e1;line-height:1.5}
+.fact-text b{color:#f97316}
+.cta-btn{margin-top:24px;background:linear-gradient(135deg,#ef4444,#f97316);border:none;color:#fff;padding:14px 32px;border-radius:50px;font-size:14px;font-weight:700;animation:slideUp 0.5s 21s both}
+.watermark{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,.15)}
+</style></head><body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+<div class="scene s1">
+  <div class="big-num">70%</div>
+  <div class="title">Người ù tai bị nghe kém</div>
+  <div class="sub">Nghiên cứu y khoa cho thấy 70% người bị tinnitus có suy giảm thính lực ở các tần số khác nhau</div>
+</div>
+<div class="scene s2">
+  <div class="title" style="font-size:18px;margin-bottom:14px;animation-delay:10.7s">Bạn cần biết</div>
+  <div class="fact-list">
+    <div class="fact"><div class="fact-icon">🔬</div><div class="fact-text">Ù tai thường là <b>dấu hiệu sớm</b> của tổn thương thính giác</div></div>
+    <div class="fact"><div class="fact-icon">📉</div><div class="fact-text">Nghe kém <b>không điều trị</b> có thể làm ù tai nặng hơn</div></div>
+    <div class="fact"><div class="fact-icon">🏥</div><div class="fact-text">Kiểm tra thính lực <b>định kỳ</b> giúp phát hiện vấn đề sớm</div></div>
+    <div class="fact"><div class="fact-icon">✅</div><div class="fact-text">Can thiệp sớm cải thiện <b>80% trường hợp</b> ù tai do nghe kém</div></div>
+  </div>
+</div>
+<div class="scene s3">
+  <div class="big-num" style="font-size:64px;animation-delay:10.3s">👂</div>
+  <div class="title" style="animation-delay:10.5s">Kiểm tra thính lực<br>miễn phí ngay hôm nay</div>
+  <div class="cta-btn">🎧 Kiểm tra ngay →</div>
+</div>
+<div class="watermark">@tinnimate • tinnitus.vuinghe.com</div>
+
+<script>
+// Scene controller: show one scene at a time
+(function() {
+  const scenes = document.querySelectorAll('.scene');
+  const hasS4 = document.querySelector('.scene.s4');
+  const timings = hasS4 ? [1000, 8000, 16000, 23000] : [1000, 10500, 20500];
+  
+  // Hide all scenes initially
+  scenes.forEach(s => { s.style.opacity = '0'; s.style.transition = 'none'; });
+  
+  scenes.forEach((scene, i) => {
+    // Show scene
+    setTimeout(() => {
+      scene.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      scene.style.opacity = '1';
+      scene.style.transform = 'translateY(0)';
+    }, timings[i]);
+    
+    // Hide scene (except last one)
+    if (i < scenes.length - 1) {
+      const hideTime = timings[i + 1] - 400; // hide 400ms before next
+      setTimeout(() => {
+        scene.style.transition = 'opacity 0.4s ease';
+        scene.style.opacity = '0';
+      }, hideTime);
+    }
+  });
+})();
+</script>
+</body></html>

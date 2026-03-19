@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { Brain, ChevronRight, CheckCircle2, Lock, X, ArrowLeft } from 'lucide-react'
+import { AuthGate } from '@/components/auth-gate'
 
 interface Exercise {
   label: string
@@ -164,6 +165,12 @@ export default function CBTiPage() {
   })() : null
 
   return (
+    <AuthGate feature="CBT-i Program" featureVi="Chương Trình CBT-i" emoji="🧠"
+      previewItems={[
+        { emoji: '📖', label: 'CBT modules' },
+        { emoji: '🎯', label: 'Exercises' },
+        { emoji: '📊', label: 'Tracking' },
+      ]}>
     <div className="h-full overflow-y-auto p-4 sm:p-6 md:p-8 max-w-4xl mx-auto">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-[10%] right-[20%] w-[250px] h-[250px] rounded-full bg-violet-600/6 blur-[100px]" />
@@ -330,5 +337,6 @@ export default function CBTiPage() {
         </p>
       </div>
     </div>
+    </AuthGate>
   )
 }

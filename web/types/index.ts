@@ -12,6 +12,8 @@ export type QuizType = 'THI' | 'TFI' | 'PHQ9' | 'GAD7' | 'ISI'
 export type TherapySound =
   | 'white_noise' | 'pink_noise' | 'brown_noise'
   | 'rain' | 'ocean' | 'forest' | 'campfire'
+  | 'birds' | 'creek' | 'thunder' | 'wind'
+  | 'singing_bowl' | 'wind_chimes' | 'crickets' | 'heartbeat' | 'om_drone'
   | 'binaural_alpha' | 'binaural_theta' | 'binaural_delta'
   | 'notch_therapy'
 

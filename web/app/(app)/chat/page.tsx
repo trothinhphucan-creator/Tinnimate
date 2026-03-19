@@ -61,7 +61,28 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
         })}
       </div>
 
+      {/* New user question suggestions */}
+      <div className="w-full space-y-1.5">
+        <p className="text-[9px] text-slate-600 text-center">{lang === 'vi' ? '💡 Hoặc hỏi Tinni:' : '💡 Or ask Tinni:'}</p>
+        <div className="flex flex-wrap justify-center gap-1.5">
+          {(d as any).newUserQuestions?.map((q: string) => (
+            <button
+              key={q}
+              onClick={() => onSelectTool(q)}
+              className="px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/15 text-[10px] text-slate-400 hover:text-white transition-all"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <p className="text-[10px] text-slate-600 mt-1">{d.chat.orChat}</p>
+
+      {/* Medical disclaimer */}
+      <p className="text-[8px] text-slate-700 text-center max-w-xs mt-2 leading-relaxed">
+        ⚕️ {(d as any).disclaimer}
+      </p>
     </div>
   )
 }
@@ -70,11 +91,23 @@ export default function ChatPage() {
   const { messages, isLoading, addMessage, updateLastMessage, appendToolCall, setLoading, conversationId, clearMessages } =
     useChatStore()
   const { user } = useUserStore()
-  const isGuest = !user
+  const [userLoaded, setUserLoaded] = useState(false)
+  const isGuest = userLoaded && !user
   const [input, setInput] = useState('')
   const [guestCount, setGuestCount] = useState(0)
   const [showSignupModal, setShowSignupModal] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  // Wait for user store to hydrate before showing guest UI
+  useEffect(() => {
+    const timer = setTimeout(() => setUserLoaded(true), 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // If user becomes available, mark as loaded immediately
+  useEffect(() => {
+    if (user) setUserLoaded(true)
+  }, [user])
 
   // Restore guest count from localStorage
   useEffect(() => {
@@ -82,6 +115,8 @@ export default function ChatPage() {
       const saved = parseInt(localStorage.getItem('tinni_guest_count') ?? '0')
       setGuestCount(saved)
       if (saved >= GUEST_MAX) setShowSignupModal(true)
+    } else {
+      setShowSignupModal(false)
     }
   }, [isGuest])
 

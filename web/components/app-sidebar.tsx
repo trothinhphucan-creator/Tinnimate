@@ -20,6 +20,7 @@ const NAV_KEYS = [
   { href: '/blog', key: 'blog' as const, icon: Newspaper },
   { href: '/hearing-test', key: 'hearingTest' as const, icon: Ear },
   { href: '/sleep', key: 'sleepMode' as const, icon: Moon },
+  { href: '/zen', key: 'zen' as const, icon: Music },
   { href: '/profile', key: 'profile' as const, icon: User },
   { href: '/pricing', key: 'pricing' as const, icon: CreditCard },
 ]
