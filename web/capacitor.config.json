@@ -4,7 +4,16 @@
   "webDir": "out",
   "server": {
     "url": "https://tinnitus.vuinghe.com",
-    "cleartext": false
+    "cleartext": false,
+    "allowNavigation": [
+      "tinnitus.vuinghe.com",
+      "*.supabase.co",
+      "*.supabase.com",
+      "accounts.google.com",
+      "*.google.com",
+      "appleid.apple.com",
+      "*.apple.com"
+    ]
   },
   "ios": {
     "contentInset": "automatic",
