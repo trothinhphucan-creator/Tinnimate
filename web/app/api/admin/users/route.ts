@@ -19,10 +19,11 @@ export async function GET(request: Request) {
 
     const sc = createServiceClient()
 
-    // Get profiles with filtering
+    // Get profiles with is_admin flag
+    // Note: tinnitus info is in separate table (tinnitus_profiles), not in profiles
     let query = sc
       .from('profiles')
-      .select('id, name, email, subscription_tier, tinnitus_type, tinnitus_frequency, tinnitus_ear, is_admin, created_at, streak_count, last_checkin_date', { count: 'exact' })
+      .select('id, name, email, subscription_tier, is_admin, created_at', { count: 'exact' })
 
     if (search) {
       query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`)
@@ -36,27 +37,35 @@ export async function GET(request: Request) {
 
     const { data: users, count, error: dbError } = await query
 
-    if (dbError) return Response.json({ error: dbError.message }, { status: 500 })
+    if (dbError) {
+      console.error('CRM query error:', dbError)
+      return Response.json({ error: dbError.message }, { status: 500 })
+    }
 
-    // Get aggregate stats
-    const { data: statsData } = await sc.rpc('get_crm_stats').single()
+    // Compute stats manually (no RPC dependency)
+    const [
+      { count: total },
+      { count: free },
+      { count: premium },
+      { count: pro },
+      { count: ultra },
+      { count: active7d },
+    ] = await Promise.all([
+      sc.from('profiles').select('*', { count: 'exact', head: true }),
+      sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'free'),
+      sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'premium'),
+      sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'pro'),
+      sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'ultra'),
+      sc.from('profiles').select('*', { count: 'exact', head: true }).gte('last_checkin_date', new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]),
+    ])
 
-    // If RPC doesn't exist, compute manually
-    let stats = statsData
-    if (!stats) {
-      const { count: total } = await sc.from('profiles').select('*', { count: 'exact', head: true })
-      const { count: free } = await sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'free')
-      const { count: premium } = await sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'premium')
-      const { count: pro } = await sc.from('profiles').select('*', { count: 'exact', head: true }).eq('subscription_tier', 'pro')
-      const { count: active7d } = await sc.from('profiles').select('*', { count: 'exact', head: true }).gte('last_checkin_date', new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0])
-
-      stats = {
-        total: total ?? 0,
-        free: free ?? 0,
-        premium: premium ?? 0,
-        pro: pro ?? 0,
-        active_7d: active7d ?? 0,
-      }
+    const stats = {
+      total:    total    ?? 0,
+      free:     free     ?? 0,
+      premium:  premium  ?? 0,
+      pro:      pro      ?? 0,
+      ultra:    ultra    ?? 0,
+      active_7d: active7d ?? 0,
     }
 
     return Response.json({

@@ -9,13 +9,14 @@ interface UserRow {
   name: string | null
   email: string | null
   subscription_tier: string
-  tinnitus_type: string | null
-  tinnitus_frequency: number | null
-  tinnitus_ear: string | null
   is_admin: boolean
   created_at: string
-  streak_count: number | null
-  last_checkin_date: string | null
+  // Note: These fields are in separate tables, not returned by API
+  // tinnitus_type: string | null
+  // tinnitus_frequency: number | null
+  // tinnitus_ear: string | null
+  // streak_count: number | null
+  // last_checkin_date: string | null
 }
 
 interface Stats {
@@ -23,18 +24,20 @@ interface Stats {
   free: number
   premium: number
   pro: number
+  ultra: number
   active_7d: number
 }
 
 const TIER_BADGE: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
-  free: { bg: 'bg-slate-700/50', text: 'text-slate-300', icon: <Users size={10} /> },
-  premium: { bg: 'bg-amber-600/20', text: 'text-amber-400', icon: <Star size={10} /> },
-  pro: { bg: 'bg-violet-600/20', text: 'text-violet-400', icon: <Crown size={10} /> },
+  free:    { bg: 'bg-slate-700/50',  text: 'text-slate-300',  icon: <Users size={10} /> },
+  premium: { bg: 'bg-amber-600/20',  text: 'text-amber-400',  icon: <Star size={10} /> },
+  pro:     { bg: 'bg-violet-600/20', text: 'text-violet-400',  icon: <Crown size={10} /> },
+  ultra:   { bg: 'bg-cyan-500/20',   text: 'text-cyan-300',    icon: <Zap size={10} /> },
 }
 
 export default function AdminCRMPage() {
   const [users, setUsers] = useState<UserRow[]>([])
-  const [stats, setStats] = useState<Stats>({ total: 0, free: 0, premium: 0, pro: 0, active_7d: 0 })
+  const [stats, setStats] = useState<Stats>({ total: 0, free: 0, premium: 0, pro: 0, ultra: 0, active_7d: 0 })
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -114,13 +117,15 @@ export default function AdminCRMPage() {
     } catch {}
   }
 
-  const daysSince = (date: string | null) => {
+  const [now] = useState(() => Date.now())
+
+  const daysSince = useCallback((date: string | null) => {
     if (!date) return '—'
-    const d = Math.floor((Date.now() - new Date(date).getTime()) / 86400000)
+    const d = Math.floor((now - new Date(date).getTime()) / 86400000)
     if (d === 0) return 'Today'
     if (d === 1) return '1d ago'
     return `${d}d ago`
-  }
+  }, [now])
 
   return (
     <div className="p-6 lg:p-8">
@@ -153,20 +158,12 @@ export default function AdminCRMPage() {
                   <p className="text-white">{new Date(selectedUser.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3">
-                  <span className="text-slate-500">Tinnitus</span>
-                  <p className="text-white">{selectedUser.tinnitus_type ?? '—'} {selectedUser.tinnitus_frequency ? `${selectedUser.tinnitus_frequency}Hz` : ''}</p>
+                  <span className="text-slate-500">Email</span>
+                  <p className="text-white text-[10px]">{selectedUser.email}</p>
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3">
-                  <span className="text-slate-500">Streak</span>
-                  <p className="text-white">🔥 {selectedUser.streak_count ?? 0} days</p>
-                </div>
-                <div className="bg-white/[0.03] rounded-lg p-3">
-                  <span className="text-slate-500">Last Active</span>
-                  <p className="text-white">{daysSince(selectedUser.last_checkin_date)}</p>
-                </div>
-                <div className="bg-white/[0.03] rounded-lg p-3">
-                  <span className="text-slate-500">Ear</span>
-                  <p className="text-white">{selectedUser.tinnitus_ear ?? '—'}</p>
+                  <span className="text-slate-500">Admin</span>
+                  <p className="text-white">{selectedUser.is_admin ? '✅ Yes' : '—'}</p>
                 </div>
               </div>
 
@@ -177,6 +174,7 @@ export default function AdminCRMPage() {
                   <option value="free">🆓 Free</option>
                   <option value="premium">⭐ Premium</option>
                   <option value="pro">💎 Pro</option>
+                  <option value="ultra">⚡ Ultra</option>
                 </select>
               </div>
               {msg && <p className="text-xs">{msg}</p>}
@@ -196,13 +194,14 @@ export default function AdminCRMPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
         {[
-          { label: 'Total Users', value: stats.total, icon: <Users size={16} className="text-blue-400" />, bg: 'from-blue-600/10 to-blue-600/5' },
-          { label: 'Free', value: stats.free, icon: <Users size={16} className="text-slate-400" />, bg: 'from-slate-600/10 to-slate-600/5' },
-          { label: 'Premium', value: stats.premium, icon: <Star size={16} className="text-amber-400" />, bg: 'from-amber-600/10 to-amber-600/5' },
-          { label: 'Pro', value: stats.pro, icon: <Crown size={16} className="text-violet-400" />, bg: 'from-violet-600/10 to-violet-600/5' },
-          { label: 'Active (7d)', value: stats.active_7d, icon: <Activity size={16} className="text-emerald-400" />, bg: 'from-emerald-600/10 to-emerald-600/5' },
+          { label: 'Total Users', value: stats.total,    icon: <Users    size={16} className="text-blue-400"    />, bg: 'from-blue-600/10 to-blue-600/5'     },
+          { label: 'Free',        value: stats.free,     icon: <Users    size={16} className="text-slate-400"  />, bg: 'from-slate-600/10 to-slate-600/5'   },
+          { label: 'Premium',     value: stats.premium,  icon: <Star     size={16} className="text-amber-400"  />, bg: 'from-amber-600/10 to-amber-600/5'   },
+          { label: 'Pro',         value: stats.pro,      icon: <Crown    size={16} className="text-violet-400" />, bg: 'from-violet-600/10 to-violet-600/5'  },
+          { label: 'Ultra',       value: stats.ultra,    icon: <Zap      size={16} className="text-cyan-400"   />, bg: 'from-cyan-600/10 to-cyan-600/5'      },
+          { label: 'Active (7d)', value: stats.active_7d,icon: <Activity size={16} className="text-emerald-400"/>, bg: 'from-emerald-600/10 to-emerald-600/5' },
         ].map(s => (
           <div key={s.label} className={`bg-gradient-to-br ${s.bg} border border-white/5 rounded-xl p-4`}>
             <div className="flex items-center gap-2 mb-1">{s.icon}<span className="text-[10px] text-slate-500">{s.label}</span></div>
@@ -214,12 +213,12 @@ export default function AdminCRMPage() {
       {/* Conversion rate */}
       {stats.total > 0 && (
         <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 mb-6 flex items-center gap-4">
-          <Zap size={14} className="text-amber-400" />
-          <span className="text-xs text-slate-400">Conversion Rate:</span>
-          <span className="text-xs font-semibold text-white">{((stats.premium + stats.pro) / stats.total * 100).toFixed(1)}%</span>
-          <span className="text-[10px] text-slate-600">({stats.premium + stats.pro} paying / {stats.total} total)</span>
+          <Zap size={14} className="text-cyan-400" />
+          <span className="text-xs text-slate-400">Paid Conversion:</span>
+          <span className="text-xs font-semibold text-white">{stats.total > 0 ? ((stats.premium + stats.pro + stats.ultra) / stats.total * 100).toFixed(1) : 0}%</span>
+          <span className="text-[10px] text-slate-600">({stats.premium + stats.pro + stats.ultra} paying / {stats.total} total)</span>
           <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden ml-2">
-            <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" style={{ width: `${(stats.premium + stats.pro) / stats.total * 100}%` }} />
+            <div className="h-full bg-gradient-to-r from-cyan-500 to-violet-500 rounded-full" style={{ width: stats.total > 0 ? `${(stats.premium + stats.pro + stats.ultra) / stats.total * 100}%` : '0%' }} />
           </div>
         </div>
       )}
@@ -238,6 +237,7 @@ export default function AdminCRMPage() {
           <option value="free">🆓 Free</option>
           <option value="premium">⭐ Premium</option>
           <option value="pro">💎 Pro</option>
+          <option value="ultra">⚡ Ultra</option>
         </select>
       </div>
 
@@ -249,10 +249,8 @@ export default function AdminCRMPage() {
               <tr className="border-b border-white/5 bg-white/[0.02]">
                 {[
                   { field: 'name', label: 'User' },
+                  { field: 'email', label: 'Email' },
                   { field: 'subscription_tier', label: 'Plan' },
-                  { field: 'tinnitus_type', label: 'Tinnitus' },
-                  { field: 'streak_count', label: 'Streak' },
-                  { field: 'last_checkin_date', label: 'Last Active' },
                   { field: 'created_at', label: 'Joined' },
                 ].map(col => (
                   <th key={col.field}
@@ -266,9 +264,9 @@ export default function AdminCRMPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">Loading...</td></tr>
+                <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">Loading...</td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500">No users found</td></tr>
+                <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">No users found</td></tr>
               ) : users.map(u => {
                 const badge = TIER_BADGE[u.subscription_tier] ?? TIER_BADGE.free
                 return (
@@ -288,19 +286,12 @@ export default function AdminCRMPage() {
                         </div>
                       </div>
                     </td>
+                    <td className="px-4 py-3 text-xs text-slate-400">{u.email}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${badge.bg} ${badge.text}`}>
                         {badge.icon} {u.subscription_tier}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-slate-400">
-                      {u.tinnitus_type ?? '—'}
-                      {u.tinnitus_frequency ? <span className="ml-1 text-slate-600">{u.tinnitus_frequency}Hz</span> : ''}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-400">
-                      {u.streak_count ? <span className="text-orange-400">🔥 {u.streak_count}</span> : '—'}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-slate-400">{daysSince(u.last_checkin_date)}</td>
                     <td className="px-4 py-3 text-xs text-slate-500">{new Date(u.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right" onClick={e => e.stopPropagation()}>
                       <button onClick={() => toggleAdmin(u.id, u.is_admin)} title={u.is_admin ? 'Remove admin' : 'Make admin'}
