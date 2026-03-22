@@ -1,6 +1,6 @@
 // Shared TypeScript types for TinniMate
 
-export type SubscriptionTier = 'free' | 'premium' | 'pro'
+export type SubscriptionTier = 'free' | 'premium' | 'pro' | 'ultra'
 
 export type TinnitusType = 'ringing' | 'buzzing' | 'hissing' | 'clicking' | 'roaring' | 'pulsatile'
 export type TinnitusSide = 'left' | 'right' | 'both' | 'in_head'
@@ -82,6 +82,7 @@ export interface RateLimits {
   free: TierLimits
   premium: TierLimits
   pro: TierLimits
+  ultra: TierLimits
 }
 
 export interface TierLimits {

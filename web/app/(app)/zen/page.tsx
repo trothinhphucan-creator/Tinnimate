@@ -4,19 +4,20 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { Play, Square, Volume2, Lock, Crown, Sparkles } from 'lucide-react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { useUserStore } from '@/stores/use-user-store'
-import { FractalToneEngine, ZEN_STYLES, type ZenStyle } from '@/lib/audio/fractal-engine'
+import { FractalToneEngine, ZEN_STYLES } from '@/lib/audio/fractal-engine'
 import { AuthGate } from '@/components/auth-gate'
 import Link from 'next/link'
 
-// Trial limits per tier
+// Trial limits per tier — Ultra-only feature
 const TRIAL_LIMITS: Record<string, number> = {
   guest: 0,     // must login first (AuthGate handles this)
-  free: 1,      // 1 free trial
-  premium: 3,   // 3 trials
-  pro: Infinity, // unlimited (ultra premium purchased)
+  free: 0,      // no access
+  premium: 0,   // no access
+  pro: 0,       // no access
+  ultra: Infinity, // unlimited for Ultra tier only
 }
 
-const STORAGE_KEY = 'zentinitone_trials'
+const STORAGE_KEY = 'zentones_trials'
 const DEMO_DURATION_MS = 10000 // 10-second demo
 
 function getTrialCount(): number {
@@ -136,7 +137,7 @@ export default function ZenPage() {
   }, [])
 
   return (
-    <AuthGate feature="ZenTinitone" featureVi="ZenTinitone" emoji="🎵"
+    <AuthGate feature="Zentones" featureVi="Zentones" emoji="🎵"
       previewItems={[
         { emoji: '🌊', label: 'Ocean Breeze' },
         { emoji: '✨', label: 'Starlight' },
@@ -165,20 +166,21 @@ export default function ZenPage() {
                 <Crown size={24} className="text-white" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2">
-                {isEn ? 'Upgrade to ZenTinitone Pro' : 'Nâng cấp ZenTinitone Pro'}
+                {isEn ? 'Upgrade to Zentones Ultra' : 'Nâng cấp Zentones Ultra'}
               </h3>
               <p className="text-sm text-slate-400 mb-4">
                 {isEn
-                  ? `You've used all ${maxTrials} free trial${maxTrials > 1 ? 's' : ''}. Unlock unlimited ZenTinitone with the Pro plan.`
-                  : `Bạn đã dùng hết ${maxTrials} lần thử miễn phí. Mở khóa ZenTinitone không giới hạn với gói Pro.`}
+                  ? 'Zentones is an Ultra-tier exclusive feature. Upgrade to unlock unlimited access.'
+                  : 'Zentones là tính năng độc quyền gói Ultra. Nâng cấp để mở khóa không giới hạn.'}
               </p>
-              
+
               {/* Tier comparison */}
               <div className="space-y-2 mb-5">
                 {[
-                  { tier: 'Free', trials: '1 lần thử', trialsEn: '1 trial', active: tier === 'free' },
-                  { tier: 'Premium', trials: '3 lần thử', trialsEn: '3 trials', active: tier === 'premium' },
-                  { tier: 'Pro', trials: 'Không giới hạn ♾️', trialsEn: 'Unlimited ♾️', active: tier === 'pro' },
+                  { tier: 'Free', trials: 'Không có quyền', trialsEn: 'No access', active: tier === 'free' },
+                  { tier: 'Premium', trials: 'Không có quyền', trialsEn: 'No access', active: tier === 'premium' },
+                  { tier: 'Pro', trials: 'Không có quyền', trialsEn: 'No access', active: tier === 'pro' },
+                  { tier: 'Ultra', trials: 'Không giới hạn ♾️', trialsEn: 'Unlimited ♾️', active: tier === 'ultra' },
                 ].map(t => (
                   <div key={t.tier} className={`flex items-center justify-between p-2.5 rounded-lg border text-xs ${
                     t.active ? 'border-amber-500/30 bg-amber-500/10' : 'border-white/5 bg-white/[0.02]'
@@ -208,7 +210,7 @@ export default function ZenPage() {
         <div className="text-center pt-1">
           <div className="flex items-center justify-center gap-2 mb-1">
             <h1 className="text-2xl font-bold text-white">
-              🎵 ZenTinitone
+              🎵 Zentones
             </h1>
             <span className="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500 to-orange-500 text-white">
               Ultra
@@ -357,7 +359,7 @@ export default function ZenPage() {
         {/* Info */}
         <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 space-y-2">
           <h3 className="text-[10px] font-semibold text-slate-300">
-            {isEn ? '💡 How ZenTinitone works' : '💡 ZenTinitone hoạt động thế nào'}
+            {isEn ? '💡 How Zentones works' : '💡 Zentones hoạt động thế nào'}
           </h3>
           <div className="space-y-1.5">
             {[

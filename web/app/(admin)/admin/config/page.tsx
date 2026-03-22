@@ -31,6 +31,7 @@ export default async function ConfigPage() {
       free: { chat: 20, quiz: 3, hearing_test: 1 },
       premium: { chat: 100, quiz: 10, hearing_test: 5 },
       pro: { chat: -1, quiz: -1, hearing_test: -1 },
+      ultra: { chat: -1, quiz: -1, hearing_test: -1 },
     },
     pricing_config: {
       plans: [],

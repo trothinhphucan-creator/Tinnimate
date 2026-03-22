@@ -18,7 +18,7 @@ interface PremiumGateProps {
   inline?: boolean
 }
 
-const TIER_RANK: Record<SubscriptionTier, number> = { free: 0, premium: 1, pro: 2 }
+const TIER_RANK: Record<SubscriptionTier, number> = { free: 0, premium: 1, pro: 2, ultra: 3 }
 
 export function PremiumGate({
   requiredTier = 'premium',

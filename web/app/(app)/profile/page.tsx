@@ -21,8 +21,8 @@ export default function ProfilePage() {
   }
 
   const tier = user?.subscription_tier ?? 'free'
-  const tierLabel = { free: 'Miễn phí', premium: 'Premium', pro: 'Pro' }[tier]
-  const tierColor = { free: 'text-slate-400', premium: 'text-blue-400', pro: 'text-purple-400' }[tier]
+  const tierLabel = { free: 'Miễn phí', premium: 'Premium', pro: 'Pro', ultra: 'Ultra' }[tier]
+  const tierColor = { free: 'text-slate-400', premium: 'text-blue-400', pro: 'text-purple-400', ultra: 'text-amber-400' }[tier]
 
   return (
     <div className="p-8 max-w-2xl mx-auto">

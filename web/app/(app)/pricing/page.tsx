@@ -7,17 +7,18 @@ import { Check, X, Sparkles, CreditCard } from 'lucide-react'
 import type { SubscriptionTier, PricingConfig, PlanConfig } from '@/types'
 
 const COMPARISON_KEYS = [
-  { key: 'chat', vi: 'Chat AI', en: 'AI Chat', free: '5/ngày', premium: '∞', pro: '∞ + priority' },
-  { key: 'sounds', vi: 'Âm thanh trị liệu', en: 'Therapy sounds', free: '3', premium: '11+', pro: '11+' },
-  { key: 'quiz', vi: 'Bộ câu hỏi', en: 'Quizzes', free: '1/tháng', premium: '∞', pro: '∞' },
-  { key: 'mixer', vi: 'Sound Mixer', en: 'Sound Mixer', free: false, premium: true, pro: true },
-  { key: 'notch', vi: 'Notch Therapy', en: 'Notch Therapy', free: false, premium: true, pro: true },
-  { key: 'sleep', vi: 'Chế độ ngủ', en: 'Sleep Mode', free: false, premium: true, pro: true },
-  { key: 'cbti', vi: 'CBT-i', en: 'CBT-i', free: 'Tuần 1', premium: '4 tuần', pro: '4 tuần' },
-  { key: 'charts', vi: 'Biểu đồ', en: 'Charts', free: false, premium: true, pro: true },
-  { key: 'pdf', vi: 'Xuất PDF', en: 'PDF export', free: false, premium: true, pro: true },
-  { key: 'ent', vi: 'Bác sĩ TMH', en: 'ENT specialist', free: false, premium: false, pro: true },
-  { key: 'family', vi: 'Family plan', en: 'Family plan', free: false, premium: false, pro: true },
+  { key: 'chat', vi: 'Chat AI', en: 'AI Chat', free: '5/ngày', premium: '∞', pro: '∞ + priority', ultra: '∞ + priority' },
+  { key: 'sounds', vi: 'Âm thanh trị liệu', en: 'Therapy sounds', free: '3', premium: '11+', pro: '11+', ultra: '11+' },
+  { key: 'quiz', vi: 'Bộ câu hỏi', en: 'Quizzes', free: '1/tháng', premium: '∞', pro: '∞', ultra: '∞' },
+  { key: 'mixer', vi: 'Sound Mixer', en: 'Sound Mixer', free: false, premium: true, pro: true, ultra: true },
+  { key: 'notch', vi: 'Notch Therapy', en: 'Notch Therapy', free: false, premium: true, pro: true, ultra: true },
+  { key: 'sleep', vi: 'Chế độ ngủ', en: 'Sleep Mode', free: false, premium: true, pro: true, ultra: true },
+  { key: 'zentones', vi: 'Zentones ✨', en: 'Zentones ✨', free: false, premium: false, pro: false, ultra: true },
+  { key: 'cbti', vi: 'CBT-i', en: 'CBT-i', free: 'Tuần 1', premium: '4 tuần', pro: '4 tuần', ultra: '4 tuần' },
+  { key: 'charts', vi: 'Biểu đồ', en: 'Charts', free: false, premium: true, pro: true, ultra: true },
+  { key: 'pdf', vi: 'Xuất PDF', en: 'PDF export', free: false, premium: true, pro: true, ultra: true },
+  { key: 'ent', vi: 'Bác sĩ TMH', en: 'ENT specialist', free: false, premium: false, pro: true, ultra: true },
+  { key: 'family', vi: 'Family plan', en: 'Family plan', free: false, premium: false, pro: true, ultra: true },
 ]
 
 type Gateway = 'stripe' | 'momo' | 'vnpay'
@@ -57,8 +58,9 @@ export default function PricingPage() {
   // Fallback plans if DB not loaded yet
   const plans: PlanConfig[] = pricingConfig?.plans ?? [
     { tier: 'free', name: 'Free', emoji: '🆓', price_usd: 0, price_vnd: 0, stripe_price_id: '', features_en: ['5 messages/day', '3 basic sounds', 'Hearing test'], features_vi: ['5 tin nhắn/ngày', '3 âm thanh cơ bản', 'Kiểm tra thính lực'], highlighted: false },
-    { tier: 'premium', name: 'Premium', emoji: '⭐', price_usd: 4.99, price_vnd: 99000, stripe_price_id: '', features_en: ['Unlimited chat', 'All sounds', 'Sound Mixer', 'Notch Therapy', 'Sleep Mode'], features_vi: ['Chat không giới hạn', 'Tất cả âm thanh', 'Sound Mixer', 'Notch Therapy', 'Chế độ ngủ'], highlighted: true },
+    { tier: 'premium', name: 'Premium', emoji: '⭐', price_usd: 4.99, price_vnd: 99000, stripe_price_id: '', features_en: ['Unlimited chat', 'All sounds', 'Sound Mixer', 'Notch Therapy', 'Sleep Mode'], features_vi: ['Chat không giới hạn', 'Tất cả âm thanh', 'Sound Mixer', 'Notch Therapy', 'Chế độ ngủ'], highlighted: false },
     { tier: 'pro', name: 'Pro', emoji: '💎', price_usd: 9.99, price_vnd: 199000, stripe_price_id: '', features_en: ['All Premium', 'Priority AI', 'ENT specialist'], features_vi: ['Tất cả Premium', 'AI ưu tiên', 'Bác sĩ TMH'], highlighted: false },
+    { tier: 'ultra', name: 'Ultra', emoji: '✨', price_usd: 14.99, price_vnd: 299000, stripe_price_id: '', features_en: ['All Pro features', 'Zentones ✨', 'Fractal music therapy', 'Never-repeating melodies'], features_vi: ['Tất cả tính năng Pro', 'Zentones ✨', 'Liệu pháp nhạc fractal', 'Giai điệu không lặp lại'], highlighted: true },
   ]
   const discount = pricingConfig?.yearly_discount ?? 20
   const enabledGateways = Object.entries(pricingConfig?.gateways ?? { stripe: { enabled: true } })
@@ -155,7 +157,7 @@ export default function PricingPage() {
         )}
 
         {/* Plan cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map(plan => {
             const isCurrent = plan.tier === currentTier
             const isHighlighted = plan.highlighted
@@ -233,16 +235,17 @@ export default function PricingPage() {
             {isEn ? 'Feature Comparison' : 'So Sánh Tính Năng'}
           </h2>
           <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-4 text-xs font-semibold text-slate-400 border-b border-white/5">
+            <div className="grid grid-cols-5 text-xs font-semibold text-slate-400 border-b border-white/5">
               <div className="p-3">{isEn ? 'Feature' : 'Tính năng'}</div>
               <div className="p-3 text-center">🆓 Free</div>
               <div className="p-3 text-center">⭐ Premium</div>
               <div className="p-3 text-center">💎 Pro</div>
+              <div className="p-3 text-center">✨ Ultra</div>
             </div>
             {COMPARISON_KEYS.map((row, i) => (
-              <div key={row.key} className={`grid grid-cols-4 text-xs border-b border-white/5 last:border-b-0 ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
+              <div key={row.key} className={`grid grid-cols-5 text-xs border-b border-white/5 last:border-b-0 ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
                 <div className="p-3 text-slate-300">{isEn ? row.en : row.vi}</div>
-                {(['free', 'premium', 'pro'] as const).map(tier => {
+                {(['free', 'premium', 'pro', 'ultra'] as const).map(tier => {
                   const val = row[tier]
                   return (
                     <div key={tier} className="p-3 text-center">
