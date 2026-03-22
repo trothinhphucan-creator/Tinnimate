@@ -19,9 +19,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       const { data: { user: authUser } } = await supabase.auth.getUser()
       if (!authUser) { clearUser(); return }
 
-      // Fetch full profile from users table
+      // Fetch full profile from profiles table
       const { data: profile } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, email, name, subscription_tier, is_admin, created_at')
         .eq('id', authUser.id)
         .single()
