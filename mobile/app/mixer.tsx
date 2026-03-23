@@ -37,7 +37,10 @@ function VolumeSlider({
 
   const pan = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => { xRef.current = xAnim._value; },
+    onPanResponderGrant: () => { 
+      // @ts-ignore - accessing private _value property
+      xRef.current = xAnim._value; 
+    },
     onPanResponderMove: (_, gs) => {
       const nx = Math.max(0, Math.min(SLIDER_WIDTH, xRef.current + gs.dx));
       xAnim.setValue(nx);

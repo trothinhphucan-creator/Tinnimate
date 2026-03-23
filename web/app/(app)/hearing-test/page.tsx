@@ -94,6 +94,16 @@ export default function HearingTestPage() {
     }
   }, [step, currentFreqIdx, currentDb, presentTone])
 
+  // Advance to next frequency
+  const advanceToNextFreq = useCallback(() => {
+    if (currentFreqIdx < TEST_FREQUENCIES.length - 1) {
+      setCurrentFreqIdx(i => i + 1)
+      setCurrentDb(START_DB)
+    } else {
+      setStep('results')
+    }
+  }, [currentFreqIdx])
+
   // Handle response
   const handleResponse = useCallback((heard: boolean) => {
     const freq = TEST_FREQUENCIES[currentFreqIdx]
@@ -118,16 +128,7 @@ export default function HearingTestPage() {
         advanceToNextFreq()
       }
     }
-  }, [currentFreqIdx, currentDb])
-
-  const advanceToNextFreq = useCallback(() => {
-    if (currentFreqIdx < TEST_FREQUENCIES.length - 1) {
-      setCurrentFreqIdx(i => i + 1)
-      setCurrentDb(START_DB)
-    } else {
-      setStep('results')
-    }
-  }, [currentFreqIdx])
+  }, [currentFreqIdx, currentDb, advanceToNextFreq])
 
   const resetTest = useCallback(() => {
     setStep('intro')

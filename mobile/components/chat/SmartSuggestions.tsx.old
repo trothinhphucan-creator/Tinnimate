@@ -1,0 +1,187 @@
+import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Sparkles } from 'lucide-react-native';
+
+interface Suggestion {
+  text: string;
+  category: string;
+}
+
+interface Props {
+  userId?: string;
+  lang: string;
+  messageCount: number;
+  onSuggestionPress: (text: string) => void;
+  apiBase: string;
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  assessment: '#F59E0B',
+  therapy: '#10B981',
+  checkin: '#8B5CF6',
+  progress: '#14B8A6',
+  education: '#3B82F6',
+  support: '#EC4899',
+};
+
+export function SmartSuggestions({
+  userId,
+  lang,
+  messageCount,
+  onSuggestionPress,
+  apiBase,
+}: Props) {
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSuggestions();
+  }, [userId, lang, messageCount]);
+
+  async function fetchSuggestions() {
+    try {
+      setLoading(true);
+      const url = new URL(`${apiBase}/api/chat/suggestions`);
+      url.searchParams.set('lang', lang);
+      url.searchParams.set('messageCount', String(messageCount));
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (userId) {
+        headers['X-User-ID'] = userId;
+      }
+
+      const response = await fetch(url.toString(), { headers });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSuggestions(data.suggestions || []);
+    } catch (error) {
+      console.error('Failed to fetch suggestions:', error);
+      // Fallback to default suggestions
+      setSuggestions(getDefaultSuggestions());
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function getDefaultSuggestions(): Suggestion[] {
+    return lang === 'vi'
+      ? [
+          { text: '🎧 Phát nhạc trị liệu', category: 'therapy' },
+          { text: '👂 Kiểm tra thính lực', category: 'assessment' },
+          { text: '💊 Ù tai hôm nay thế nào?', category: 'checkin' },
+        ]
+      : [
+          { text: '🎧 Sound therapy', category: 'therapy' },
+          { text: '👂 Hearing test', category: 'assessment' },
+          { text: '💊 How is your tinnitus?', category: 'checkin' },
+        ];
+  }
+
+  function handlePress(suggestion: Suggestion) {
+    Haptics.selectionAsync();
+    onSuggestionPress(suggestion.text);
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="small" color="#818CF8" />
+      </View>
+    );
+  }
+
+  if (suggestions.length === 0) {
+    return null;
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Sparkles size={14} color="#818CF8" />
+        <Text style={styles.headerText}>
+          {lang === 'vi' ? 'Gợi ý cho bạn' : 'Suggestions for you'}
+        </Text>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {suggestions.map((suggestion, index) => {
+          const color = CATEGORY_COLORS[suggestion.category] || '#64748B';
+          return (
+            <TouchableOpacity
+              key={index}
+              style={[styles.suggestionChip, { borderColor: color }]}
+              onPress={() => handlePress(suggestion)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.suggestionText, { color }]}>
+                {suggestion.text}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 12,
+    paddingBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#0F172A',
+    backgroundColor: '#020617',
+  },
+  loadingContainer: {
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  headerText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#818CF8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  suggestionChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 18,
+    backgroundColor: '#0F172A',
+    borderWidth: 1.5,
+  },
+  suggestionText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+});

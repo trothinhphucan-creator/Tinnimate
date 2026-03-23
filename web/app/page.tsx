@@ -26,21 +26,54 @@ const T = {
       { role: 'assistant', content: 'Tôi hiểu, thực sự rất khó chịu 😔 Để tôi bật White Noise giúp bạn thư giãn nhé?' },
     ],
     features: {
-      title: 'Tính năng', title2: 'nổi bật',
-      desc: 'Tất cả công cụ bạn cần để kiểm soát ù tai, trong một nền tảng duy nhất',
+      title: 'Công cụ', title2: 'chuyên biệt',
+      desc: 'Nền tảng toàn diện được xây dựng trên nghiên cứu lâm sàng — giúp bạn hiểu, kiểm soát và cải thiện tình trạng ù tai mỗi ngày',
       items: [
-        { icon: '💬', title: 'AI Chat Thông Minh', desc: 'Chia sẻ cảm xúc với Tinni — AI chuyên biệt về ù tai, hỗ trợ 24/7 với gợi ý clickable', img: '/landing/ai-chat.png' },
-        { icon: '🎧', title: 'Âm Thanh Trị Liệu', desc: '11 loại âm thanh: White/Pink/Brown noise, sóng biển, mưa, rừng đêm, lửa trại + hiệu ứng thị giác', img: '/landing/sound-therapy.png' },
-        { icon: '👂', title: 'Kiểm Tra Thính Lực', desc: 'Đo ngưỡng nghe 6 tần số bằng phương pháp Hughson-Westlake chuẩn lâm sàng, ngay trên trình duyệt', img: '/landing/hearing-test.png' },
-        { icon: '📋', title: 'Trắc Nghiệm Lâm Sàng', desc: '5 bộ câu hỏi chuẩn quốc tế: THI, TFI, ISI, PHQ-9, GAD-7 — AI phân tích kết quả', img: '/landing/quiz.png' },
-        { icon: '🧘', title: 'Thư Giãn & Thiền', desc: 'Hít thở 4-7-8, box breathing, thư giãn cơ tiến dạt — giảm stress gây ù tai', img: '/landing/relax.png' },
-        { icon: '📊', title: 'Theo Dõi Tiến Triển', desc: 'Biểu đồ mood, giấc ngủ, mức ù tai theo thời gian — đo lường hiệu quả trị liệu', img: '/landing/quiz.png' },
-        { icon: '🎛️', title: 'Sound Mixer', desc: 'Trộn nhiều âm thanh cùng lúc, chỉnh volume riêng từng lớp — tạo mix cá nhân hóa', img: '/landing/sound-therapy.png' },
-        { icon: '🎯', title: 'Notch Therapy', desc: 'Liệu pháp notch theo tần số ù tai — giảm cường độ ù bằng kích thích thần kinh', img: '/landing/hearing-test.png' },
-        { icon: '🧠', title: 'CBT-i Module', desc: '4 tuần trị liệu hành vi nhận thức cho mất ngủ — 12 bài tập với hướng dẫn chi tiết', img: '/landing/relax.png' },
-        { icon: '🌙', title: 'Chế Độ Ngủ', desc: 'Hẹn giờ âm thanh, fade-out tự động, màn hình tối — thiết kế riêng cho giấc ngủ', img: '/landing/sound-therapy.png' },
-        { icon: '🤖', title: 'Tinni Coach', desc: 'AI huấn luyện cá nhân — gợi ý bài tập, theo dõi tiến trình, nhắc nhở hàng ngày', img: '/landing/ai-chat.png' },
-        { icon: '📰', title: 'Blog Kiến Thức', desc: 'Bài viết chuyên sâu về ù tai, thính học, nghiên cứu mới — cập nhật thường xuyên', img: '/landing/quiz.png' },
+        {
+          icon: '📋', title: 'Chẩn đoán lâm sàng',
+          subtitle: 'Bộ câu hỏi chuẩn quốc tế',
+          desc: 'Đánh giá mức độ ù tai và tác động tâm lý bằng 5 thang đo được WHO công nhận. AI phân tích kết quả và đề xuất liệu trình cá nhân hóa.',
+          tags: ['THI', 'TFI', 'ISI', 'PHQ-9', 'GAD-7'],
+          img: '/landing/features/diagnostic.png',
+          accent: 'from-violet-600/80 to-purple-800/60', glow: 'violet',
+          exclusive: false,
+        },
+        {
+          icon: '🧠', title: 'Quản lý tiếng ù',
+          subtitle: 'CBT · Âm thanh · Thư giãn',
+          desc: 'Kết hợp liệu pháp hành vi nhận thức CBT-i, 11 âm thanh trị liệu và bài tập thư giãn tinh thần để giảm ảnh hưởng của ù tai lên cuộc sống.',
+          tags: ['CBT-i', 'White Noise', '4-7-8', 'Sound Mixer', 'Sleep Mode'],
+          img: '/landing/features/management.png',
+          accent: 'from-emerald-600/80 to-teal-800/60', glow: 'emerald',
+          exclusive: false,
+        },
+        {
+          icon: '✨', title: 'Zentone',
+          subtitle: 'Phương pháp âm thanh độc quyền',
+          desc: 'Công nghệ âm thanh fractal độc quyền của TinniMate — điều chỉnh theo tần số ù tai của từng người, kích thích neuroplasticity để giảm cường độ tiếng ù.',
+          tags: ['Fractal Audio', 'Personalized', 'Neuroplasticity'],
+          img: '/landing/features/zentone.png',
+          accent: 'from-amber-600/80 to-orange-800/60', glow: 'amber',
+          exclusive: true,
+        },
+        {
+          icon: '🎯', title: 'Notch Therapy',
+          subtitle: 'Lọc âm tần số chính xác',
+          desc: 'Lọc chính xác tần số gây ù tai khỏi nguồn âm thanh, ức chế hoạt động thần kinh liên quan và giảm dần cường độ tiếng ù theo thời gian.',
+          tags: ['Frequency Filter', 'Neural Inhibition', 'Clinical Grade'],
+          img: '/landing/features/notch.png',
+          accent: 'from-red-600/80 to-rose-800/60', glow: 'red',
+          exclusive: true,
+        },
+        {
+          icon: '👂', title: 'Tiện ích thính giác',
+          subtitle: 'Đo thính lực & theo dõi',
+          desc: 'Kiểm tra sức nghe bằng phương pháp Hughson-Westlake chuẩn lâm sàng tại 6 tần số, theo dõi tiến triển bằng biểu đồ audiogram cá nhân hóa.',
+          tags: ['Audiometry', 'Hughson-Westlake', '6 Frequencies', 'Progress Chart'],
+          img: '/landing/features/hearing.png',
+          accent: 'from-cyan-600/80 to-blue-800/60', glow: 'cyan',
+          exclusive: false,
+        },
       ],
     },
     how: {
@@ -109,21 +142,54 @@ const T = {
       { role: 'assistant', content: "I understand, that sounds really tough 😔 Want me to play White Noise to help you relax?" },
     ],
     features: {
-      title: 'Powerful', title2: 'features',
-      desc: 'Everything you need to manage tinnitus in one platform',
+      title: 'Specialized', title2: 'tools',
+      desc: 'A comprehensive platform built on clinical research — helping you understand, manage and improve tinnitus every day',
       items: [
-        { icon: '💬', title: 'Smart AI Chat', desc: 'Talk to Tinni — your 24/7 AI tinnitus companion with clickable options & tool integration', img: '/landing/ai-chat.png' },
-        { icon: '🎧', title: 'Sound Therapy', desc: '11 sounds: White/Pink/Brown noise, ocean waves, rain, forest, campfire + visual animations', img: '/landing/sound-therapy.png' },
-        { icon: '👂', title: 'Hearing Test', desc: 'Clinical-grade Hughson-Westlake audiometry at 6 frequencies, right in your browser', img: '/landing/hearing-test.png' },
-        { icon: '📋', title: 'Clinical Assessments', desc: '5 validated questionnaires: THI, TFI, ISI, PHQ-9, GAD-7 — with AI-powered analysis', img: '/landing/quiz.png' },
-        { icon: '🧘', title: 'Relaxation & Meditation', desc: '4-7-8 breathing, box breathing, progressive muscle relaxation — reduce stress-triggered tinnitus', img: '/landing/relax.png' },
-        { icon: '📊', title: 'Progress Tracking', desc: 'Charts for mood, sleep quality, tinnitus severity over time — measure therapy effectiveness', img: '/landing/quiz.png' },
-        { icon: '🎛️', title: 'Sound Mixer', desc: 'Layer multiple sounds, adjust per-channel volume — create your personalized therapy mix', img: '/landing/sound-therapy.png' },
-        { icon: '🎯', title: 'Notch Therapy', desc: 'Frequency-targeted notch therapy — reduce tinnitus intensity through neuroplasticity', img: '/landing/hearing-test.png' },
-        { icon: '🧠', title: 'CBT-i Module', desc: '4-week cognitive behavioral therapy for insomnia — 12 guided exercises with clinical content', img: '/landing/relax.png' },
-        { icon: '🌙', title: 'Sleep Mode', desc: 'Sleep timer, auto fade-out, dark screen — designed for bedtime tinnitus masking', img: '/landing/sound-therapy.png' },
-        { icon: '🤖', title: 'Tinni Coach', desc: 'AI personal coach — suggests exercises, tracks progress, daily reminders', img: '/landing/ai-chat.png' },
-        { icon: '📰', title: 'Knowledge Blog', desc: 'Expert articles on tinnitus, audiology, latest research — regularly updated', img: '/landing/quiz.png' },
+        {
+          icon: '📋', title: 'Clinical Diagnostics',
+          subtitle: 'International standard questionnaires',
+          desc: 'Assess tinnitus severity and psychological impact with 5 WHO-recognized scales. AI analyzes results and recommends a personalized therapy plan.',
+          tags: ['THI', 'TFI', 'ISI', 'PHQ-9', 'GAD-7'],
+          img: '/landing/features/diagnostic.png',
+          accent: 'from-violet-600/80 to-purple-800/60', glow: 'violet',
+          exclusive: false,
+        },
+        {
+          icon: '🧠', title: 'Tinnitus Management',
+          subtitle: 'CBT · Sound Therapy · Relaxation',
+          desc: 'Combines CBT-i, 11 sound therapies and relaxation exercises to reduce the impact of tinnitus on daily life.',
+          tags: ['CBT-i', 'White Noise', '4-7-8', 'Sound Mixer', 'Sleep Mode'],
+          img: '/landing/features/management.png',
+          accent: 'from-emerald-600/80 to-teal-800/60', glow: 'emerald',
+          exclusive: false,
+        },
+        {
+          icon: '✨', title: 'Zentone',
+          subtitle: 'Proprietary sound method',
+          desc: 'TinniMate\'s exclusive fractal audio technology — tuned to each person\'s tinnitus frequency, stimulating neuroplasticity to reduce tinnitus intensity.',
+          tags: ['Fractal Audio', 'Personalized', 'Neuroplasticity'],
+          img: '/landing/features/zentone.png',
+          accent: 'from-amber-600/80 to-orange-800/60', glow: 'amber',
+          exclusive: true,
+        },
+        {
+          icon: '🎯', title: 'Notch Therapy',
+          subtitle: 'Precision frequency filtering',
+          desc: 'Precisely filters the tinnitus-causing frequency from audio sources, suppressing related neural activity and gradually reducing tinnitus intensity.',
+          tags: ['Frequency Filter', 'Neural Inhibition', 'Clinical Grade'],
+          img: '/landing/features/notch.png',
+          accent: 'from-red-600/80 to-rose-800/60', glow: 'red',
+          exclusive: true,
+        },
+        {
+          icon: '👂', title: 'Hearing Utilities',
+          subtitle: 'Audiometry & tracking',
+          desc: 'Test your hearing with clinical-grade Hughson-Westlake audiometry at 6 frequencies, and track progress with a personalized audiogram.',
+          tags: ['Audiometry', 'Hughson-Westlake', '6 Frequencies', 'Progress Chart'],
+          img: '/landing/features/hearing.png',
+          accent: 'from-cyan-600/80 to-blue-800/60', glow: 'cyan',
+          exclusive: false,
+        },
       ],
     },
     how: {
@@ -175,20 +241,7 @@ const T = {
   },
 }
 
-const FEATURE_COLORS = [
-  { color: 'from-blue-500 to-cyan-400', glow: 'shadow-blue-500/20' },
-  { color: 'from-violet-500 to-purple-400', glow: 'shadow-violet-500/20' },
-  { color: 'from-emerald-500 to-teal-400', glow: 'shadow-emerald-500/20' },
-  { color: 'from-amber-500 to-orange-400', glow: 'shadow-amber-500/20' },
-  { color: 'from-pink-500 to-rose-400', glow: 'shadow-pink-500/20' },
-  { color: 'from-indigo-500 to-blue-400', glow: 'shadow-indigo-500/20' },
-  { color: 'from-cyan-500 to-sky-400', glow: 'shadow-cyan-500/20' },
-  { color: 'from-red-500 to-pink-400', glow: 'shadow-red-500/20' },
-  { color: 'from-fuchsia-500 to-purple-400', glow: 'shadow-fuchsia-500/20' },
-  { color: 'from-slate-400 to-blue-400', glow: 'shadow-slate-400/20' },
-  { color: 'from-teal-500 to-emerald-400', glow: 'shadow-teal-500/20' },
-  { color: 'from-orange-500 to-amber-400', glow: 'shadow-orange-500/20' },
-]
+
 
 /* ── Scroll animation hook ── */
 function useScrollReveal() {
@@ -227,22 +280,29 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 overflow-hidden">
-      {/* SEO Meta would go in layout.tsx / metadata */}
 
-      {/* ── Animated background orbs ── */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/15 blur-[120px] animate-pulse" />
-        <div className="absolute top-[30%] right-[-15%] w-[500px] h-[500px] rounded-full bg-violet-600/15 blur-[120px] animate-pulse [animation-delay:2s]" />
-        <div className="absolute bottom-[-10%] left-[30%] w-[400px] h-[400px] rounded-full bg-emerald-600/10 blur-[100px] animate-pulse [animation-delay:4s]" />
-        <div className="absolute top-[60%] left-[10%] w-[300px] h-[300px] rounded-full bg-pink-600/10 blur-[100px] animate-pulse [animation-delay:3s]" />
+      {/* ── Ambient Background: Aurora clouds ── */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] rounded-full bg-indigo-600/10 blur-[140px] animate-pulse" />
+        <div className="absolute top-[25%] right-[-15%] w-[600px] h-[600px] rounded-full bg-violet-600/12 blur-[130px] animate-pulse [animation-delay:2s]" />
+        <div className="absolute bottom-[-10%] left-[25%] w-[500px] h-[500px] rounded-full bg-cyan-600/8 blur-[120px] animate-pulse [animation-delay:4s]" />
+        <div className="absolute top-[55%] left-[5%] w-[350px] h-[350px] rounded-full bg-fuchsia-600/8 blur-[100px] animate-pulse [animation-delay:3s]" />
       </div>
 
       {/* ── Navbar ── */}
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#020617]/60 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl flex items-center justify-between px-6 h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/landing/logo.png" alt="TinniMate" width={32} height={32} className="rounded-lg" />
-            <span className="font-bold text-lg text-white">TinniMate</span>
+          <Link href="/" className="flex items-center gap-2.5">
+            {/* Aurora Orb Logo Mark */}
+            <div className="relative w-8 h-8 flex-shrink-0">
+              <div className="aurora-orb-glow absolute inset-0 rounded-full bg-indigo-500/50 blur-md" />
+              <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/20 shadow-lg shadow-indigo-500/30">
+                <div className="aurora-orb-blob absolute inset-[-30%] rounded-full"
+                  style={{ background: 'conic-gradient(from 0deg, #4f46e5, #7c3aed, #06b6d4, #ec4899, #4f46e5)' }} />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-full" />
+              </div>
+            </div>
+            <span className="font-bold text-lg text-white tracking-wide">Tinnimate</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-slate-400">
             <a href="#features" className="hover:text-white transition-colors">{lt.nav.features}</a>
@@ -251,7 +311,6 @@ export default function LandingPage() {
             <a href="#pricing" className="hover:text-white transition-colors">{lt.nav.pricing}</a>
           </div>
           <div className="flex items-center gap-3">
-            {/* Language switcher */}
             <button onClick={toggleLang}
               className="px-3 py-1.5 text-xs font-medium border border-white/10 rounded-full text-slate-400 hover:text-white hover:border-white/25 transition-all">
               {lang === 'vi' ? '🇬🇧 EN' : '🇻🇳 VI'}
@@ -259,7 +318,7 @@ export default function LandingPage() {
             <Link href="/login" className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors hidden sm:block">
               {lt.nav.login}
             </Link>
-            <Link href="/signup" className="px-5 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full transition-all hover:shadow-lg hover:shadow-blue-500/25">
+            <Link href="/signup" className="px-5 py-2 text-sm font-medium bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-full transition-all hover:shadow-lg hover:shadow-indigo-500/30">
               {lt.nav.cta}
             </Link>
           </div>
@@ -270,33 +329,30 @@ export default function LandingPage() {
       <section className="pt-32 pb-20 px-6">
         <div className="mx-auto max-w-6xl grid lg:grid-cols-2 gap-16 items-center">
           <RevealSection>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
               {lt.hero.badge}
             </div>
             <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-              <span className="bg-gradient-to-r from-white via-blue-100 to-violet-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-slate-200 to-indigo-100 bg-clip-text text-transparent">
                 {lt.hero.title1}
               </span>
               <br />
-              <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="text-shimmer">
                 {lt.hero.title2}
               </span>
             </h1>
             <p className="text-lg text-slate-400 mb-8 max-w-md leading-relaxed">{lt.hero.desc}</p>
             <div className="flex flex-wrap items-center gap-4">
-              <Link href="/chat" className="group flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5">
+              <Link href="/chat" className="group flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-full font-medium transition-all hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5">
                 {lang === 'vi' ? '💬 Tư vấn miễn phí với Tinni' : '💬 Free Consultation with Tinni'}
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
-              <Link href="/signup" className="px-6 py-3.5 border border-white/10 hover:border-white/25 text-slate-300 hover:text-white rounded-full text-sm transition-all hover:bg-white/5">
+              <Link href="/signup" className="px-6 py-3.5 border border-white/10 hover:border-indigo-500/40 text-slate-300 hover:text-white rounded-full text-sm transition-all hover:bg-indigo-500/5">
                 {lt.hero.cta1}
               </Link>
-              <a href="#features" className="px-6 py-3.5 text-slate-500 hover:text-white text-sm transition-all">
-                {lt.hero.cta2}
-              </a>
             </div>
-            {/* Online 24/7 badge */}
+            {/* Online badge */}
             <div className="flex items-center gap-4 mt-4">
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                 <span className="relative flex h-2.5 w-2.5">
@@ -308,6 +364,7 @@ export default function LandingPage() {
                 </span>
               </div>
             </div>
+            {/* Stats */}
             <div className="flex items-center gap-8 mt-12 pt-8 border-t border-white/5">
               {[
                 { value: '10K+', label: lt.hero.stat1 },
@@ -320,43 +377,53 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-            {/* Evidence-based badges */}
-            <div className="flex flex-wrap items-center gap-3 mt-5">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-medium">
-                <span>🔬</span> {lt.hero.evidence}
-              </div>
-              {lt.hero.evidenceItems.map((item: string) => (
-                <span key={item} className="px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[9px] text-slate-500">
-                  ✓ {item}
-                </span>
-              ))}
-            </div>
           </RevealSection>
 
-          {/* Hero image + Chat preview */}
+          {/* ── Heroes: Aurora Orb + Chat Card ── */}
           <RevealSection delay={200}>
-            <div className="relative">
-              {/* Hero image background */}
-              <div className="absolute -inset-6 rounded-3xl overflow-hidden opacity-40">
-                <Image src="/landing/hero.png" alt="Tinnitus relief" fill className="object-cover blur-sm" />
-              </div>
-              <div className="absolute -inset-4 bg-gradient-to-br from-blue-500/20 via-violet-500/10 to-transparent blur-2xl rounded-3xl" />
-              <div className="relative bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="flex items-center gap-2 mb-5">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="ml-3 text-xs text-slate-500">{lt.chat.title}</span>
+            <div className="relative flex items-center justify-center h-[480px]">
+
+              {/* Big Aurora Orb — floats */}
+              <div className="aurora-float relative z-10">
+                {/* Outer glow halo */}
+                <div className="aurora-orb-glow absolute inset-[-20%] rounded-full"
+                  style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.35) 0%, rgba(139,92,246,0.2) 50%, transparent 70%)' }} />
+                {/* Glass sphere */}
+                <div className="relative w-64 h-64 rounded-full overflow-hidden border border-white/20 shadow-2xl shadow-indigo-500/30">
+                  {/* Animated blob inside */}
+                  <div className="aurora-orb-blob absolute inset-[-40%] rounded-full"
+                    style={{ background: 'conic-gradient(from 0deg, #312e81, #4f46e5, #7c3aed, #06b6d4, #ec4899, #7c3aed, #312e81)' }} />
+                  {/* Blur overlay for smooth look */}
+                  <div className="absolute inset-0 backdrop-blur-sm" style={{ background: 'rgba(15,23,42,0.15)' }} />
+                  {/* Glass shine highlight */}
+                  <div className="absolute top-[8%] left-[12%] w-[45%] h-[30%] rounded-full"
+                    style={{ background: 'radial-gradient(ellipse, rgba(255,255,255,0.18) 0%, transparent 70%)', transform: 'rotate(-20deg)' }} />
                 </div>
-                <div className="space-y-4">
+              </div>
+
+              {/* Chat preview card — glassmorphism, overlapping bottom-left */}
+              <div className="absolute bottom-4 left-0 w-80 bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl z-20">
+                <div className="flex items-center gap-2 mb-4">
+                  {/* Mini orb avatar */}
+                  <div className="relative w-7 h-7 rounded-full overflow-hidden border border-white/20 flex-shrink-0">
+                    <div className="aurora-orb-blob absolute inset-[-40%] rounded-full"
+                      style={{ background: 'conic-gradient(from 0deg, #4f46e5, #06b6d4, #7c3aed, #4f46e5)' }} />
+                  </div>
+                  <span className="text-xs text-slate-400 font-medium">{lt.chat.title}</span>
+                  <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <div className="space-y-3">
                   {lt.chatMsgs.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'items-start gap-2'}`}>
                       {msg.role === 'assistant' && (
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-xs flex-shrink-0">💙</div>
+                        <div className="relative w-6 h-6 rounded-full overflow-hidden border border-white/15 flex-shrink-0">
+                          <div className="aurora-orb-blob absolute inset-[-40%] rounded-full"
+                            style={{ background: 'conic-gradient(from 0deg, #4f46e5, #06b6d4, #4f46e5)' }} />
+                        </div>
                       )}
-                      <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                      <div className={`max-w-[80%] rounded-xl px-3 py-2 text-[11px] leading-relaxed ${
                         msg.role === 'user'
-                          ? 'bg-gradient-to-r from-blue-600 to-violet-600 text-white'
+                          ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
                           : 'bg-white/[0.06] text-slate-200 border border-white/5'
                       }`}>
                         {msg.content}
@@ -364,106 +431,469 @@ export default function LandingPage() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 ml-9 bg-gradient-to-r from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-xl p-3">
-                  <div className="flex items-center gap-2 text-green-400 text-xs font-medium">🎧 {lt.chat.playing}</div>
-                  <div className="mt-2 w-full bg-white/5 rounded-full h-1">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-400 h-1 rounded-full w-[35%]" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-5 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5">
-                  <span className="text-slate-500 text-sm flex-1">{lt.chat.input}</span>
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 flex items-center justify-center text-xs">↑</div>
+                <div className="mt-3 flex items-center gap-2 bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2">
+                  <span className="text-slate-500 text-[11px] flex-1">{lt.chat.input}</span>
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 flex items-center justify-center text-[10px] text-white">↑</div>
                 </div>
               </div>
+
+              {/* Floating mini badge — top right */}
+              <div className="absolute top-8 right-0 bg-white/[0.05] backdrop-blur border border-white/10 rounded-xl px-4 py-3 z-20">
+                <div className="text-xs text-slate-400 mb-1">🎧 {lt.chat.playing}</div>
+                <div className="w-full bg-white/5 rounded-full h-1">
+                  <div className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-1 rounded-full w-[35%]" />
+                </div>
+              </div>
+
             </div>
           </RevealSection>
         </div>
       </section>
 
-      {/* ── Testimonials — right after hero for social proof ── */}
-      <section id="testimonials" className="py-16 px-6">
-        <div className="mx-auto max-w-5xl">
+      {/* ── Testimonials — Premium Bento Grid ── */}
+      <section id="testimonials" className="py-20 px-6 overflow-hidden">
+        <div className="mx-auto max-w-6xl">
           <RevealSection>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {lt.testimonials.title1} <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">{lt.testimonials.title2}</span>
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-medium mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+                {lang === 'vi' ? '10,000+ người dùng tin tưởng' : '10,000+ people trust TinniMate'}
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                {lt.testimonials.title1}{' '}
+                <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-orange-400 bg-clip-text text-transparent">
+                  {lt.testimonials.title2}
+                </span>
               </h2>
+              <p className="text-slate-400 max-w-md mx-auto text-sm">
+                {lang === 'vi'
+                  ? 'Những câu chuyện có thật từ người dùng đang cải thiện cuộc sống mỗi ngày'
+                  : 'Real stories from people improving their lives every day'}
+              </p>
             </div>
           </RevealSection>
-          {/* Mobile: auto-scroll horizontal */}
-          <div className="flex md:hidden gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide" style={{ scrollBehavior: 'smooth' }}>
-            {lt.testimonials.items.map((r: any) => (
-              <div key={r.name} className="flex-none w-[85vw] snap-center bg-white/[0.03] border border-white/5 rounded-2xl p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <Image src={r.avatar} alt={r.name} width={48} height={48} className="rounded-full object-cover w-12 h-12" />
-                  <div>
-                    <p className="text-sm font-medium text-white">{r.name}</p>
-                    <p className="text-[10px] text-slate-500">{r.role}</p>
+
+          {/* ── FEATURED HERO TESTIMONIAL ── */}
+          <RevealSection delay={100}>
+            <div className="relative rounded-3xl overflow-hidden mb-6 group cursor-default">
+              {/* Ambient glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-600/12 via-rose-600/8 to-violet-600/10" />
+              <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/10 blur-[100px] rounded-full" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-500/10 blur-[80px] rounded-full" />
+              {/* Border with shimmer */}
+              <div className="absolute inset-0 rounded-3xl border border-pink-500/20 group-hover:border-pink-500/35 transition-colors duration-500" />
+
+              <div className="relative p-8 md:p-12">
+                {/* Giant quote mark */}
+                <div className="absolute top-4 left-8 text-[120px] leading-none font-serif text-pink-500/10 select-none pointer-events-none">&ldquo;</div>
+
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                  {/* Left: Avatar + info */}
+                  <div className="flex-shrink-0 flex flex-col items-center gap-3">
+                    {/* Avatar with animated ring */}
+                    <div className="relative w-20 h-20">
+                      <div className="absolute inset-[-3px] rounded-full bg-gradient-to-r from-pink-500 via-rose-400 to-orange-400 animate-spin" style={{ animationDuration: '4s' }} />
+                      <div className="absolute inset-[-2px] rounded-full bg-[#020617]" />
+                      <img src={lt.testimonials.items[0].avatar} alt={lt.testimonials.items[0].name} className="relative w-20 h-20 rounded-full object-cover" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white font-semibold">{lt.testimonials.items[0].name}</p>
+                      <p className="text-xs text-slate-500">{lt.testimonials.items[0].role}</p>
+                    </div>
+                    {/* Metric badge */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-xs font-medium">
+                        ✓ {lt.testimonials.items[0].duration}
+                      </div>
+                      <div className="flex gap-0.5 text-yellow-400 text-sm">★★★★★</div>
+                    </div>
                   </div>
-                  <div className="ml-auto">
-                    <div className="text-yellow-400 text-[10px]">★★★★★</div>
-                    <div className="text-[8px] text-slate-600 text-right">{r.duration}</div>
+
+                  {/* Right: Big quote */}
+                  <div className="flex-1">
+                    <p className="text-lg md:text-xl text-slate-100 leading-relaxed font-light italic relative z-10">
+                      &ldquo;{lt.testimonials.items[0].text}&rdquo;
+                    </p>
+                    {/* THI metric pill for Hung (index 1 in vi) */}
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+                        <span className="text-pink-400">🎧</span>
+                        {lang === 'vi' ? 'Cải thiện giấc ngủ' : 'Improved sleep quality'}
+                      </div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+                        <span className="text-emerald-400">📉</span>
+                        {lang === 'vi' ? 'Giảm triệu chứng ù tai' : 'Reduced tinnitus symptoms'}
+                      </div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+                        <span className="text-blue-400">🧘</span>
+                        {lang === 'vi' ? 'Hít thở 4-7-8' : '4-7-8 breathing'}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
               </div>
-            ))}
-          </div>
-          {/* Desktop: 3-column grid */}
-          <div className="hidden md:grid md:grid-cols-3 gap-6">
-            {lt.testimonials.items.slice(0, 6).map((r: any, i: number) => (
-              <RevealSection key={r.name} delay={i * 100}>
-                <div className="bg-white/[0.03] border border-white/5 hover:border-white/10 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Image src={r.avatar} alt={r.name} width={48} height={48} className="rounded-full object-cover w-12 h-12" />
+            </div>
+          </RevealSection>
+
+          {/* ── BENTO GRID — items 1-5 ── */}
+          <div className="hidden md:grid grid-cols-3 gap-4">
+            {/* Card 1 — span 1 (tall, with THI metric) */}
+            <RevealSection delay={150}>
+              <div className="relative group rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-violet-500/30 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-violet-500/10 h-full flex flex-col p-6">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/8 blur-3xl rounded-full" />
+                {/* THI drop metric — big visual */}
+                <div className="relative mb-4 p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/5 border border-violet-500/15">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-white">{r.name}</p>
-                      <p className="text-[10px] text-slate-500">{r.role}</p>
+                      <div className="text-xs text-slate-500 mb-1">THI Score</div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-3xl font-black text-white">56</span>
+                        <span className="text-violet-400 text-lg">→</span>
+                        <span className="text-3xl font-black text-emerald-400">32</span>
+                      </div>
                     </div>
-                    <div className="ml-auto">
-                      <div className="text-yellow-400 text-xs">★★★★★</div>
-                      <div className="text-[8px] text-slate-600 text-right">{r.duration}</div>
+                    <div className="text-right">
+                      <div className="text-2xl font-black text-emerald-400">-43%</div>
+                      <div className="text-[10px] text-slate-500">3 tháng</div>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-300 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
                 </div>
-              </RevealSection>
-            ))}
+                <div className="flex items-center gap-2.5 mb-3">
+                  <img src={lt.testimonials.items[1].avatar} alt={lt.testimonials.items[1].name} className="w-10 h-10 rounded-full object-cover flex-shrink-0 ring-2 ring-violet-500/40" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{lt.testimonials.items[1].name}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{lt.testimonials.items[1].role}</p>
+                  </div>
+                  <div className="text-yellow-400 text-[10px]">★★★★★</div>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed italic flex-1">&ldquo;{lt.testimonials.items[1].text}&rdquo;</p>
+                <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-[10px] self-start">
+                  ⏱ {lt.testimonials.items[1].duration}
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Card 2 — Doctor/Expert (span 1, horizon accent) */}
+            <RevealSection delay={200}>
+              <div className="relative group rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-cyan-500/10 h-full flex flex-col p-6">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500 opacity-60" />
+                <div className="absolute top-0 right-0 w-28 h-28 bg-cyan-500/8 blur-3xl rounded-full" />
+                {/* Expert badge */}
+                <div className="mb-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs self-start">
+                  🏥 {lang === 'vi' ? 'Bác sĩ chuyên khoa' : 'Medical Expert'}
+                </div>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="relative w-10 h-10 flex-shrink-0">
+                    <div className="absolute inset-[-1.5px] rounded-full bg-gradient-to-r from-cyan-400 to-teal-400" />
+                    <div className="absolute inset-[-0.5px] rounded-full bg-[#020617]" />
+                    <img src={lt.testimonials.items[2].avatar} alt={lt.testimonials.items[2].name} className="relative w-10 h-10 rounded-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{lt.testimonials.items[2].name}</p>
+                    <p className="text-[10px] text-cyan-400/70 truncate">{lt.testimonials.items[2].role}</p>
+                  </div>
+                  <div className="text-yellow-400 text-[10px]">★★★★★</div>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed italic flex-1">&ldquo;{lt.testimonials.items[2].text}&rdquo;</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-slate-400 border border-white/5">THI ✓</span>
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-slate-400 border border-white/5">TFI ✓</span>
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-slate-400 border border-white/5">Remotely</span>
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Card 3 — Sarah (skeptic → convert, span 1) */}
+            <RevealSection delay={250}>
+              <div className="relative group rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-amber-500/30 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-amber-500/10 h-full flex flex-col p-6">
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/8 blur-3xl rounded-full" />
+                {/* Pre/post label */}
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex-1 h-px bg-white/5" />
+                  <span className="text-[10px] text-amber-400/70 font-medium px-2">
+                    {lang === 'vi' ? '4 tháng sử dụng' : '4 months journey'}
+                  </span>
+                  <div className="flex-1 h-px bg-white/5" />
+                </div>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <img src={lt.testimonials.items[3].avatar} alt={lt.testimonials.items[3].name} className="w-10 h-10 rounded-full object-cover flex-shrink-0 ring-2 ring-amber-500/40" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{lt.testimonials.items[3].name}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{lt.testimonials.items[3].role}</p>
+                  </div>
+                  <div className="text-yellow-400 text-[10px]">★★★★★</div>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed italic flex-1">&ldquo;{lt.testimonials.items[3].text}&rdquo;</p>
+                <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] self-start">
+                  💤 {lang === 'vi' ? 'Chất lượng ngủ +80%' : 'Sleep quality +80%'}
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Card 4 — James (span 2, wide with quote pullout) */}
+            <RevealSection delay={300}>
+              <div className="relative group col-span-2 rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/10 p-6">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/8 blur-3xl rounded-full" />
+                <div className="flex gap-6 items-start">
+                  <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                    <img src={lt.testimonials.items[4].avatar} alt={lt.testimonials.items[4].name} className="w-14 h-14 rounded-full object-cover ring-2 ring-blue-500/40" />
+                    <div className="text-center">
+                      <p className="text-xs font-medium text-white">{lt.testimonials.items[4].name}</p>
+                      <p className="text-[9px] text-slate-500">{lt.testimonials.items[4].role}</p>
+                    </div>
+                    <div className="flex gap-0.5 text-yellow-400 text-[10px]">★★★★★</div>
+                    <div className="px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[9px]">
+                      {lt.testimonials.items[4].duration}
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    {/* Pull-quote highlight */}
+                    <div className="mb-3 p-3 rounded-xl border-l-2 border-blue-400/50 bg-blue-500/5">
+                      <p className="text-sm text-blue-100 font-medium italic">
+                        &ldquo;{lang === 'vi' ? 'Hiệu quả hơn nhiều năm điều trị khác' : 'More relief in 2 months than years of other treatments'}&rdquo;
+                      </p>
+                    </div>
+                    <p className="text-xs text-slate-400 leading-relaxed">{lt.testimonials.items[4].text}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/8 text-[10px] text-slate-400">🎵 Fractal Tones</span>
+                      <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/8 text-[10px] text-slate-400">🏥 vs. Clinics</span>
+                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/15 text-[10px] text-emerald-400">✓ Highly Effective</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Card 5 — Dr. Elena (span 1, clinical) */}
+            <RevealSection delay={350}>
+              <div className="relative group rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-teal-500/30 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-teal-500/10 h-full flex flex-col p-6">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 via-cyan-400 to-blue-500 opacity-60" />
+                <div className="absolute bottom-0 right-0 w-24 h-24 bg-teal-500/8 blur-3xl rounded-full" />
+                <div className="mb-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs self-start">
+                  🎓 {lang === 'vi' ? 'Chuyên gia thính học' : 'Audiologist'}
+                </div>
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="relative w-10 h-10 flex-shrink-0">
+                    <div className="absolute inset-[-1.5px] rounded-full bg-gradient-to-r from-teal-400 to-cyan-400" />
+                    <div className="absolute inset-[-0.5px] rounded-full bg-[#020617]" />
+                    <img src={lt.testimonials.items[5].avatar} alt={lt.testimonials.items[5].name} className="relative w-10 h-10 rounded-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{lt.testimonials.items[5].name}</p>
+                    <p className="text-[10px] text-teal-400/70 truncate">{lt.testimonials.items[5].role}</p>
+                  </div>
+                  <div className="text-yellow-400 text-[10px]">★★★★★</div>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed italic flex-1">&ldquo;{lt.testimonials.items[5].text}&rdquo;</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-slate-400 border border-white/5">HW Audiometry ✓</span>
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-slate-400 border border-white/5">CBT-i ✓</span>
+                </div>
+              </div>
+            </RevealSection>
           </div>
+
+          {/* ── MOBILE: Marquee scroll ── */}
+          <div className="md:hidden -mx-6 px-0 overflow-hidden">
+            {/* First row */}
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 px-6 scrollbar-hide" style={{ scrollBehavior: 'smooth' }}>
+              {lt.testimonials.items.map((r: any, i: number) => {
+                const CARD_COLORS = [
+                  { ring: 'from-pink-500 to-rose-400', badge: 'bg-pink-500/10 border-pink-500/20 text-pink-300' },
+                  { ring: 'from-violet-500 to-purple-400', badge: 'bg-violet-500/10 border-violet-500/20 text-violet-300' },
+                  { ring: 'from-cyan-500 to-teal-400', badge: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-300' },
+                  { ring: 'from-amber-500 to-orange-400', badge: 'bg-amber-500/10 border-amber-500/20 text-amber-300' },
+                  { ring: 'from-blue-500 to-indigo-400', badge: 'bg-blue-500/10 border-blue-500/20 text-blue-300' },
+                  { ring: 'from-teal-500 to-cyan-400', badge: 'bg-teal-500/10 border-teal-500/20 text-teal-300' },
+                ][i] ?? { ring: 'from-indigo-500 to-violet-400', badge: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300' }
+                return (
+                  <div key={r.name} className="flex-none w-[78vw] snap-center bg-white/[0.03] border border-white/8 rounded-2xl p-5 flex flex-col gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-11 h-11 flex-shrink-0">
+                        <div className={`absolute inset-[-2px] rounded-full bg-gradient-to-br ${CARD_COLORS.ring}`} />
+                        <div className="absolute inset-[-1px] rounded-full bg-[#020617]" />
+                        <img src={r.avatar} alt={r.name} className="relative w-11 h-11 rounded-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{r.name}</p>
+                        <p className="text-[10px] text-slate-500 truncate">{r.role}</p>
+                      </div>
+                      <div className="text-yellow-400 text-xs flex flex-col items-end gap-0.5">
+                        <span>★★★★★</span>
+                        <span className="text-[9px] text-slate-600">{r.duration}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
+                    <div className={`self-start inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[10px] font-medium ${CARD_COLORS.badge}`}>
+                      ✓ {r.duration}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* ── Social proof bar ── */}
+          <RevealSection delay={400}>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-6 border-t border-white/5">
+              {[
+                { value: '4.8★', label: lang === 'vi' ? 'Đánh giá trung bình' : 'Average rating', color: 'text-yellow-400' },
+                { value: '10K+', label: lang === 'vi' ? 'Người dùng tin tưởng' : 'Trusted users', color: 'text-pink-400' },
+                { value: '89%', label: lang === 'vi' ? 'Cải thiện sau 3 tháng' : 'Improved in 3 months', color: 'text-emerald-400' },
+              ].map(s => (
+                <div key={s.label} className="flex items-center gap-3">
+                  <span className={`text-2xl font-black ${s.color}`}>{s.value}</span>
+                  <span className="text-xs text-slate-500">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </RevealSection>
         </div>
       </section>
 
-      {/* ── Features with images ── */}
+      {/* ── Features ── */}
       <section id="features" className="py-20 px-6">
         <div className="mx-auto max-w-6xl">
           <RevealSection>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">{lt.features.title}</span> {lt.features.title2}
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                {lang === 'vi' ? 'Nền tảng lâm sàng toàn diện' : 'Comprehensive clinical platform'}
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                <span className="text-shimmer">{lt.features.title}</span>{' '}
+                <span className="text-white">{lt.features.title2}</span>
               </h2>
-              <p className="text-slate-400 max-w-lg mx-auto">{lt.features.desc}</p>
+              <p className="text-slate-400 max-w-xl mx-auto text-sm leading-relaxed">{lt.features.desc}</p>
             </div>
           </RevealSection>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {lt.features.items.map((f, i) => (
-              <RevealSection key={f.title} delay={i * 100}>
-                <div className={`group relative bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${FEATURE_COLORS[i]?.glow}`}>
-                  {/* Feature image */}
-                  <div className="relative h-36 overflow-hidden">
-                    <Image src={f.img} alt={f.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110 opacity-60 group-hover:opacity-80" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/60 to-transparent" />
-                    <div className={`absolute top-3 left-3 w-10 h-10 rounded-xl bg-gradient-to-br ${FEATURE_COLORS[i]?.color} flex items-center justify-center text-lg shadow-lg ${FEATURE_COLORS[i]?.glow}`}>
-                      {f.icon}
-                    </div>
+          {/* ── Row 1: 2-col hero + 2-row stack ── */}
+          <div className="grid lg:grid-cols-5 gap-4 mb-4">
+
+            {/* Zentone — hero tall card (col-span-2) */}
+            <RevealSection delay={0} className="lg:col-span-2">
+              <div className="group relative rounded-3xl overflow-hidden h-full min-h-[420px] cursor-default">
+                {/* BG image */}
+                <img src={lt.features.items[2].img} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                {/* gradient overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-t ${lt.features.items[2].accent} via-black/50 to-transparent`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                {/* Exclusive pill */}
+                <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-semibold backdrop-blur-sm">
+                  ⚡ {lang === 'vi' ? 'Độc quyền' : 'Exclusive'}
+                </div>
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="text-3xl mb-2">{lt.features.items[2].icon}</div>
+                  <h3 className="text-2xl font-black text-white mb-1">{lt.features.items[2].title}</h3>
+                  <p className="text-amber-300/80 text-xs font-medium mb-3">{lt.features.items[2].subtitle}</p>
+                  <p className="text-sm text-white/70 leading-relaxed mb-4">{lt.features.items[2].desc}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {lt.features.items[2].tags.map((tag: string) => (
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-[10px] text-white/80 backdrop-blur-sm">{tag}</span>
+                    ))}
                   </div>
-                  <div className="p-4 pt-2">
-                    <h3 className="font-semibold text-white mb-1.5">{f.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{f.desc}</p>
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Right 2-row stack: Diagnostic + Management */}
+            <div className="lg:col-span-3 grid grid-rows-2 gap-4">
+              {/* Diagnostic */}
+              <RevealSection delay={100}>
+                <div className="group relative rounded-3xl overflow-hidden min-h-[200px]">
+                  <img src={lt.features.items[0].img} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-violet-900/85 via-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="relative p-6 h-full flex flex-col justify-between">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="text-2xl">{lt.features.items[0].icon}</span>
+                        <h3 className="text-xl font-bold text-white mt-1">{lt.features.items[0].title}</h3>
+                        <p className="text-violet-300 text-xs mt-0.5">{lt.features.items[0].subtitle}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-1 justify-end max-w-[180px]">
+                        {lt.features.items[0].tags.map((tag: string) => (
+                          <span key={tag} className="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-400/20 text-violet-300 text-[9px]">{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm text-white/65 leading-relaxed mt-3 max-w-[70%]">{lt.features.items[0].desc}</p>
                   </div>
                 </div>
               </RevealSection>
-            ))}
+              {/* Management */}
+              <RevealSection delay={150}>
+                <div className="group relative rounded-3xl overflow-hidden min-h-[200px]">
+                  <img src={lt.features.items[1].img} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/85 via-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="relative p-6 h-full flex flex-col justify-between">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="text-2xl">{lt.features.items[1].icon}</span>
+                        <h3 className="text-xl font-bold text-white mt-1">{lt.features.items[1].title}</h3>
+                        <p className="text-emerald-300 text-xs mt-0.5">{lt.features.items[1].subtitle}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-1 justify-end max-w-[180px]">
+                        {lt.features.items[1].tags.map((tag: string) => (
+                          <span key={tag} className="px-2 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-400/20 text-emerald-300 text-[9px]">{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm text-white/65 leading-relaxed mt-3 max-w-[70%]">{lt.features.items[1].desc}</p>
+                  </div>
+                </div>
+              </RevealSection>
+            </div>
+          </div>
+
+          {/* ── Row 2: Notch + Hearing — equal 2-col ── */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Notch Therapy */}
+            <RevealSection delay={200}>
+              <div className="group relative rounded-3xl overflow-hidden min-h-[260px]">
+                <img src={lt.features.items[3].img} alt="" className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-red-950/90 via-black/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                {/* Exclusive badge */}
+                <div className="absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/25 border border-red-400/40 text-red-300 text-[11px] font-semibold backdrop-blur-sm">
+                  🔒 {lang === 'vi' ? 'Độc quyền' : 'Exclusive'}
+                </div>
+                <div className="relative p-6 h-full flex flex-col justify-end">
+                  <div className="text-2xl mb-1">{lt.features.items[3].icon}</div>
+                  <h3 className="text-xl font-bold text-white">{lt.features.items[3].title}</h3>
+                  <p className="text-red-300 text-xs mb-2">{lt.features.items[3].subtitle}</p>
+                  <p className="text-sm text-white/65 leading-relaxed mb-3">{lt.features.items[3].desc}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {lt.features.items[3].tags.map((tag: string) => (
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-[10px] text-white/80 backdrop-blur-sm">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Hearing Utilities */}
+            <RevealSection delay={250}>
+              <div className="group relative rounded-3xl overflow-hidden min-h-[260px]">
+                <img src={lt.features.items[4].img} alt="" className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-cyan-950/90 via-black/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                <div className="relative p-6 h-full flex flex-col justify-end">
+                  <div className="text-2xl mb-1">{lt.features.items[4].icon}</div>
+                  <h3 className="text-xl font-bold text-white">{lt.features.items[4].title}</h3>
+                  <p className="text-cyan-300 text-xs mb-2">{lt.features.items[4].subtitle}</p>
+                  <p className="text-sm text-white/65 leading-relaxed mb-3">{lt.features.items[4].desc}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {lt.features.items[4].tags.map((tag: string) => (
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-[10px] text-white/80 backdrop-blur-sm">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
           </div>
         </div>
       </section>
@@ -537,10 +967,19 @@ export default function LandingPage() {
                       </div>
                     </RevealSection>
                   ))}
-                  {/* Hearing test image */}
                   <RevealSection delay={500}>
-                    <div className="relative h-32 rounded-xl overflow-hidden mt-2">
-                      <Image src="/landing/hearing-test.png" alt="Hearing Test" fill className="object-cover opacity-50" />
+                    <div className="relative h-32 rounded-xl overflow-hidden mt-2 flex items-center justify-center"
+                      style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(59,130,246,0.15) 0%, rgba(2,6,23,0.95) 100%)' }}>
+                      {/* Audiogram bars visualization */}
+                      <div className="flex items-end gap-2 h-16">
+                        {[60, 45, 72, 55, 80, 40].map((h, idx) => (
+                          <div key={idx} className="flex flex-col items-center gap-1">
+                            <div className="w-3 rounded-t-sm bg-gradient-to-t from-blue-600 to-cyan-400 opacity-80"
+                              style={{ height: `${h}%` }} />
+                            <span className="text-[7px] text-slate-600">{['250','500','1k','2k','4k','8k'][idx]}</span>
+                          </div>
+                        ))}
+                      </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
                       <div className="absolute bottom-3 left-4 text-xs text-slate-300 font-medium">
                         🎧 hearingtest.vuinghe.com

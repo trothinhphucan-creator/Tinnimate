@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Play, Square, Timer, Volume2, Headphones } from 'lucide-react'
+import { Square, Timer, Volume2, Headphones } from 'lucide-react'
 import { THERAPY_PRESETS } from '@/lib/audio/therapy-presets'
 import { useAudioEngine } from '@/hooks/use-audio-engine'
 import { useLangStore } from '@/stores/use-lang-store'

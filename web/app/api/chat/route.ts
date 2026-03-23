@@ -38,7 +38,8 @@ export async function POST(request: Request) {
       const tier = (profile?.subscription_tier ?? 'free') as SubscriptionTier
       const tierLimits = adminConfig.rate_limits[tier]
 
-      if (tierLimits.chat !== -1) {
+      // If tier has no rate_limits entry (e.g. 'ultra') or limit is -1 → unlimited
+      if (tierLimits?.chat !== undefined && tierLimits.chat !== -1) {
         // Count today's user messages via conversations
         const todayStart = new Date()
         todayStart.setHours(0, 0, 0, 0)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Moon, Play, Square, Volume2 } from 'lucide-react'
+import { Play, Square, Volume2 } from 'lucide-react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { PremiumGate } from '@/components/premium-gate'
 import { AuthGate } from '@/components/auth-gate'

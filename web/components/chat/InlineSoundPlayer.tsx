@@ -148,6 +148,25 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
   const { lang } = useLangStore()
   const isEn = lang === 'en'
 
+  // Pre-generate random values for animations to avoid impure function calls during render
+  const [rainAnimations] = useState(() =>
+    Array.from({ length: 20 }, () => ({
+      duration: 0.8 + Math.random() * 0.6,
+      delay: Math.random() * 2
+    }))
+  )
+  const [fireflyAnimations] = useState(() =>
+    Array.from({ length: 10 }, () => ({
+      duration: 4 + Math.random() * 3
+    }))
+  )
+  const [fireSparkAnimations] = useState(() =>
+    Array.from({ length: 12 }, () => ({
+      duration: 1.5 + Math.random() * 1.5,
+      delay: Math.random() * 2
+    }))
+  )
+
   // Inject CSS animations once
   useEffect(() => {
     if (stylesRef.current) return
@@ -308,11 +327,11 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
           {/* ─── Per-sound animated overlays ─── */}
           {isPlaying && selectedSound === 'rain' && (
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(20)].map((_, i) => (
+              {rainAnimations.map((anim, i) => (
                 <div key={i} className="absolute w-[1px] bg-gradient-to-b from-transparent via-blue-300/40 to-transparent"
                   style={{ left: `${2 + i * 5}%`, top: '-10px', height: '30px',
-                    animation: `rain-drop ${0.8 + Math.random() * 0.6}s linear infinite`,
-                    animationDelay: `${Math.random() * 2}s`,
+                    animation: `rain-drop ${anim.duration}s linear infinite`,
+                    animationDelay: `${anim.delay}s`,
                   }} />
               ))}
             </div>
@@ -332,10 +351,10 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
 
           {isPlaying && (selectedSound === 'forest' || selectedSound === 'birds') && (
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(10)].map((_, i) => (
+              {fireflyAnimations.map((anim, i) => (
                 <div key={i} className={`absolute w-2 h-2 rounded-full ${selectedSound === 'forest' ? 'bg-emerald-300/60' : 'bg-amber-300/50'}`}
                   style={{ left: `${5 + i * 9}%`, top: `${15 + (i % 4) * 20}%`,
-                    animation: `firefly-float ${4 + Math.random() * 3}s ease-in-out infinite`,
+                    animation: `firefly-float ${anim.duration}s ease-in-out infinite`,
                     animationDelay: `${i * 0.6}s`,
                   }} />
               ))}
@@ -344,11 +363,11 @@ export function InlineSoundPlayer({ soundType = 'white_noise', durationMinutes =
 
           {isPlaying && selectedSound === 'campfire' && (
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(12)].map((_, i) => (
+              {fireSparkAnimations.map((anim, i) => (
                 <div key={i} className="absolute w-1 h-1 bg-orange-400/70 rounded-full"
                   style={{ left: `${30 + i * 3.5}%`, bottom: '30%',
-                    animation: `fire-spark ${1.5 + Math.random() * 1.5}s ease-out infinite`,
-                    animationDelay: `${Math.random() * 2}s`,
+                    animation: `fire-spark ${anim.duration}s ease-out infinite`,
+                    animationDelay: `${anim.delay}s`,
                   }} />
               ))}
             </div>

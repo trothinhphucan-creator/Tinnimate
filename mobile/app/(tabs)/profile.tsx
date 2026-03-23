@@ -7,8 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
 import { useRouter } from 'expo-router'
 import { TinniOrb } from '@/components/TinniOrb'
-import { LogOut, Bell, ChevronRight, Zap, Star } from 'lucide-react-native'
-import { useUserStore } from '@/store/userStore'
+import { LogOut, Bell, ChevronRight, Zap, Star, Globe, DollarSign } from 'lucide-react-native'
+import { useUserStore } from '@/store/use-user-store'
+import { useLangStore } from '@/store/use-lang-store'
 import { supabase } from '@/lib/supabase'
 
 const { width } = Dimensions.get('window')
@@ -21,15 +22,21 @@ const DAY_LABELS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 export default function ProfileScreen() {
   const [notifyOn, setNotifyOn] = useState(true)
   const { user } = useUserStore()
+  const { lang, setLang } = useLangStore()
   const router = useRouter()
 
-  const displayName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Bạn'
-  const tier = user?.user_metadata?.subscription_tier ?? 'free'
+  const displayName = user?.name ?? user?.email?.split('@')[0] ?? (lang === 'vi' ? 'Bạn' : 'You')
+  const tier = user?.subscription_tier ?? 'free'
   const isPro = tier === 'premium' || tier === 'pro' || tier === 'ultra'
 
   async function handleLogout() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     await supabase.auth.signOut()
+  }
+
+  const toggleLanguage = () => {
+    Haptics.selectionAsync()
+    setLang(lang === 'vi' ? 'en' : 'vi')
   }
 
   return (
@@ -95,24 +102,24 @@ export default function ProfileScreen() {
         {isPro ? (
           <View style={styles.subCard}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.subTitle}>⭐ Premium</Text>
-              <Text style={styles.subDesc}>Còn 23 ngày — hết hạn 14/4/2026</Text>
+              <Text style={styles.subTitle}>⭐ {tier === 'ultra' ? 'Ultra' : tier === 'pro' ? 'Pro' : 'Premium'}</Text>
+              <Text style={styles.subDesc}>{lang === 'vi' ? 'Còn 23 ngày — hết hạn 14/4/2026' : '23 days left — expires 14/4/2026'}</Text>
             </View>
             <TouchableOpacity style={styles.renewBtn}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); router.push('/paywall') }}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); router.push('/pricing') }}
             >
-              <Text style={styles.renewText}>Gia hạn</Text>
+              <Text style={styles.renewText}>{lang === 'vi' ? 'Gia hạn' : 'Renew'}</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity style={styles.upgradeCard}
-            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); router.push('/paywall') }}
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); router.push('/pricing') }}
             activeOpacity={0.85}
           >
             <Zap size={18} color="#A78BFA" />
             <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.upgradeTitle}>Nâng cấp Premium</Text>
-              <Text style={styles.upgradeDesc}>Mở khóa toàn bộ tính năng trị liệu</Text>
+              <Text style={styles.upgradeTitle}>{lang === 'vi' ? 'Nâng cấp Premium' : 'Upgrade to Premium'}</Text>
+              <Text style={styles.upgradeDesc}>{lang === 'vi' ? 'Mở khóa toàn bộ tính năng trị liệu' : 'Unlock all therapy features'}</Text>
             </View>
             <ChevronRight size={16} color="#A78BFA" />
           </TouchableOpacity>
@@ -120,12 +127,12 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Cài đặt</Text>
+          <Text style={styles.sectionTitle}>{lang === 'vi' ? 'Cài đặt' : 'Settings'}</Text>
 
           <View style={styles.settingsCard}>
             <View style={styles.settingRow}>
               <Bell size={18} color="#64748B" />
-              <Text style={styles.settingLabel}>Nhắc nhở hàng ngày</Text>
+              <Text style={styles.settingLabel}>{lang === 'vi' ? 'Nhắc nhở hàng ngày' : 'Daily reminders'}</Text>
               <Switch
                 value={notifyOn}
                 onValueChange={(v) => { Haptics.selectionAsync(); setNotifyOn(v) }}
@@ -134,11 +141,29 @@ export default function ProfileScreen() {
               />
             </View>
             <View style={styles.divider} />
+            <View style={styles.settingRow}>
+              <Globe size={18} color="#64748B" />
+              <Text style={styles.settingLabel}>{lang === 'vi' ? 'Ngôn ngữ' : 'Language'}</Text>
+              <TouchableOpacity onPress={toggleLanguage} style={styles.langBtn}>
+                <Text style={styles.langText}>{lang === 'vi' ? '🇻🇳 Tiếng Việt' : '🇺🇸 English'}</Text>
+                <ChevronRight size={14} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => { Haptics.selectionAsync(); router.push('/pricing') }}
+            >
+              <DollarSign size={18} color="#64748B" />
+              <Text style={styles.settingLabel}>{lang === 'vi' ? 'Bảng giá' : 'Pricing'}</Text>
+              <ChevronRight size={16} color="#334155" />
+            </TouchableOpacity>
+            <View style={styles.divider} />
             <TouchableOpacity
               style={styles.settingRow}
               onPress={() => { Haptics.selectionAsync() }}
             >
-              <Text style={[styles.settingLabel, { marginLeft: 0 }]}>💎 Về Tinnimate</Text>
+              <Text style={[styles.settingLabel, { marginLeft: 0 }]}>💎 {lang === 'vi' ? 'Về Tinnimate' : 'About TinniMate'}</Text>
               <ChevronRight size={16} color="#334155" />
             </TouchableOpacity>
           </View>
@@ -147,7 +172,7 @@ export default function ProfileScreen() {
         {/* Logout */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
           <LogOut size={16} color="#EF4444" />
-          <Text style={styles.logoutText}>Đăng xuất</Text>
+          <Text style={styles.logoutText}>{lang === 'vi' ? 'Đăng xuất' : 'Log out'}</Text>
         </TouchableOpacity>
 
       </ScrollView>
@@ -218,6 +243,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 14,
   },
   settingLabel: { flex: 1, fontSize: 14, color: '#CBD5E1', marginLeft: 0 },
+  langBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 12, paddingVertical: 6,
+    borderRadius: 8,
+  },
+  langText: { fontSize: 13, color: '#CBD5E1', fontWeight: '600' },
   divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginHorizontal: 16 },
 
   logoutBtn: {

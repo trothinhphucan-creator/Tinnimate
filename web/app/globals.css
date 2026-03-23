@@ -156,3 +156,62 @@
 .chat-bubble {
   animation: fadeInUp 0.2s ease-out both;
 }
+
+/* ── Aurora Orb animations ── */
+@keyframes orb-rotate {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes orb-glow-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%       { opacity: 0.5;  transform: scale(1.15); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-18px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.aurora-orb-blob {
+  animation: orb-rotate 12s linear infinite;
+}
+
+.aurora-orb-glow {
+  animation: orb-glow-pulse 4s ease-in-out infinite;
+}
+
+.aurora-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #e0e7ff 0%,
+    #a5b4fc 25%,
+    #c4b5fd 50%,
+    #67e8f9 75%,
+    #e0e7ff 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* scrollbar-hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

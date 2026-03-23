@@ -19,6 +19,7 @@ export interface LLMProvider {
 }
 
 // Factory: select provider implementation based on model.provider field
+/* eslint-disable @typescript-eslint/no-require-imports */
 export function getProvider(model: LLMModel): LLMProvider {
   switch (model.provider) {
     case 'gemini': {
@@ -41,3 +42,4 @@ export function getProvider(model: LLMModel): LLMProvider {
       throw new Error(`Unsupported provider: ${(model as LLMModel).provider}`)
   }
 }
+/* eslint-enable @typescript-eslint/no-require-imports */

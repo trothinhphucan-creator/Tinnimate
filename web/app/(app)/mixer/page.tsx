@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
-import { Play, Square, Volume2, Plus, X, Layers } from 'lucide-react'
+import { Square, Volume2, Plus, X, Layers } from 'lucide-react'
 import { PremiumGate } from '@/components/premium-gate'
 import { AuthGate } from '@/components/auth-gate'
 

@@ -53,6 +53,7 @@ export default function TabLayout() {
         options={{
           title: 'Chat',
           tabBarIcon: ({ color }) => <MessageCircle size={22} color={color} />,
+          tabBarStyle: { display: 'none' }, // Hide tab bar on chat screen
         }}
       />
       <Tabs.Screen

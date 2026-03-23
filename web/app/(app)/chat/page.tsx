@@ -65,7 +65,7 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
       <div className="w-full space-y-1.5">
         <p className="text-[9px] text-slate-600 text-center">{lang === 'vi' ? '💡 Hoặc hỏi Tinni:' : '💡 Or ask Tinni:'}</p>
         <div className="flex flex-wrap justify-center gap-1.5">
-          {(d as any).newUserQuestions?.map((q: string) => (
+          {'newUserQuestions' in d && Array.isArray(d.newUserQuestions) && d.newUserQuestions.map((q: string) => (
             <button
               key={q}
               onClick={() => onSelectTool(q)}
@@ -81,14 +81,14 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
 
       {/* Medical disclaimer */}
       <p className="text-[8px] text-slate-700 text-center max-w-xs mt-2 leading-relaxed">
-        ⚕️ {(d as any).disclaimer}
+        ⚕️ {'disclaimer' in d && typeof d.disclaimer === 'string' ? d.disclaimer : ''}
       </p>
     </div>
   )
 }
 
 export default function ChatPage() {
-  const { messages, isLoading, addMessage, updateLastMessage, appendToolCall, setLoading, conversationId, clearMessages } =
+  const { messages, isLoading, addMessage, updateLastMessage, appendToolCall, setLoading, conversationId, setConversationId, clearMessages } =
     useChatStore()
   const { user } = useUserStore()
   const [userLoaded, setUserLoaded] = useState(false)
@@ -125,19 +125,10 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Callback when a tool widget reports its result (e.g. quiz score, hearing test)
-  const handleToolResult = useCallback((toolName: string, result: Record<string, unknown>) => {
-    const resultMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: `[Kết quả ${toolName}]: ${JSON.stringify(result)}`,
-      timestamp: new Date(),
-    }
-    addMessage(resultMsg)
-    sendMessage(`Tôi vừa hoàn thành ${toolName}. Kết quả: ${JSON.stringify(result)}`)
-  }, [addMessage])
+  const { lang } = useLangStore()
+  const d = t(lang)
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = useCallback(async (content: string) => {
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -193,7 +184,6 @@ export default function ChatPage() {
         setGuestCount(newCount)
         localStorage.setItem('tinni_guest_count', String(newCount))
         if (newCount >= GUEST_MAX) {
-          // Will show signup after AI replies
           setTimeout(() => setShowSignupModal(true), 3000)
         }
       }
@@ -209,6 +199,10 @@ export default function ChatPage() {
         for (const line of lines) {
           try {
             const data = JSON.parse(line.slice(6))
+            // Capture conversationId from server
+            if (data.conversationId && !conversationId) {
+              setConversationId(data.conversationId)
+            }
             if (data.type === 'text') updateLastMessage(data.content)
             if (data.type === 'tool_call') {
               const toolCall: ToolCall = { name: data.name, args: data.args ?? {} }
@@ -224,10 +218,19 @@ export default function ChatPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [addMessage, setLoading, updateLastMessage, appendToolCall, isGuest, guestCount, messages, conversationId, lang])
 
-  const { lang } = useLangStore()
-  const d = t(lang)
+  // Callback when a tool widget reports its result (e.g. quiz score, hearing test)
+  const handleToolResult = useCallback((toolName: string, result: Record<string, unknown>) => {
+    const resultMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: `[Kết quả ${toolName}]: ${JSON.stringify(result)}`,
+      timestamp: new Date(),
+    }
+    addMessage(resultMsg)
+    sendMessage(`Tôi vừa hoàn thành ${toolName}. Kết quả: ${JSON.stringify(result)}`)
+  }, [addMessage, sendMessage])
 
   return (
     <div className="flex flex-col h-full bg-slate-950">

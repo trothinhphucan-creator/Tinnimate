@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { TinniOrb } from '@/components/TinniOrb';
 import { FractalToneEngine, ZEN_STYLES } from '@/lib/audio/fractal-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserStore } from '@/store/use-user-store';
 
 const { width } = Dimensions.get('window');
 
@@ -33,9 +34,10 @@ export default function ZentonesScreen() {
   const router = useRouter();
   const engineRef = useRef<FractalToneEngine | null>(null);
 
-  // TODO: Get from user store
-  const tier: 'free' | 'premium' | 'pro' | 'ultra' = 'free'; // Replace with actual user tier
-  const maxTrials = TRIAL_LIMITS[tier] ?? 1;
+  // Get actual subscription tier from user store
+  const { user } = useUserStore();
+  const tier = (user?.subscription_tier ?? 'free') as 'free' | 'premium' | 'pro' | 'ultra';
+  const maxTrials = TRIAL_LIMITS[tier] ?? 0;
   const trialsRemaining = maxTrials === Infinity ? Infinity : Math.max(0, maxTrials - trialCount);
   const canPlay = trialsRemaining > 0 || maxTrials === Infinity;
 

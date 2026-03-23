@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic"
 import { ModelManager } from '@/components/admin/ModelManager'
 import { createServiceClient } from '@/lib/supabase/server'
-import type { LLMModel, AdminConfig } from '@/types'
+import type { LLMModel } from '@/types'
 
 async function getModels(): Promise<LLMModel[]> {
   try {

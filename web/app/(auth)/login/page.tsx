@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useCapacitorAuth } from '@/hooks/useCapacitorAuth'
 
@@ -51,10 +50,13 @@ export default function LoginPage() {
       const supabase = createClient()
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin
 
-      // Use custom URL scheme for mobile deep link redirect
-      // iOS will intercept tinnimate:// and open the app, where we handle the code exchange
-      const isInCapacitor = typeof window !== 'undefined' &&
-        (navigator.userAgent.includes('TinniMateApp') || !!(window as any).Capacitor)
+      // Detect true native Capacitor context (not web platform)
+      // window.Capacitor exists on web too if capacitor is in the bundle,
+      // so we also check getPlatform() to confirm it's truly native iOS/Android
+      const cap = (window as any).Capacitor
+      const isInCapacitor = !!(cap?.isNativePlatform?.() || 
+        (cap && cap.getPlatform && cap.getPlatform() !== 'web')) &&
+        navigator.userAgent.includes('TinniMateApp')
       const redirectTo = isInCapacitor
         ? `tinnimate://auth/callback`
         : `${siteUrl}/auth/callback?next=/chat`
@@ -121,19 +123,13 @@ export default function LoginPage() {
           <div className="p-8">
             {/* Logo + Header */}
             <div className="text-center mb-8">
+              {/* Aurora Orb Logo Mark */}
               <div className="relative w-14 h-14 mx-auto mb-4">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 shadow-lg shadow-blue-500/30" />
-                <div className="relative flex items-center justify-center w-full h-full">
-                  <Image
-                    src="/logo.png"
-                    alt="TinniMate"
-                    width={40}
-                    height={40}
-                    className="rounded-xl object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
+                <div className="aurora-orb-glow absolute inset-0 rounded-2xl bg-indigo-500/50 blur-lg" />
+                <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-white/20 shadow-xl shadow-indigo-500/30">
+                  <div className="aurora-orb-blob absolute inset-[-30%] rounded-full"
+                    style={{ background: 'conic-gradient(from 0deg, #4f46e5, #7c3aed, #06b6d4, #ec4899, #4f46e5)' }} />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent" />
                 </div>
               </div>
               <h1 className="text-2xl font-bold text-white tracking-tight">Chào mừng trở lại</h1>

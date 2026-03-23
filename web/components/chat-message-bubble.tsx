@@ -2,7 +2,7 @@
 
 import { ChatMessage } from '@/types'
 import { ChatToolCallCard } from '@/components/chat-tool-call-card'
-import { useChatStore } from '@/stores/use-chat-store'
+// Removed unused useChatStore import
 
 interface ChatMessageBubbleProps {
   message: ChatMessage

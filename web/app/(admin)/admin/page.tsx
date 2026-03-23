@@ -1,8 +1,11 @@
 export const dynamic = "force-dynamic"
 import Link from "next/link"
-import { Settings, FileText, Database, MessageSquare, Bot, Cpu, CreditCard, UsersRound } from "lucide-react"
+import { Settings, FileText, Database, MessageSquare, Bot, Cpu, CreditCard, UsersRound, Smartphone, Film } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CostDashboard } from "@/components/admin/CostDashboard"
+import MobileConfigPanel from "@/components/admin/MobileConfigPanel"
+import NotificationPanel from "@/components/admin/NotificationPanel"
+import MobileAnalyticsPanel from "@/components/admin/MobileAnalyticsPanel"
 import type { AdminConfig, SystemPrompt } from "@/types"
 
 async function getConfig(): Promise<AdminConfig | null> {
@@ -38,6 +41,7 @@ const quickLinks = [
   { href: "/admin/knowledge", label: "Knowledge Base", icon: Database, desc: "RAG documents" },
   { href: "/admin/examples", label: "Few-shot Examples", icon: MessageSquare, desc: "Response style guides" },
   { href: "/admin/training", label: "Training Chat", icon: Bot, desc: "Rate and save sessions" },
+  { href: "/admin/video-creator", label: "Video Creator", icon: Film, desc: "Tạo video TikTok/Reels animation" },
 ]
 
 export default async function AdminDashboard() {
@@ -122,7 +126,7 @@ export default async function AdminDashboard() {
       {Object.keys(promptGroups).length > 0 && (
         <>
           <h2 className="text-sm font-semibold text-slate-300 mb-3">System Prompt Versions</h2>
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-slate-800 border-slate-700 mb-8">
             <CardContent className="p-0">
               <table className="w-full text-sm">
                 <thead>
@@ -144,6 +148,27 @@ export default async function AdminDashboard() {
           </Card>
         </>
       )}
+
+      {/* 📊 Mobile Analytics */}
+      <Card className="bg-slate-800 border-slate-700 mb-6">
+        <CardContent className="pt-5 pb-5">
+          <MobileAnalyticsPanel />
+        </CardContent>
+      </Card>
+
+      {/* 📱 Mobile Remote Config */}
+      <Card className="bg-slate-800 border-slate-700 mb-6">
+        <CardContent className="pt-5 pb-5">
+          <MobileConfigPanel />
+        </CardContent>
+      </Card>
+
+      {/* 🔔 Push Notifications */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardContent className="pt-5 pb-5">
+          <NotificationPanel />
+        </CardContent>
+      </Card>
     </div>
   )
 }

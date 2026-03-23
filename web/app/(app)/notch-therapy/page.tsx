@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { Play, Square, Volume2, Target } from 'lucide-react'
 import { PremiumGate } from '@/components/premium-gate'
@@ -107,7 +107,7 @@ export default function NotchTherapyPage() {
   const freqLabel = freq >= 1000 ? `${(freq/1000).toFixed(1)} kHz` : `${freq} Hz`
 
   // Pre-compute stable random heights for visualization (no flickering)
-  const barHeights = useMemo(() => Array.from({ length: 40 }, () => 30 + Math.random() * 55), [])
+  const [barHeights] = useState(() => Array.from({ length: 40 }, () => 30 + Math.random() * 55))
 
   return (
     <AuthGate feature="Notch Therapy" featureVi="Liệu Pháp Lọc Âm" emoji="🎯"

@@ -94,21 +94,21 @@ export async function assembleSystemPrompt(userContext?: UserContext, lang: stri
       .select('*')
       .eq('is_active', true)
       .neq('name', 'training_mode')
-      .order('name', { ascending: true }) as Promise<{ data: SystemPrompt[] | null }>,
+      .order('name', { ascending: true }) as unknown as Promise<{ data: SystemPrompt[] | null }>,
 
     // Active few-shot examples (limit 5)
     supabase
       .from('few_shot_examples')
       .select('*')
       .eq('is_active', true)
-      .limit(5) as Promise<{ data: FewShotExample[] | null }>,
+      .limit(5) as unknown as Promise<{ data: FewShotExample[] | null }>,
 
     // Training notes saved by admin — injected as persistent knowledge for patient sessions
     supabase
       .from('training_notes')
       .select('title, content, category')
       .order('category', { ascending: true })
-      .order('created_at', { ascending: true }) as Promise<{ data: TrainingNote[] | null }>,
+      .order('created_at', { ascending: true }) as unknown as Promise<{ data: TrainingNote[] | null }>,
   ])
 
   const basePrompt = (prompts && prompts.length > 0)

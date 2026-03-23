@@ -9,7 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { TrainingPromptEditor } from "@/components/admin/TrainingPromptEditor"
-import type { ChatMessage, TrainingNote, TrainingSession, SystemPrompt } from "@/types"
+import { useLangStore } from "@/stores/use-lang-store"
+import { ChatToolCallCard } from "@/components/chat-tool-call-card"
+import type { ChatMessage, TrainingNote, TrainingSession, SystemPrompt, ToolCall } from "@/types"
 
 interface Props {
   sessions: TrainingSession[]
@@ -36,19 +38,25 @@ function MessageBubble({
   const isUser = msg.role === "user"
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-3`}>
-      <div className={`max-w-[75%] rounded-xl px-4 py-2.5 text-sm ${isUser ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-100"}`}>
-        <p className="whitespace-pre-wrap">{msg.content}</p>
-        {!isUser && (
-          <div className="flex gap-2 mt-2 pt-1 border-t border-slate-600">
-            <button onClick={() => onFeedback(msg.id, "good")}
-              className={`text-xs transition-colors ${msg.feedback === "good" ? "text-green-400" : "text-slate-400 hover:text-green-400"}`}>
-              <ThumbsUp className="h-3.5 w-3.5" />
-            </button>
-            <button onClick={() => onFeedback(msg.id, "bad")}
-              className={`text-xs transition-colors ${msg.feedback === "bad" ? "text-red-400" : "text-slate-400 hover:text-red-400"}`}>
-              <ThumbsDown className="h-3.5 w-3.5" />
-            </button>
-          </div>
+      <div className={`max-w-[75%] ${isUser ? '' : 'flex flex-col gap-2'}`}>
+        <div className={`rounded-xl px-4 py-2.5 text-sm ${isUser ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-100"}`}>
+          <p className="whitespace-pre-wrap">{msg.content}</p>
+          {!isUser && (
+            <div className="flex gap-2 mt-2 pt-1 border-t border-slate-600">
+              <button onClick={() => onFeedback(msg.id, "good")}
+                className={`text-xs transition-colors ${msg.feedback === "good" ? "text-green-400" : "text-slate-400 hover:text-green-400"}`}>
+                <ThumbsUp className="h-3.5 w-3.5" />
+              </button>
+              <button onClick={() => onFeedback(msg.id, "bad")}
+                className={`text-xs transition-colors ${msg.feedback === "bad" ? "text-red-400" : "text-slate-400 hover:text-red-400"}`}>
+                <ThumbsDown className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+        {/* Tool call widget */}
+        {!isUser && msg.toolCall && (
+          <ChatToolCallCard toolCall={msg.toolCall} />
         )}
       </div>
     </div>
@@ -57,6 +65,7 @@ function MessageBubble({
 
 export function TrainingChat({ sessions: initialSessions, trainingPrompt, trainingPromptFallback }: Props) {
   const { toast } = useToast()
+  const { lang } = useLangStore()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [feedback, setFeedback] = useState<Record<string, "good" | "bad">>({})
   const [notes, setNotes] = useState("")
@@ -114,6 +123,7 @@ export function TrainingChat({ sessions: initialSessions, trainingPrompt, traini
         headers: { "Content-Type": "application/json", "X-Training-Mode": "true" },
         body: JSON.stringify({
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
+          lang,
         }),
       })
 
@@ -137,6 +147,13 @@ export function TrainingChat({ sessions: initialSessions, trainingPrompt, traini
               accumulated += parsed.content
               setMessages(prev => prev.map(m =>
                 m.id === assistantMsg.id ? { ...m, content: accumulated } : m
+              ))
+            }
+            // Handle tool calls
+            if (parsed?.type === "tool_call") {
+              const toolCall: ToolCall = { name: parsed.name, args: parsed.args ?? {} }
+              setMessages(prev => prev.map(m =>
+                m.id === assistantMsg.id ? { ...m, toolCall } : m
               ))
             }
             // When AI saves a training note, update the notes panel in real time

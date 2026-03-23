@@ -75,7 +75,8 @@ export function useAudioEngine() {
     return () => {
       generatorRef.current?.stop()
       if (timerRef.current) clearTimeout(timerRef.current)
-      if (countdownRef.current) clearInterval(countdownRef.current)
+      const countdown = countdownRef.current
+      if (countdown) clearInterval(countdown)
     }
   }, [])
 

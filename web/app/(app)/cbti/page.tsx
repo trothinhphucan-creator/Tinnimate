@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
-import { Brain, ChevronRight, CheckCircle2, Lock, X, ArrowLeft } from 'lucide-react'
+import { Brain, ChevronRight, CheckCircle2, Lock, X } from 'lucide-react'
 import { AuthGate } from '@/components/auth-gate'
 
 interface Exercise {

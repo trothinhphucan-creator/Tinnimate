@@ -2,6 +2,7 @@
 
 import { useLangStore } from '@/stores/use-lang-store'
 import Link from 'next/link'
+import { useState } from 'react'
 import { Sparkles, Target, BookOpen, Music, Brain, Moon, BarChart2 } from 'lucide-react'
 
 interface CoachTip {
@@ -92,8 +93,10 @@ export default function CoachPage() {
   const isEn = lang === 'en'
 
   // Rotate tips based on day of year
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
-  const todayTips = [0, 1, 2].map(i => DAILY_TIPS[(dayOfYear + i) % DAILY_TIPS.length])
+  const [todayTips] = useState(() => {
+    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000)
+    return [0, 1, 2].map(i => DAILY_TIPS[(dayOfYear + i) % DAILY_TIPS.length])
+  })
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 md:p-8 max-w-4xl mx-auto">

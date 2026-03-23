@@ -1,5 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server'
-import type { PricingConfig, SubscriptionTier } from '@/types'
+import type { SubscriptionTier } from '@/types'
 
 export const runtime = 'nodejs'
 
