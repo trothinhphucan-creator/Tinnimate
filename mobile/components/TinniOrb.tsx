@@ -17,7 +17,7 @@ interface TinniOrbProps {
 }
 
 const MODE_GLOW: Record<OrbMode, string> = {
-  idle:      '#4F46E5',
+  idle:      '#4533AD',
   playing:   '#8B5CF6',
   breathing: '#3B82F6',
   sleep:     '#1E1B4B',
@@ -42,11 +42,11 @@ const MODE_SCALE: Record<OrbMode, [number, number]> = {
 
 // Aurora color sets for non-playing modes
 const MODE_COLORS: Record<OrbMode, [string, string, string, string]> = {
-  idle:      ['#312E81', '#4F46E5', '#06B6D4', '#7C3AED'],
+  idle:      ['#312E81', '#4533AD', '#06B6D4', '#7C3AED'],
   playing:   ['#FF006E', '#8338EC', '#3A86FF', '#FF006E'], // overridden by RGB
-  breathing: ['#1D4ED8', '#4F46E5', '#7C3AED', '#EC4899'],
-  sleep:     ['#0A0F1E', '#0F172A', '#1E1B4B', '#312E81'],
-  chat:      ['#0284C7', '#4F46E5', '#7C3AED', '#06B6D4'],
+  breathing: ['#1D4ED8', '#4533AD', '#7C3AED', '#EC4899'],
+  sleep:     ['#0A0F1E', '#1D1928', '#1E1B4B', '#312E81'],
+  chat:      ['#0284C7', '#4533AD', '#7C3AED', '#06B6D4'],
 };
 
 export function TinniOrb({ mode = 'idle', size = 200 }: TinniOrbProps) {

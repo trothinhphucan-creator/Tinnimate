@@ -12,7 +12,7 @@ const { width } = Dimensions.get('window');
 
 const PHASES_4478 = [
   { label: 'HÍT VÀO', secs: 4, color: '#06B6D4', scale: 1.0 },
-  { label: 'GIỮ HƠI', secs: 7, color: '#818CF8', scale: 1.0 },
+  { label: 'GIỮ HƠI', secs: 7, color: '#C7BFFF', scale: 1.0 },
   { label: 'THỞ RA',  secs: 8, color: '#10B981', scale: 0.55 },
 ];
 
@@ -22,14 +22,14 @@ const EXERCISES = [
   { id: '4-4-6-2', name: '4-4-6-2', desc: 'Giảm lo âu',
     phases: [
       { label: 'HÍT VÀO', secs: 4, color: '#06B6D4', scale: 1.0 },
-      { label: 'GIỮ HƠI', secs: 4, color: '#818CF8', scale: 1.0 },
+      { label: 'GIỮ HƠI', secs: 4, color: '#C7BFFF', scale: 1.0 },
       { label: 'THỞ RA',  secs: 6, color: '#10B981', scale: 0.55 },
       { label: 'NGHỈ',    secs: 2, color: '#3B82F6', scale: 0.55 },
     ] },
   { id: 'box', name: 'Box',    desc: 'Cân bằng tâm trí',
     phases: [
       { label: 'HÍT VÀO', secs: 4, color: '#06B6D4', scale: 1.0 },
-      { label: 'GIỮ HƠI', secs: 4, color: '#818CF8', scale: 1.0 },
+      { label: 'GIỮ HƠI', secs: 4, color: '#C7BFFF', scale: 1.0 },
       { label: 'THỞ RA',  secs: 4, color: '#10B981', scale: 0.55 },
       { label: 'NGHỈ',    secs: 4, color: '#3B82F6', scale: 0.55 },
     ] },
@@ -118,7 +118,7 @@ export default function BreathingScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#94A3B8" />
+          <ChevronLeft size={24} color="#938F9C" />
         </TouchableOpacity>
         <Text style={styles.title}>🌬️ Bài tập thở</Text>
         <View style={{ width: 40 }} />
@@ -135,7 +135,7 @@ export default function BreathingScreen() {
               phaseRef.current = 0; setPhaseIdx(0); setRound(1); roundRef.current = 1;
               Haptics.selectionAsync();
             }}>
-            <Text style={[styles.exChipName, exerciseId === e.id && { color: '#818CF8' }]}>{e.name}</Text>
+            <Text style={[styles.exChipName, exerciseId === e.id && { color: '#C7BFFF' }]}>{e.name}</Text>
             <Text style={styles.exChipDesc}>{e.desc}</Text>
           </TouchableOpacity>
         ))}
@@ -169,7 +169,7 @@ export default function BreathingScreen() {
         {ex.phases.filter(p => p.secs > 0).map((p, i) => (
           <View key={i} style={styles.phaseIndicator}>
             <View style={[styles.phaseDot, ex.phases.indexOf(p) === phaseIdx && { backgroundColor: phase.color, width: 16 }]} />
-            <Text style={[styles.phaseIndLabel, ex.phases.indexOf(p) === phaseIdx && { color: '#E0E7FF' }]}>
+            <Text style={[styles.phaseIndLabel, ex.phases.indexOf(p) === phaseIdx && { color: '#E7DFF5' }]}>
               {p.label.charAt(0) + p.label.slice(1).toLowerCase()} ({p.secs}s)
             </Text>
           </View>
@@ -182,7 +182,7 @@ export default function BreathingScreen() {
       {/* Start/Stop */}
       <TouchableOpacity
         style={[styles.startBtn, isRunning
-          ? { backgroundColor: '#1E293B', borderColor: '#334155' }
+          ? { backgroundColor: '#2C2837', borderColor: '#484551' }
           : { backgroundColor: phase.color + 'CC', borderColor: phase.color }
         ]}
         onPress={() => { setIsRunning(!isRunning); Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); }}
@@ -196,22 +196,22 @@ export default function BreathingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617', alignItems: 'center', paddingHorizontal: 20 },
+  container: { flex: 1, backgroundColor: '#151120', alignItems: 'center', paddingHorizontal: 20 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingTop: 8, paddingBottom: 12, width: '100%',
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: '700', color: '#E0E7FF' },
+  title: { fontSize: 18, fontWeight: '700', color: '#E7DFF5' },
 
   picker: { flexDirection: 'row', gap: 8, marginBottom: 16, width: '100%' },
   exChip: {
     flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6,
-    borderRadius: 14, borderWidth: 1, borderColor: '#1E293B', backgroundColor: '#0F172A',
+    borderRadius: 14, borderWidth: 1, borderColor: '#2C2837', backgroundColor: '#1D1928',
   },
-  exChipActive: { borderColor: '#4F46E5', backgroundColor: '#4F46E518' },
-  exChipName: { fontSize: 14, fontWeight: '700', color: '#475569', marginBottom: 2 },
-  exChipDesc: { fontSize: 10, color: '#334155', textAlign: 'center' },
+  exChipActive: { borderColor: '#4533AD', backgroundColor: '#4F46E518' },
+  exChipName: { fontSize: 14, fontWeight: '700', color: '#938F9C', marginBottom: 2 },
+  exChipDesc: { fontSize: 10, color: '#484551', textAlign: 'center' },
 
   circleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   circleGlow: { position: 'absolute' },
@@ -223,14 +223,14 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   phaseLabel: { fontSize: 18, fontWeight: '800', letterSpacing: 1.5, marginBottom: 8 },
-  phaseSeconds: { fontSize: 64, fontWeight: '900', color: '#E0E7FF', lineHeight: 70 },
+  phaseSeconds: { fontSize: 64, fontWeight: '900', color: '#E7DFF5', lineHeight: 70 },
 
   phaseIndicators: { flexDirection: 'row', gap: 16, marginBottom: 8, alignItems: 'center' },
   phaseIndicator: { alignItems: 'center', gap: 4 },
-  phaseDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1E293B' },
-  phaseIndLabel: { fontSize: 10, color: '#334155', fontWeight: '600' },
+  phaseDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2C2837' },
+  phaseIndLabel: { fontSize: 10, color: '#484551', fontWeight: '600' },
 
-  roundText: { fontSize: 13, color: '#64748B', marginBottom: 24 },
+  roundText: { fontSize: 13, color: '#484551', marginBottom: 24 },
 
   startBtn: {
     width: '100%', paddingVertical: 17, borderRadius: 100,

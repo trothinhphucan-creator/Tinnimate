@@ -63,7 +63,7 @@ export default function ProfileScreen() {
                   onPress={() => { if (!s.toggle) Haptics.selectionAsync(); }}>
                   <View style={styles.settingLeft}>
                     <View style={styles.settingIcon}>
-                      <Icon size={16} color="#818CF8" />
+                      <Icon size={16} color="#C7BFFF" />
                     </View>
                     <Text style={styles.settingLabel}>{s.label}</Text>
                   </View>
@@ -71,13 +71,13 @@ export default function ProfileScreen() {
                     <Switch
                       value={toggles[s.id]}
                       onValueChange={v => { setToggles(p => ({ ...p, [s.id]: v })); Haptics.selectionAsync(); }}
-                      trackColor={{ false: '#1E293B', true: '#4F46E5' }}
+                      trackColor={{ false: '#2C2837', true: '#4533AD' }}
                       thumbColor="#fff"
                     />
                   ) : (
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                       {s.right ? <Text style={styles.settingRight}>{s.right}</Text> : null}
-                      <ChevronRight size={16} color="#334155" />
+                      <ChevronRight size={16} color="#484551" />
                     </View>
                   )}
                 </TouchableOpacity>
@@ -114,36 +114,36 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#151120' },
   scroll: { paddingHorizontal: 20, paddingBottom: 40 },
 
   profileHeader: { alignItems: 'center', paddingTop: 20, paddingBottom: 24 },
   orbWrapper: { marginBottom: 12 },
-  userName: { fontSize: 20, fontWeight: '800', color: '#E0E7FF', marginBottom: 4 },
-  userEmail: { fontSize: 13, color: '#475569', marginBottom: 16 },
+  userName: { fontSize: 20, fontWeight: '800', color: '#E7DFF5', marginBottom: 4 },
+  userEmail: { fontSize: 13, color: '#938F9C', marginBottom: 16 },
   loginBtn: {
     paddingHorizontal: 24, paddingVertical: 10, borderRadius: 100,
-    backgroundColor: '#4F46E5',
-    shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 0 },
+    backgroundColor: '#4533AD',
+    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4, shadowRadius: 10, elevation: 6,
   },
   loginBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
 
   statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
   statCard: {
-    flex: 1, backgroundColor: '#0F172A', borderRadius: 16,
-    borderWidth: 1, borderColor: '#1E293B', padding: 14, alignItems: 'center',
+    flex: 1, backgroundColor: '#1D1928', borderRadius: 16,
+    borderWidth: 1, borderColor: '#2C2837', padding: 14, alignItems: 'center',
   },
-  statVal: { fontSize: 20, fontWeight: '800', color: '#C7D2FE' },
-  statLbl: { fontSize: 9, color: '#475569', marginTop: 3, textAlign: 'center' },
+  statVal: { fontSize: 20, fontWeight: '800', color: '#FBBC00' },
+  statLbl: { fontSize: 9, color: '#938F9C', marginTop: 3, textAlign: 'center' },
 
   sectionLabel: {
-    fontSize: 11, color: '#334155', fontWeight: '700',
+    fontSize: 11, color: '#484551', fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10,
   },
   settingsCard: {
-    backgroundColor: '#0F172A', borderRadius: 18,
-    borderWidth: 1, borderColor: '#1E293B', marginBottom: 24, overflow: 'hidden',
+    backgroundColor: '#1D1928', borderRadius: 18,
+    borderWidth: 1, borderColor: '#2C2837', marginBottom: 24, overflow: 'hidden',
   },
   settingRow: {
     flexDirection: 'row', alignItems: 'center',
@@ -154,20 +154,20 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 10,
     backgroundColor: '#4F46E518', alignItems: 'center', justifyContent: 'center',
   },
-  settingLabel: { fontSize: 14, color: '#CBD5E1' },
-  settingRight: { fontSize: 13, color: '#475569' },
-  divider: { height: 1, backgroundColor: '#1E293B', marginHorizontal: 16 },
+  settingLabel: { fontSize: 14, color: '#C9C4D3' },
+  settingRight: { fontSize: 13, color: '#938F9C' },
+  divider: { height: 1, backgroundColor: '#2C2837', marginHorizontal: 16 },
 
   aboutCard: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: '#0F172A', borderRadius: 18,
-    borderWidth: 1, borderColor: '#1E293B',
+    backgroundColor: '#1D1928', borderRadius: 18,
+    borderWidth: 1, borderColor: '#2C2837',
     padding: 16, marginBottom: 24,
   },
   aboutOrb: { width: 40, height: 40 },
-  aboutTitle: { fontSize: 15, fontWeight: '700', color: '#E0E7FF', marginBottom: 2 },
-  aboutVersion: { fontSize: 11, color: '#4F46E5', marginBottom: 4 },
-  aboutDesc: { fontSize: 12, color: '#64748B', lineHeight: 17 },
+  aboutTitle: { fontSize: 15, fontWeight: '700', color: '#E7DFF5', marginBottom: 2 },
+  aboutVersion: { fontSize: 11, color: '#4533AD', marginBottom: 4 },
+  aboutDesc: { fontSize: 12, color: '#484551', lineHeight: 17 },
 
   logoutBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,

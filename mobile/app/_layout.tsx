@@ -9,6 +9,21 @@ import { useUserStore } from '@/store/use-user-store';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useSessionTracker } from '@/hooks/useSessionTracker';
+import { V } from '@/constants/theme';
+
+/** Violet Serenity — Custom dark theme */
+const VioletDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: V.bg,
+    card: V.surface,
+    border: V.borderCard,
+    primary: V.secondary,
+    text: V.textPrimary,
+    notification: V.primary,
+  },
+};
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -94,7 +109,7 @@ export default function RootLayout() {
   if (!isInitialized) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={VioletDarkTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -109,7 +124,7 @@ export default function RootLayout() {
         <Stack.Screen name="notch-therapy" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </ThemeProvider>
   );
 }

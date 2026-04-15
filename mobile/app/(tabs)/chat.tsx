@@ -5,8 +5,9 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Send, LayoutGrid } from 'lucide-react-native';
+import { Send, LayoutGrid, Sparkles } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { TinniOrb } from '@/components/TinniOrb';
 import { ChatMessage } from '@/types/chat';
@@ -15,17 +16,9 @@ import { SuggestionsFAB } from '@/components/chat/SuggestionsFAB';
 import { SuggestionsBottomSheet } from '@/components/chat/SuggestionsBottomSheet';
 import { useUserStore } from '@/store/use-user-store';
 import { useLangStore } from '@/store/use-lang-store';
+import { V } from '@/constants/theme';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'https://tinnimate.vuinghe.com';
-
-const QUICK_CHIPS = [
-  '🎧 Phát nhạc trị liệu',
-  '👂 Test thính lực',
-  '🧘 Bài tập hít thở',
-  '📋 Đánh giá mức ù tai',
-  '🌙 Chế độ ngủ',
-  '💊 Ù tai hôm nay thế nào?',
-];
 
 function OrbAvatar({ isTyping }: { isTyping: boolean }) {
   const pulse = useRef(new Animated.Value(1)).current;
@@ -47,7 +40,7 @@ function OrbAvatar({ isTyping }: { isTyping: boolean }) {
 
   return (
     <Animated.View style={{ transform: [{ scale: pulse }] }}>
-      <TinniOrb mode={isTyping ? 'chat' : 'idle'} size={32} />
+      <TinniOrb mode={isTyping ? 'chat' : 'idle'} size={36} />
     </Animated.View>
   );
 }
@@ -63,8 +56,8 @@ export default function ChatScreen() {
       role: 'assistant',
       content:
         lang === 'vi'
-          ? 'Xin chào! Tôi là Tinni 💙\nHôm nay bạn cảm thấy thế nào? Tôi có thể:\n1. 🎧 Bật âm thanh trị liệu\n2. 👂 Kiểm tra thính lực\n3. 📋 Đánh giá mức độ ù tai\n\nBạn muốn bắt đầu với gì?'
-          : 'Hello! I am Tinni 💙\nHow are you feeling today? I can help you with:\n1. 🎧 Sound therapy\n2. 👂 Hearing test\n3. 📋 Tinnitus assessment\n\nWhat would you like to start with?',
+          ? 'Xin chào! Tôi là Tinni 💜\nHôm nay bạn cảm thấy thế nào? Tôi có thể:\n1. 🎧 Bật âm thanh trị liệu\n2. 👂 Kiểm tra thính lực\n3. 📋 Đánh giá mức độ ù tai\n\nBạn muốn bắt đầu với gì?'
+          : 'Hello! I am Tinni 💜\nHow are you feeling today? I can help you with:\n1. 🎧 Sound therapy\n2. 👂 Hearing test\n3. 📋 Tinnitus assessment\n\nWhat would you like to start with?',
       timestamp: new Date(),
     },
   ]);
@@ -101,7 +94,6 @@ export default function ChatScreen() {
     let toolCall: any = null;
 
     try {
-      // Cancel any previous request
       if (xhrRef.current) {
         xhrRef.current.abort();
       }
@@ -124,16 +116,14 @@ export default function ChatScreen() {
         lastIndex = xhr.responseText.length;
         buffer += newText;
 
-        // Parse SSE events
         const lines = buffer.split('\n');
-        // Keep the last incomplete line in buffer
         buffer = lines.pop() || '';
 
         for (const line of lines) {
           if (!line.trim()) continue;
 
           if (line.startsWith('data: ')) {
-            const data = line.substring(6); // Remove "data: " prefix
+            const data = line.substring(6);
 
             if (data === '[DONE]') {
               continue;
@@ -142,10 +132,8 @@ export default function ChatScreen() {
             try {
               const parsed = JSON.parse(data);
 
-              // Skip empty objects
               if (!parsed || Object.keys(parsed).length === 0) continue;
 
-              // Capture conversationId from server
               if (parsed.conversationId && !conversationId) {
                 setConversationId(parsed.conversationId);
               }
@@ -227,15 +215,12 @@ export default function ChatScreen() {
 
   const handleToolResult = (toolName: string, result: Record<string, unknown>) => {
     console.log('Tool result:', toolName, result);
-    // You can send tool results back to chat if needed
-    // sendMessage(`Tool ${toolName} completed: ${JSON.stringify(result)}`);
   };
 
   useEffect(() => {
     setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 100);
   }, [messages]);
 
-  // Fetch suggestions on mount
   useEffect(() => {
     fetchSuggestions();
   }, [user?.id, lang, messages.length]);
@@ -265,7 +250,6 @@ export default function ChatScreen() {
     }
   }
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (xhrRef.current) {
@@ -276,31 +260,49 @@ export default function ChatScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.safeTop} edges={['top']}>
-        <View style={styles.header}>
-          <OrbAvatar isTyping={isLoading} />
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerName}>Tinni</Text>
-            <Text style={styles.headerStatus}>
-              {isLoading
-                ? lang === 'vi' ? '💬 đang nhập...' : '💬 typing...'
-                : lang === 'vi' ? '🟢 trực tuyến 24/7' : '🟢 online 24/7'}
-            </Text>
+      {/* ── Gradient Header ── */}
+      <LinearGradient
+        colors={['#3D2B85', '#5B4BC4', V.bg]}
+        locations={[0, 0.5, 1]}
+        style={styles.headerGradient}
+      >
+        <SafeAreaView edges={['top']} style={styles.safeHeader}>
+          <View style={styles.header}>
+            <OrbAvatar isTyping={isLoading} />
+            <View style={styles.headerInfo}>
+              <View style={styles.headerNameRow}>
+                <Text style={styles.headerName}>Tinni</Text>
+                <View style={styles.aiBadge}>
+                  <Sparkles size={8} color={V.primary} />
+                  <Text style={styles.aiBadgeText}>AI</Text>
+                </View>
+              </View>
+              <Text style={styles.headerStatus}>
+                {isLoading
+                  ? lang === 'vi' ? '💬 đang suy nghĩ...' : '💬 thinking...'
+                  : lang === 'vi' ? '🟢 sẵn sàng' : '🟢 ready'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.replace('/(tabs)')}
+              style={styles.homeBtn}
+              activeOpacity={0.7}
+            >
+              <LayoutGrid size={18} color={V.secondary} />
+            </TouchableOpacity>
           </View>
-          {/* Home button — navigate back to main menu */}
-          <TouchableOpacity
-            onPress={() => router.replace('/(tabs)')}
-            style={styles.homeBtn}
-            activeOpacity={0.7}
-          >
-            <LayoutGrid size={22} color="#6366F1" />
-          </TouchableOpacity>
-        </View>
+        </SafeAreaView>
+      </LinearGradient>
 
+      {/* ── Messages ── */}
       <FlatList
         ref={flatRef}
         data={messages}
         keyExtractor={(m) => m.id}
+        initialNumToRender={15}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === 'android'}
         renderItem={({ item }) => (
           <MessageBubble
             message={item}
@@ -310,30 +312,33 @@ export default function ChatScreen() {
         )}
         contentContainerStyle={styles.messageList}
         showsVerticalScrollIndicator={false}
+        style={{ flex: 1 }}
       />
-      </SafeAreaView>
 
+      {/* ── Input Bar ── */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         style={[styles.inputContainer, { paddingBottom: insets.bottom || (Platform.OS === 'ios' ? 34 : 12) }]}
       >
         <View style={styles.inputBar}>
-          <TextInput
-            style={styles.input}
-            value={input}
-            onChangeText={setInput}
-            placeholder={
-              lang === 'vi'
-                ? 'Nhắn gì đó cho Tinni...'
-                : 'Message Tinni...'
-            }
-            placeholderTextColor="#334155"
-            multiline
-            maxLength={500}
-            returnKeyType="send"
-            onSubmitEditing={() => sendMessage(input)}
-          />
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              value={input}
+              onChangeText={setInput}
+              placeholder={
+                lang === 'vi'
+                  ? 'Hỏi Tinni bất cứ điều gì...'
+                  : 'Ask Tinni anything...'
+              }
+              placeholderTextColor={V.textDim}
+              multiline
+              maxLength={500}
+              returnKeyType="send"
+              onSubmitEditing={() => sendMessage(input)}
+            />
+          </View>
           <TouchableOpacity
             style={[
               styles.sendBtn,
@@ -343,21 +348,25 @@ export default function ChatScreen() {
             disabled={!input.trim() || isLoading}
             activeOpacity={0.8}
           >
-            <Send
-              size={18}
-              color={input.trim() ? '#0F172A' : '#334155'}
-            />
+            {input.trim() ? (
+              <LinearGradient
+                colors={[V.primary, '#FFA726']}
+                style={styles.sendBtnGradient}
+              >
+                <Send size={16} color={V.primaryDark} />
+              </LinearGradient>
+            ) : (
+              <Send size={16} color={V.textDim} />
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
 
-      {/* Floating Action Button */}
       <SuggestionsFAB
         onPress={() => setShowSuggestions(true)}
         visible={true}
       />
 
-      {/* Bottom Sheet */}
       <SuggestionsBottomSheet
         visible={showSuggestions}
         onClose={() => setShowSuggestions(false)}
@@ -370,27 +379,52 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
-  safeTop: { flex: 1 },
+  container: { flex: 1, backgroundColor: V.bg },
 
+  // ── Gradient Header ──
+  headerGradient: {
+    paddingBottom: 8,
+  },
+  safeHeader: {},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#0F172A',
   },
   headerInfo: { flex: 1 },
-  headerName: { fontSize: 16, fontWeight: '700', color: '#E0E7FF' },
-  headerStatus: { fontSize: 11, color: '#475569', marginTop: 1 },
+  headerNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerName: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  aiBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(251,188,0,0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  aiBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: V.primary,
+    letterSpacing: 0.5,
+  },
+  headerStatus: { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   homeBtn: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: '#1E293B',
+    width: 40, height: 40, borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center', justifyContent: 'center',
   },
 
+  // ── Messages ──
   messageList: {
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -398,26 +432,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 
-  chipsScroll: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#1E293B',
-  },
-  chipText: { fontSize: 12, color: '#64748B' },
-
+  // ── Input ──
   inputContainer: {
-    backgroundColor: '#020617',
-    // paddingBottom set dynamically via insets.bottom in component
+    backgroundColor: V.bg,
   },
   inputBar: {
     flexDirection: 'row',
@@ -427,28 +444,38 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 12,
     borderTopWidth: 1,
-    borderTopColor: '#0F172A',
-    backgroundColor: '#020617',
+    borderTopColor: V.surface,
+    backgroundColor: V.bg,
+  },
+  inputWrapper: {
+    flex: 1,
+    backgroundColor: V.surface,
+    borderWidth: 1,
+    borderColor: V.outlineVariant + '30',
+    borderRadius: 24,
+    overflow: 'hidden',
   },
   input: {
-    flex: 1,
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#1E293B',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    color: '#E0E7FF',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    color: V.textPrimary,
     fontSize: 14,
     maxHeight: 100,
   },
   sendBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#C7D2FE',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: V.surface,
+  },
+  sendBtnGradient: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  sendBtnDisabled: { backgroundColor: '#1E293B' },
+  sendBtnDisabled: { backgroundColor: V.surface },
 });

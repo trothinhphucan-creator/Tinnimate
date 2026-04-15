@@ -16,7 +16,7 @@ const SLIDES = [
     title: 'Chào mừng đến\nTinnimate',
     subtitle: 'Người bạn đồng hành thông minh\ntrên hành trình chữa lành ù tai',
     cta: 'Tiếp theo',
-    color: '#818CF8',
+    color: '#C7BFFF',
   },
   {
     mode: 'playing' as const,
@@ -105,18 +105,18 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617', alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#151120', alignItems: 'center' },
   skipBtn: { alignSelf: 'flex-end', paddingHorizontal: 24, paddingTop: 12, paddingBottom: 4 },
-  skipText: { color: '#475569', fontSize: 14 },
+  skipText: { color: '#938F9C', fontSize: 14 },
   slide: { alignItems: 'center', justifyContent: 'center', flex: 1, paddingHorizontal: 32 },
   orbContainer: { marginBottom: 40 },
   title: {
     fontSize: 34, fontWeight: '800', textAlign: 'center',
     letterSpacing: -0.5, marginBottom: 16, lineHeight: 42,
   },
-  subtitle: { fontSize: 16, color: '#94A3B8', textAlign: 'center', lineHeight: 24 },
+  subtitle: { fontSize: 16, color: '#938F9C', textAlign: 'center', lineHeight: 24 },
   dots: { flexDirection: 'row', gap: 8, marginBottom: 24 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1E293B' },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2C2837' },
   dotActive: { width: 24 },
   ctaBtn: {
     width: width - 48, paddingVertical: 16, borderRadius: 100,

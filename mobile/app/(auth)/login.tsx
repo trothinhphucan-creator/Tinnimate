@@ -63,14 +63,27 @@ export default function LoginScreen() {
   }, []);
 
   async function handleOAuthCallback(url: string) {
-    if (!url || !url.startsWith('tinnimate://')) return;
+    if (!url) return;
     try {
+      // Accept any URL containing auth-callback (works for both dev exp:// and prod tinnimate://)
+      if (!url.includes('auth-callback') && !url.includes('auth/callback')) return;
+
       // PKCE flow: ?code=...
       const parsed  = Linking.parse(url);
       const code    = parsed.queryParams?.code as string | undefined;
+      const oauthError = parsed.queryParams?.error as string | undefined;
+
+      if (oauthError) {
+        setError('Đăng nhập thất bại: ' + (parsed.queryParams?.error_description ?? oauthError));
+        return;
+      }
+
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) setError('Xác thực thất bại: ' + error.message);
+        if (error) {
+          setError('Xác thực thất bại: ' + error.message);
+        }
+        // On success, the auth state listener in _layout.tsx will navigate to home
         return;
       }
       // Implicit flow: #access_token=...&refresh_token=...
@@ -84,6 +97,7 @@ export default function LoginScreen() {
       }
     } catch (e) {
       console.warn('[oauth-callback]', e);
+      setError('Đã xảy ra lỗi khi xác thực. Vui lòng thử lại.');
     }
   }
 
@@ -96,11 +110,22 @@ export default function LoginScreen() {
       const redirectTo = Linking.createURL('auth-callback');
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo, skipBrowserRedirect: true },
+        options: {
+          redirectTo,
+          skipBrowserRedirect: true,
+          queryParams: { access_type: 'offline', prompt: 'select_account' },
+        },
       });
       if (error) throw error;
       if (data?.url) {
-        await WebBrowser.openBrowserAsync(data.url);
+        // openAuthSessionAsync handles the redirect back to the app
+        // and returns the callback URL with the authorization code
+        const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+        if (result.type === 'success' && result.url) {
+          await handleOAuthCallback(result.url);
+        } else if (result.type === 'cancel') {
+          // User cancelled — do nothing
+        }
       }
     } catch (err: any) {
       setError(err?.message ?? 'Đăng nhập Google thất bại');
@@ -125,7 +150,10 @@ export default function LoginScreen() {
       });
       if (error) throw error;
       if (data?.url) {
-        await WebBrowser.openBrowserAsync(data.url);
+        const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+        if (result.type === 'success' && result.url) {
+          await handleOAuthCallback(result.url);
+        }
       }
     } catch (err: any) {
       setError(err?.message ?? 'Đăng nhập Apple thất bại');
@@ -234,7 +262,7 @@ export default function LoginScreen() {
             <TextInput
               style={styles.input}
               placeholder="Email"
-              placeholderTextColor="#334155"
+              placeholderTextColor="#484551"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -244,7 +272,7 @@ export default function LoginScreen() {
             <TextInput
               style={styles.input}
               placeholder="Mật khẩu"
-              placeholderTextColor="#334155"
+              placeholderTextColor="#484551"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -268,7 +296,7 @@ export default function LoginScreen() {
               disabled={loading}
               activeOpacity={0.85}>
               {loading
-                ? <ActivityIndicator color="#0F172A" />
+                ? <ActivityIndicator color="#1D1928" />
                 : <Text style={styles.submitText}>
                     {mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}
                   </Text>}
@@ -277,7 +305,7 @@ export default function LoginScreen() {
 
           <Text style={styles.note}>
             Cùng account với{' '}
-            <Text style={{ color: '#818CF8' }}>tinnimate.vuinghe.com</Text>
+            <Text style={{ color: '#C7BFFF' }}>tinnimate.vuinghe.com</Text>
           </Text>
 
         </ScrollView>
@@ -288,41 +316,41 @@ export default function LoginScreen() {
 
 const GAP = 12;
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#151120' },
   scroll: { paddingHorizontal: 28, paddingBottom: 40, paddingTop: 16, justifyContent: 'center', flexGrow: 1 },
 
   logoArea: { alignItems: 'center', marginBottom: 32 },
-  appName: { fontSize: 28, fontWeight: '800', color: '#E0E7FF', marginTop: 14, letterSpacing: -0.5 },
-  tagline: { fontSize: 12, color: '#475569', marginTop: 4, textAlign: 'center' },
+  appName: { fontSize: 28, fontWeight: '800', color: '#E7DFF5', marginTop: 14, letterSpacing: -0.5 },
+  tagline: { fontSize: 12, color: '#938F9C', marginTop: 4, textAlign: 'center' },
 
   modeTabs: {
-    flexDirection: 'row', backgroundColor: '#0F172A', borderRadius: 14,
-    padding: 4, marginBottom: 20, borderWidth: 1, borderColor: '#1E293B',
+    flexDirection: 'row', backgroundColor: '#1D1928', borderRadius: 14,
+    padding: 4, marginBottom: 20, borderWidth: 1, borderColor: '#2C2837',
   },
   modeTab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10 },
-  modeTabActive: { backgroundColor: '#4F46E5' },
-  modeTabText: { fontSize: 14, fontWeight: '600', color: '#475569' },
+  modeTabActive: { backgroundColor: '#4533AD' },
+  modeTabText: { fontSize: 14, fontWeight: '600', color: '#938F9C' },
   modeTabTextActive: { color: '#fff' },
 
   socialRow: { flexDirection: 'row', gap: GAP, marginBottom: 16 },
   socialBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 10, backgroundColor: '#0F172A', borderRadius: 14,
-    borderWidth: 1, borderColor: '#1E293B', paddingVertical: 13,
+    gap: 10, backgroundColor: '#1D1928', borderRadius: 14,
+    borderWidth: 1, borderColor: '#2C2837', paddingVertical: 13,
   },
   socialIcon: {
     fontSize: 16, fontWeight: '900', color: '#E2E8F0',
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
-  socialLabel: { fontSize: 14, fontWeight: '600', color: '#CBD5E1' },
+  socialLabel: { fontSize: 14, fontWeight: '600', color: '#C9C4D3' },
 
   divider: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#1E293B' },
-  dividerText: { fontSize: 12, color: '#334155', fontWeight: '500' },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#2C2837' },
+  dividerText: { fontSize: 12, color: '#484551', fontWeight: '500' },
 
   form: { gap: GAP, marginBottom: 20 },
   input: {
-    backgroundColor: '#0F172A', borderRadius: 14, borderWidth: 1, borderColor: '#1E293B',
+    backgroundColor: '#1D1928', borderRadius: 14, borderWidth: 1, borderColor: '#2C2837',
     paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: '#E2E8F0',
   },
   msgBox: {
@@ -333,11 +361,11 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 13, color: '#FCA5A5', lineHeight: 18 },
   successText: { fontSize: 13, color: '#6EE7B7', lineHeight: 18 },
   submitBtn: {
-    backgroundColor: '#C7D2FE', borderRadius: 100, paddingVertical: 16,
+    backgroundColor: '#FBBC00', borderRadius: 100, paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#818CF8', shadowOffset: { width: 0, height: 0 },
+    shadowColor: '#C7BFFF', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.45, shadowRadius: 12, elevation: 8,
   },
-  submitText: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
-  note: { textAlign: 'center', fontSize: 11, color: '#1E293B' },
+  submitText: { fontSize: 16, fontWeight: '700', color: '#1D1928' },
+  note: { textAlign: 'center', fontSize: 11, color: '#2C2837' },
 });

@@ -2,9 +2,36 @@
  * Zentones - Fractal Tone Engine (Expo Go compatible)
  * Uses expo-av Sound to play zen audio files in fractal patterns.
  * No native modules required — works in Expo Go.
+ * 
+ * Haptic feedback: Each note triggers a matching haptic pulse for immersive experience.
  */
 
 import { Audio } from 'expo-av';
+import * as Haptics from 'expo-haptics';
+
+// ── Haptic Pattern Definitions ──
+export type HapticPattern = 'deep' | 'medium' | 'light' | 'soft' | 'pulse' | 'chime';
+
+const HAPTIC_MAP: Record<HapticPattern, () => void> = {
+  // Deep bell hit — strong single impact
+  deep: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy),
+  // Medium tap — standard impact
+  medium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
+  // Light ping — gentle touch
+  light: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+  // Soft brush — barely-there selection feedback
+  soft: () => Haptics.selectionAsync(),
+  // Double-pulse — two quick taps
+  pulse: () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), 80);
+  },
+  // Chime — medium then soft (like a bell strike + resonance)
+  chime: () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setTimeout(() => Haptics.selectionAsync(), 120);
+  },
+};
 
 // ── Musical Scales for rate mapping ──
 const PENTATONIC_MAJOR = [0, 2, 4, 7, 9];
@@ -60,6 +87,8 @@ export interface ZenStyle {
   iterations: number;
   // Which audio file to use as base sound
   audioKey: 'zen' | '528hz' | 'ocean' | 'white';
+  // Haptic feedback pattern for each note
+  hapticPattern: HapticPattern;
 }
 
 export const ZEN_STYLES: ZenStyle[] = [
@@ -73,6 +102,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'ABCDE',
     rules: { A: 'AC', B: 'DA', C: 'BE', D: 'CB', E: 'AD' }, iterations: 4,
     audioKey: 'zen',
+    hapticPattern: 'medium',      // Ocean: steady medium waves
   },
   {
     name: 'Starlight', nameVi: 'Ánh Sao', emoji: '✨',
@@ -84,6 +114,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'CADBE',
     rules: { A: 'BD', B: 'EC', C: 'AB', D: 'CE', E: 'DA' }, iterations: 4,
     audioKey: '528hz',
+    hapticPattern: 'light',       // Starlight: sparkling light taps
   },
   {
     name: 'Lotus', nameVi: 'Hoa Sen', emoji: '🪷',
@@ -95,6 +126,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'DCBAE',
     rules: { A: 'CE', B: 'AD', C: 'BA', D: 'EC', E: 'DB' }, iterations: 4,
     audioKey: 'zen',
+    hapticPattern: 'soft',        // Lotus: gentle meditative brush
   },
   {
     name: 'Sunrise', nameVi: 'Bình Minh', emoji: '🌅',
@@ -106,6 +138,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'triangle', axiom: 'EABCD',
     rules: { A: 'DB', B: 'AE', C: 'BC', D: 'EA', E: 'CD' }, iterations: 4,
     audioKey: '528hz',
+    hapticPattern: 'pulse',       // Sunrise: energetic double-tap
   },
   {
     name: 'Moonlight', nameVi: 'Ánh Trăng', emoji: '🌙',
@@ -117,6 +150,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'AEBDC',
     rules: { A: 'BA', B: 'CB', C: 'DC', D: 'ED', E: 'AE' }, iterations: 4,
     audioKey: 'zen',
+    hapticPattern: 'deep',        // Moonlight: deep heavy resonance
   },
   {
     name: 'Bamboo Grove', nameVi: 'Rừng Tre', emoji: '🎋',
@@ -128,6 +162,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'triangle', axiom: 'BCADE',
     rules: { A: 'EA', B: 'CD', C: 'AB', D: 'BE', E: 'DC' }, iterations: 4,
     audioKey: 'zen',
+    hapticPattern: 'chime',       // Bamboo: strike + resonance
   },
   {
     name: 'Crystal Cave', nameVi: 'Hang Pha Lê', emoji: '💎',
@@ -139,6 +174,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'EDCBA',
     rules: { A: 'AB', B: 'BC', C: 'CD', D: 'DE', E: 'EA' }, iterations: 4,
     audioKey: '528hz',
+    hapticPattern: 'light',       // Crystal Cave: ethereal light taps
   },
   {
     name: 'Sacred Temple', nameVi: 'Đền Thiêng', emoji: '🛕',
@@ -150,6 +186,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'ACEBD',
     rules: { A: 'DA', B: 'EB', C: 'AC', D: 'BD', E: 'CE' }, iterations: 4,
     audioKey: 'zen',
+    hapticPattern: 'deep',        // Sacred Temple: heavy bell strikes
   },
   {
     name: 'Cherry Blossom', nameVi: 'Hoa Anh Đào', emoji: '🌸',
@@ -161,6 +198,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'DEBAC',
     rules: { A: 'CB', B: 'DE', C: 'EA', D: 'AC', E: 'BD' }, iterations: 4,
     audioKey: '528hz',
+    hapticPattern: 'soft',        // Cherry Blossom: delicate brush
   },
   {
     name: 'Northern Lights', nameVi: 'Cực Quang', emoji: '🌌',
@@ -172,6 +210,7 @@ export const ZEN_STYLES: ZenStyle[] = [
     waveform: 'sine', axiom: 'ACDBE',
     rules: { A: 'EB', B: 'CA', C: 'DA', D: 'AE', E: 'BC' }, iterations: 4,
     audioKey: 'zen',
+    hapticPattern: 'chime',       // Northern Lights: shifting chime
   },
 ];
 
@@ -192,9 +231,15 @@ export class FractalToneEngine {
   private currentStyle: ZenStyle | null = null;
   private volume = 0.5;
   private activeSounds: Audio.Sound[] = [];
+  private hapticEnabled = true;
 
   get playing(): boolean {
     return this.isPlaying;
+  }
+
+  /** Enable/disable haptic feedback */
+  setHapticEnabled(enabled: boolean): void {
+    this.hapticEnabled = enabled;
   }
 
   async start(style: ZenStyle, vol = 0.5): Promise<void> {
@@ -270,6 +315,15 @@ export class FractalToneEngine {
 
       this.activeSounds.push(sound);
       await sound.playAsync();
+
+      // 🎯 Fire haptic feedback synchronized with the note
+      if (this.hapticEnabled && style.hapticPattern) {
+        try {
+          HAPTIC_MAP[style.hapticPattern]();
+        } catch (_) {
+          // Haptics may fail on simulator/unsupported devices
+        }
+      }
 
       // Auto-cleanup after decay time
       const decayMs = style.decay * 1000;

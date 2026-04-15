@@ -1,40 +1,150 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Dimensions, Modal,
+  Dimensions, Modal, Switch, Animated, Easing,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
-import { ChevronLeft, Play, Square, Volume2, Crown, Sparkles, X } from 'lucide-react-native';
+import { ChevronLeft, Play, Square, Volume2, Crown, X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { TinniOrb } from '@/components/TinniOrb';
+import { LinearGradient } from 'expo-linear-gradient';
 import { FractalToneEngine, ZEN_STYLES } from '@/lib/audio/fractal-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserStore } from '@/store/use-user-store';
+import { V } from '@/constants/theme';
 
 const { width } = Dimensions.get('window');
 
-// Trial limits per tier — Ultra-only feature
-const TRIAL_LIMITS: Record<string, number> = {
-  free: 0,
-  premium: 0,
-  pro: 0,
-  ultra: Infinity,
-};
+// ─── Squircle icon size ───
+const ICON_SIZE = (width - 20 * 2 - 8 * 4) / 5;
 
+// ─── Style colors for squircle tints ───
+const STYLE_COLORS = [
+  '#0ea5e9', '#a78bfa', '#ec4899', '#f59e0b', '#6366f1',
+  '#22c55e', '#67e8f9', '#d97706', '#f472b6', '#34d399',
+];
+
+// ─── Animated waveform bars ───
+function WaveformBars({ isPlaying, color }: { isPlaying: boolean; color: string }) {
+  const bars = [0.4, 0.8, 0.55, 1.0, 0.65, 0.45, 0.85, 0.7];
+  const anims = useRef(bars.map(h => new Animated.Value(h))).current;
+
+  useEffect(() => {
+    if (!isPlaying) {
+      anims.forEach((a, i) => {
+        Animated.timing(a, { toValue: bars[i], duration: 300, useNativeDriver: false }).start();
+      });
+      return;
+    }
+    const loops = anims.map((a, i) => {
+      const dur = 350 + i * 80;
+      return Animated.loop(
+        Animated.sequence([
+          Animated.timing(a, { toValue: Math.random() * 0.6 + 0.3, duration: dur, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+          Animated.timing(a, { toValue: Math.random() * 0.4 + 0.6, duration: dur, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+        ])
+      );
+    });
+    loops.forEach(l => l.start());
+    return () => loops.forEach(l => l.stop());
+  }, [isPlaying]);
+
+  return (
+    <View style={wavStyles.container}>
+      {anims.map((a, i) => (
+        <Animated.View
+          key={i}
+          style={[
+            wavStyles.bar,
+            {
+              backgroundColor: color,
+              height: a.interpolate({ inputRange: [0, 1], outputRange: [4, 28] }),
+            },
+          ]}
+        />
+      ))}
+    </View>
+  );
+}
+
+const wavStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row', alignItems: 'center',
+    gap: 3, height: 32, marginTop: 12,
+  },
+  bar: { width: 3, borderRadius: 2 },
+});
+
+// ─── Pulsing ring (for play button orbit) ───
+function PulsingRing({ isPlaying }: { isPlaying: boolean }) {
+  const scale1 = useRef(new Animated.Value(1)).current;
+  const scale2 = useRef(new Animated.Value(1)).current;
+  const opacity1 = useRef(new Animated.Value(0.3)).current;
+  const opacity2 = useRef(new Animated.Value(0.15)).current;
+
+  useEffect(() => {
+    if (!isPlaying) {
+      Animated.timing(scale1, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+      Animated.timing(opacity1, { toValue: 0.3, duration: 300, useNativeDriver: true }).start();
+      return;
+    }
+    const pulse = (scaleAnim: Animated.Value, opacityAnim: Animated.Value, delay: number) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.parallel([
+            Animated.timing(scaleAnim, { toValue: 1.5, duration: 1200, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+            Animated.timing(opacityAnim, { toValue: 0, duration: 1200, useNativeDriver: true }),
+          ]),
+          Animated.parallel([
+            Animated.timing(scaleAnim, { toValue: 1, duration: 0, useNativeDriver: true }),
+            Animated.timing(opacityAnim, { toValue: 0.3, duration: 0, useNativeDriver: true }),
+          ]),
+        ])
+      );
+    const l1 = pulse(scale1, opacity1, 0);
+    const l2 = pulse(scale2, opacity2, 600);
+    l1.start(); l2.start();
+    return () => { l1.stop(); l2.stop(); };
+  }, [isPlaying]);
+
+  return (
+    <View style={ringStyles.container} pointerEvents="none">
+      <Animated.View style={[ringStyles.ring, { transform: [{ scale: scale1 }], opacity: opacity1 }]} />
+      <Animated.View style={[ringStyles.ring, { transform: [{ scale: scale2 }], opacity: opacity2, borderColor: 'rgba(251,188,0,0.2)' }]} />
+    </View>
+  );
+}
+
+const ringStyles = StyleSheet.create({
+  container: {
+    position: 'absolute', alignItems: 'center', justifyContent: 'center',
+    width: 80, height: 80,
+  },
+  ring: {
+    position: 'absolute',
+    width: 88, height: 88, borderRadius: 44,
+    borderWidth: 1.5, borderColor: 'rgba(199,191,255,0.3)',
+  },
+});
+
+// Trial limits
+const TRIAL_LIMITS: Record<string, number> = {
+  free: 0, premium: 0, pro: 0, ultra: Infinity,
+};
 const STORAGE_KEY = 'zentones_trials';
 
 export default function ZentonesScreen() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
+  const [hapticOn, setHapticOn] = useState(true);
   const [trialCount, setTrialCount] = useState(0);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const router = useRouter();
   const engineRef = useRef<FractalToneEngine | null>(null);
 
-  // Get actual subscription tier from user store
   const { user } = useUserStore();
   const tier = (user?.subscription_tier ?? 'free') as 'free' | 'premium' | 'pro' | 'ultra';
   const maxTrials = TRIAL_LIMITS[tier] ?? 0;
@@ -42,21 +152,19 @@ export default function ZentonesScreen() {
   const canPlay = trialsRemaining > 0 || maxTrials === Infinity;
 
   const selected = ZEN_STYLES[selectedIdx];
+  const selectedColor = STYLE_COLORS[selectedIdx] ?? V.secondary;
 
-  // Load trial count
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then(val => {
       setTrialCount(parseInt(val ?? '0', 10));
     });
   }, []);
 
-  // Get engine
   const getEngine = () => {
     if (!engineRef.current) engineRef.current = new FractalToneEngine();
     return engineRef.current;
   };
 
-  // Play/stop
   const handlePlay = async () => {
     const engine = getEngine();
     if (isPlaying) {
@@ -64,22 +172,16 @@ export default function ZentonesScreen() {
       setIsPlaying(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     } else {
-      if (!canPlay) {
-        setShowUpgrade(true);
-        return;
-      }
-      // Increment trial count
+      if (!canPlay) { setShowUpgrade(true); return; }
       const newCount = trialCount + 1;
       setTrialCount(newCount);
       await AsyncStorage.setItem(STORAGE_KEY, String(newCount));
-
       await engine.start(selected, volume);
       setIsPlaying(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
 
-  // Style change
   const handleStyleChange = async (idx: number) => {
     setSelectedIdx(idx);
     if (isPlaying) {
@@ -90,352 +192,373 @@ export default function ZentonesScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  // Volume change
   const handleVolumeChange = (val: number) => {
     setVolume(val);
     engineRef.current?.setVolume(val);
   };
 
-  // Cleanup
+  const toggleHaptic = (val: boolean) => {
+    setHapticOn(val);
+    engineRef.current?.setHapticEnabled(val);
+  };
+
   useEffect(() => {
-    return () => {
-      engineRef.current?.stop();
-    };
+    return () => { engineRef.current?.stop(); };
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Upgrade Modal */}
+    <View style={styles.root}>
+      {/* ─── Upgrade Modal ─── */}
       <Modal visible={showUpgrade} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
             <TouchableOpacity style={styles.modalClose} onPress={() => setShowUpgrade(false)}>
-              <X size={20} color="#94A3B8" />
+              <X size={20} color={V.textMuted} />
             </TouchableOpacity>
-
-            <View style={styles.modalIcon}>
-              <Crown size={28} color="#fff" />
+            <View style={styles.crownWrap}>
+              <Crown size={26} color={V.primary} />
             </View>
-
-            <Text style={styles.modalTitle}>Nâng cấp Zentones Ultra</Text>
+            <Text style={styles.modalTitle}>Zentones Ultra</Text>
             <Text style={styles.modalDesc}>
-              Zentones là tính năng độc quyền gói Ultra. Nâng cấp để mở khóa không giới hạn.
+              Tính năng độc quyền gói Ultra. Nâng cấp để mở khóa không giới hạn.
             </Text>
-
-            <View style={styles.tierList}>
-              {([
-                { tier: 'Free', trials: 'Không có quyền', tierKey: 'free' as const },
-                { tier: 'Premium', trials: 'Không có quyền', tierKey: 'premium' as const },
-                { tier: 'Pro', trials: 'Không có quyền', tierKey: 'pro' as const },
-                { tier: 'Ultra', trials: 'Không giới hạn ♾️', tierKey: 'ultra' as const },
-              ] as const).map(t => {
-                const isActive = tier === t.tierKey;
-                return (
-                  <View
-                    key={t.tier}
-                    style={[styles.tierRow, isActive && styles.tierRowActive]}>
-                    <Text style={styles.tierName}>{isActive && '→ '}{t.tier}</Text>
-                    <Text style={styles.tierTrials}>{t.trials}</Text>
-                  </View>
-                );
-              })}
-            </View>
-
-            <TouchableOpacity style={styles.upgradeBtn} onPress={() => router.push('/pricing' as any)}>
+            <TouchableOpacity
+              style={styles.upgradeBtn}
+              onPress={() => { setShowUpgrade(false); router.push('/pricing' as any); }}>
               <Text style={styles.upgradeBtnText}>✨ Xem bảng giá</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#94A3B8" />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.title}>🎵 Zentones</Text>
-          <Text style={styles.titleSub}>Giai điệu fractal trị liệu</Text>
-        </View>
-        <View style={{ width: 40 }} />
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-        {/* Trial counter */}
-        {maxTrials !== Infinity && (
-          <View style={[styles.trialBanner, trialsRemaining === 0 && styles.trialBannerEmpty]}>
-            <Sparkles size={14} color={trialsRemaining > 0 ? '#F59E0B' : '#EF4444'} />
-            <Text style={styles.trialText}>
-              {trialsRemaining > 0
-                ? `Còn ${trialsRemaining} lần dùng thử`
-                : 'Hết lượt thử — nâng cấp để dùng không giới hạn'}
-            </Text>
-          </View>
-        )}
-
-        {/* Orb + Now Playing */}
-        <View
-          style={[
-            styles.nowPlaying,
-            { borderColor: selected.color + '40', backgroundColor: selected.color + '10' },
-          ]}>
-          <TinniOrb mode={isPlaying ? 'playing' : 'idle'} size={120} />
-          <Text style={styles.npEmoji}>{selected.emoji}</Text>
-          <Text style={styles.npName}>{selected.nameVi}</Text>
-          <Text style={styles.npDesc}>{selected.descriptionVi}</Text>
-
-          <TouchableOpacity
-            style={[
-              styles.playBtn,
-              !canPlay && styles.playBtnDisabled,
-              isPlaying && { backgroundColor: selected.color },
-            ]}
-            onPress={handlePlay}>
-            {isPlaying ? (
-              <Square size={20} color="#fff" fill="#fff" />
-            ) : (
-              <Play size={22} color={canPlay ? '#fff' : '#64748B'} fill={canPlay ? '#fff' : 'transparent'} />
-            )}
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        {/* ─── Header ─── */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <ChevronLeft size={22} color={V.textSecondary} />
           </TouchableOpacity>
-
-          {isPlaying && (
-            <Text style={styles.npStatus}>♪ Đang tạo giai điệu...</Text>
-          )}
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Zentones</Text>
+            <Text style={styles.headerSub}>Giai điệu fractal trị liệu</Text>
+          </View>
+          {/* ULTRA badge */}
+          <View style={styles.ultraBadge}>
+            <Text style={styles.ultraText}>ULTRA</Text>
+          </View>
         </View>
 
-        {/* Style selector */}
-        <Text style={styles.sectionTitle}>🎨 Chọn Phong Cách ({ZEN_STYLES.length})</Text>
-        <View style={styles.styleGrid}>
-          {ZEN_STYLES.map((style, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={[
-                styles.styleCard,
-                selectedIdx === idx && {
-                  borderColor: style.color + '80',
-                  backgroundColor: style.color + '20',
-                },
-              ]}
-              onPress={() => handleStyleChange(idx)}>
-              <Text style={styles.styleEmoji}>{style.emoji}</Text>
-              <Text style={styles.styleName} numberOfLines={1}>
-                {style.nameVi.split(' ')[0]}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
-        {/* Volume */}
-        <View style={styles.volumeCard}>
-          <Volume2 size={18} color="#94A3B8" />
-          <Slider
-            style={styles.volumeSlider}
-            minimumValue={0}
-            maximumValue={1}
-            value={volume}
-            onValueChange={handleVolumeChange}
-            minimumTrackTintColor="#3B82F6"
-            maximumTrackTintColor="#1E293B"
-            thumbTintColor="#3B82F6"
-          />
-          <Text style={styles.volumeText}>{Math.round(volume * 100)}%</Text>
-        </View>
+          {/* ─── HERO NOW PLAYING ─── */}
+          <View style={styles.heroWrap}>
+            {/* Background gradient layers */}
+            <LinearGradient
+              colors={['#2A1F6E', '#1E1640', '#151120']}
+              locations={[0, 0.55, 1]}
+              style={StyleSheet.absoluteFill}
+            />
+            {/* Decorative bokeh rings */}
+            <View style={[styles.bokehRing, { width: 260, height: 260, top: -20, right: -40, borderColor: 'rgba(199,191,255,0.04)' }]} />
+            <View style={[styles.bokehRing, { width: 180, height: 180, top: 30, right: 20, borderColor: 'rgba(199,191,255,0.06)' }]} />
+            <View style={[styles.bokehRing, { width: 320, height: 320, top: -60, left: -60, borderColor: 'rgba(69,51,173,0.15)' }]} />
 
-        {/* Info */}
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>💡 Zentones hoạt động thế nào</Text>
-          {[
-            { icon: '🎶', text: 'Thuật toán fractal tạo giai điệu như chuông gió — mỗi lần phát đều khác nhau' },
-            { icon: '🧠', text: 'Não bạn lắng nghe thụ động, dần hình thành thói quen không chú ý đến tiếng ù' },
-            { icon: '✨', text: 'Sau 4-8 tuần sử dụng đều, cường độ cảm nhận ù tai giảm rõ rệt' },
-          ].map((item, i) => (
-            <View key={i} style={styles.infoRow}>
-              <Text style={styles.infoIcon}>{item.icon}</Text>
-              <Text style={styles.infoText}>{item.text}</Text>
+            {/* Content */}
+            <View style={styles.heroContent}>
+              {/* Style name */}
+              <Text style={styles.heroName}>{selected.nameVi}</Text>
+              <Text style={styles.heroDesc}>{selected.descriptionVi}</Text>
+
+              {/* Waveform */}
+              <WaveformBars isPlaying={isPlaying} color={selectedColor} />
+
+              {/* Play button with rings */}
+              <View style={styles.playArea}>
+                <PulsingRing isPlaying={isPlaying} />
+                <TouchableOpacity
+                  style={styles.playBtn}
+                  onPress={handlePlay}
+                  activeOpacity={0.85}>
+                  {isPlaying ? (
+                    <Square size={22} color="#271B00" fill="#271B00" />
+                  ) : (
+                    <Play size={22} color="#271B00" fill="#271B00" />
+                  )}
+                </TouchableOpacity>
+              </View>
+
+              {/* Meta pills */}
+              <View style={styles.metaRow}>
+                <View style={styles.metaPill}>
+                  <Text style={styles.metaText}>♩ {Math.round(1000 / selected.tempoMs * 60)} bpm</Text>
+                </View>
+                {hapticOn && (
+                  <View style={styles.metaPill}>
+                    <Text style={styles.metaText}>📳 {selected.hapticPattern.toUpperCase()}</Text>
+                  </View>
+                )}
+                {isPlaying && (
+                  <View style={[styles.metaPill, { backgroundColor: 'rgba(199,191,255,0.08)', borderColor: selectedColor + '40' }]}>
+                    <Text style={[styles.metaText, { color: selectedColor }]}>● LIVE</Text>
+                  </View>
+                )}
+              </View>
             </View>
-          ))}
+          </View>
 
-          <View style={styles.badgeRow}>
+          {/* ─── Style Selector ─── */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>PHONG CÁCH</Text>
+            <View style={styles.iconGrid}>
+              {ZEN_STYLES.map((style, idx) => {
+                const color = STYLE_COLORS[idx];
+                const isActive = idx === selectedIdx;
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() => handleStyleChange(idx)}
+                    activeOpacity={0.75}
+                    style={styles.iconWrap}
+                  >
+                    {/* Squircle */}
+                    <View style={[
+                      styles.squircle,
+                      isActive && { borderColor: color + '80', borderWidth: 1.5, backgroundColor: color + '18' },
+                    ]}>
+                      {/* Tint layer */}
+                      {!isActive && (
+                        <View style={[StyleSheet.absoluteFill, styles.squircleTint, { backgroundColor: color + '12' }]} />
+                      )}
+                      <Text style={styles.squircleEmoji}>{style.emoji}</Text>
+                    </View>
+                    <Text
+                      style={[styles.squircleLabel, isActive && { color: color }]}
+                      numberOfLines={1}
+                    >
+                      {style.nameVi.split(' ')[0]}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* ─── Volume ─── */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>ÂM LƯỢNG — {Math.round(volume * 100)}%</Text>
+            <View style={styles.sliderRow}>
+              <Volume2 size={14} color={V.textMuted} />
+              <Slider
+                style={{ flex: 1, height: 36 }}
+                minimumValue={0}
+                maximumValue={1}
+                value={volume}
+                onValueChange={handleVolumeChange}
+                minimumTrackTintColor={V.secondary}
+                maximumTrackTintColor={V.surfaceHigh}
+                thumbTintColor={V.secondary}
+              />
+            </View>
+          </View>
+
+          {/* ─── Haptic toggle ─── */}
+          <View style={styles.hapticRow}>
+            <Text style={styles.hapticLabel}>📳  Nhịp rung haptic</Text>
+            <Text style={styles.hapticSub}>
+              {hapticOn ? `${selected.hapticPattern.toUpperCase()} · đồng bộ với nốt nhạc` : 'tắt'}
+            </Text>
+            <Switch
+              value={hapticOn}
+              onValueChange={toggleHaptic}
+              trackColor={{ false: V.surfaceHigh, true: V.secondary + '50' }}
+              thumbColor={hapticOn ? V.secondary : V.textMuted}
+            />
+          </View>
+
+          {/* ─── Info ─── */}
+          <View style={styles.infoCard}>
+            <Text style={styles.infoTitle}>💡 Zentones hoạt động thế nào</Text>
             {[
-              { emoji: '🔬', label: 'Có nghiên cứu' },
-              { emoji: '♾️', label: 'Không lặp lại' },
-              { emoji: '🎵', label: '10 phong cách' },
-            ].map(badge => (
-              <View key={badge.emoji} style={styles.badge}>
-                <Text style={styles.badgeEmoji}>{badge.emoji}</Text>
-                <Text style={styles.badgeLabel}>{badge.label}</Text>
+              { icon: '🎶', text: 'Thuật toán fractal tạo giai điệu như chuông gió — mỗi lần phát đều khác nhau' },
+              { icon: '🧠', text: 'Não bạn lắng nghe thụ động, dần hình thành thói quen không chú ý đến tiếng ù' },
+              { icon: '✨', text: 'Sau 4–8 tuần sử dụng đều, cường độ cảm nhận ù tai giảm rõ rệt' },
+            ].map((item, i) => (
+              <View key={i} style={styles.infoRow}>
+                <Text style={{ fontSize: 13 }}>{item.icon}</Text>
+                <Text style={styles.infoText}>{item.text}</Text>
               </View>
             ))}
+            <View style={styles.badgeRow}>
+              {[{ e: '🔬', l: 'Có nghiên cứu' }, { e: '♾️', l: 'Không lặp lại' }, { e: '🎵', l: '10 phong cách' }].map(b => (
+                <View key={b.e} style={styles.badge}>
+                  <Text style={{ fontSize: 16 }}>{b.e}</Text>
+                  <Text style={styles.badgeLabel}>{b.l}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+          <View style={{ height: 32 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  root: { flex: 1, backgroundColor: V.bg },
+
+  // ── Header ──
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 16, paddingBottom: 8, gap: 12,
   },
-  backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  titleSub: { fontSize: 11, color: '#64748B', marginTop: 2 },
-  scroll: { padding: 16, paddingBottom: 40 },
+  backBtn: {
+    width: 38, height: 38, borderRadius: 13,
+    backgroundColor: V.surface,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerCenter: { flex: 1 },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: V.textPrimary, letterSpacing: -0.3 },
+  headerSub: { fontSize: 11, color: V.textMuted, marginTop: 1 },
+  ultraBadge: {
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 100,
+    backgroundColor: V.primary + '18',
+    borderWidth: 1, borderColor: V.primary + '40',
+  },
+  ultraText: { fontSize: 10, fontWeight: '800', color: V.primary, letterSpacing: 1.2 },
 
-  trialBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#F59E0B15',
-    borderWidth: 1,
-    borderColor: '#F59E0B30',
-    marginBottom: 16,
-  },
-  trialBannerEmpty: { backgroundColor: '#EF444415', borderColor: '#EF444430' },
-  trialText: { fontSize: 12, color: '#F59E0B', flex: 1 },
+  // ── Scroll ──
+  scroll: { paddingBottom: 40 },
 
-  nowPlaying: {
-    padding: 24,
-    borderRadius: 20,
-    borderWidth: 1,
-    alignItems: 'center',
-    marginBottom: 24,
+  // ── Hero ──
+  heroWrap: {
+    marginHorizontal: 16, borderRadius: 24,
+    overflow: 'hidden', marginBottom: 24,
   },
-  npEmoji: { fontSize: 32, marginTop: 16, marginBottom: 8 },
-  npName: { fontSize: 16, fontWeight: '700', color: '#fff', marginBottom: 4 },
-  npDesc: { fontSize: 11, color: '#94A3B8', textAlign: 'center', marginBottom: 20 },
+  heroContent: {
+    paddingHorizontal: 24, paddingTop: 28, paddingBottom: 24,
+    alignItems: 'center',
+  },
+  heroName: {
+    fontSize: 26, fontWeight: '800', color: V.textPrimary,
+    letterSpacing: -0.5, textAlign: 'center',
+  },
+  heroDesc: {
+    fontSize: 12, color: V.textMuted, textAlign: 'center',
+    marginTop: 6, maxWidth: 240, lineHeight: 18,
+  },
+
+  // ── Play ──
+  playArea: {
+    marginTop: 24, marginBottom: 20,
+    alignItems: 'center', justifyContent: 'center',
+    width: 80, height: 80,
+  },
   playBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#3B82F6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    width: 72, height: 72, borderRadius: 36,
+    backgroundColor: V.primary,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: V.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6, shadowRadius: 24, elevation: 12,
   },
-  playBtnDisabled: { backgroundColor: '#334155' },
-  npStatus: { fontSize: 10, color: '#64748B', marginTop: 12 },
 
-  sectionTitle: { fontSize: 11, fontWeight: '600', color: '#64748B', marginBottom: 12, textTransform: 'uppercase' },
-  styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  styleCard: {
-    width: (width - 48) / 5,
-    aspectRatio: 1,
-    borderRadius: 16,
+  // ── Meta pills ──
+  metaRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', justifyContent: 'center' },
+  metaPill: {
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 100,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+  },
+  metaText: { fontSize: 11, color: V.textMuted, fontWeight: '600' },
+
+  // ── Bokeh ──
+  bokehRing: {
+    position: 'absolute', borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#1E293B',
-    backgroundColor: '#0F172A',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
   },
-  styleEmoji: { fontSize: 20, marginBottom: 4 },
-  styleName: { fontSize: 8, color: '#94A3B8', textAlign: 'center' },
 
-  volumeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#1E293B',
-    marginBottom: 16,
+  // ── Section ──
+  section: { paddingHorizontal: 16, marginBottom: 20 },
+  sectionLabel: {
+    fontSize: 10, color: V.textMuted, fontWeight: '700',
+    letterSpacing: 1.5, marginBottom: 14,
   },
-  volumeSlider: { flex: 1, height: 40 },
-  volumeText: { fontSize: 11, color: '#64748B', width: 32, textAlign: 'right' },
 
+  // ── Squircle grid ──
+  iconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  iconWrap: { width: ICON_SIZE, alignItems: 'center', gap: 6 },
+  squircle: {
+    width: ICON_SIZE, height: ICON_SIZE, borderRadius: 18,
+    backgroundColor: V.surface,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 1, borderColor: V.surfaceHigh,
+  },
+  squircleTint: { borderRadius: 18 },
+  squircleEmoji: { fontSize: 26 },
+  squircleLabel: {
+    fontSize: 9, color: V.textMuted, fontWeight: '600',
+    textAlign: 'center', letterSpacing: 0.3,
+  },
+
+  // ── Volume ──
+  sliderRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+
+  // ── Haptic ──
+  hapticRow: {
+    flexDirection: 'row', alignItems: 'center',
+    marginHorizontal: 16, marginBottom: 20,
+    paddingHorizontal: 16, paddingVertical: 14,
+    backgroundColor: V.surface, borderRadius: 16,
+    borderWidth: 1, borderColor: V.surfaceHigh,
+  },
+  hapticLabel: { fontSize: 14, color: V.textPrimary, fontWeight: '600', marginRight: 6 },
+  hapticSub: { flex: 1, fontSize: 10, color: V.textMuted },
+
+  // ── Info ──
   infoCard: {
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    marginHorizontal: 16, padding: 16,
+    backgroundColor: V.surface, borderRadius: 18,
+    borderWidth: 1, borderColor: V.surfaceHigh,
   },
-  infoTitle: { fontSize: 12, fontWeight: '600', color: '#E2E8F0', marginBottom: 12 },
-  infoRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  infoIcon: { fontSize: 12 },
-  infoText: { fontSize: 11, color: '#64748B', flex: 1, lineHeight: 16 },
+  infoTitle: { fontSize: 13, fontWeight: '700', color: V.textPrimary, marginBottom: 14 },
+  infoRow: { flexDirection: 'row', gap: 10, marginBottom: 12, alignItems: 'flex-start' },
+  infoText: { flex: 1, fontSize: 12, color: V.textMuted, lineHeight: 18 },
   badgeRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
   badge: {
-    flex: 1,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#1E293B',
-    alignItems: 'center',
+    flex: 1, padding: 10, borderRadius: 12,
+    backgroundColor: V.surfaceHigh, alignItems: 'center', gap: 4,
   },
-  badgeEmoji: { fontSize: 16, marginBottom: 4 },
-  badgeLabel: { fontSize: 8, color: '#64748B', textAlign: 'center' },
+  badgeLabel: { fontSize: 9, color: V.textMuted, textAlign: 'center' },
 
-  // Modal
+  // ── Modal ──
   modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.75)',
+    alignItems: 'center', justifyContent: 'center', padding: 24,
   },
   modal: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#0F172A',
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    width: '100%', maxWidth: 360, backgroundColor: V.surface,
+    borderRadius: 24, padding: 24, borderWidth: 1, borderColor: V.surfaceHigh,
   },
   modalClose: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: 'absolute', top: 16, right: 16,
+    width: 32, height: 32, alignItems: 'center', justifyContent: 'center',
   },
-  modalIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#F59E0B',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginBottom: 16,
+  crownWrap: {
+    width: 56, height: 56, borderRadius: 28,
+    backgroundColor: V.primary + '20',
+    alignItems: 'center', justifyContent: 'center',
+    alignSelf: 'center', marginBottom: 16,
+    borderWidth: 1, borderColor: V.primary + '40',
   },
-  modalTitle: { fontSize: 18, fontWeight: '700', color: '#fff', textAlign: 'center', marginBottom: 8 },
-  modalDesc: { fontSize: 13, color: '#94A3B8', textAlign: 'center', marginBottom: 20 },
-  tierList: { gap: 8, marginBottom: 20 },
-  tierRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#1E293B',
-    backgroundColor: '#0F172A',
-  },
-  tierRowActive: { borderColor: '#F59E0B50', backgroundColor: '#F59E0B15' },
-  tierName: { fontSize: 13, fontWeight: '600', color: '#E2E8F0' },
-  tierTrials: { fontSize: 12, color: '#64748B' },
+  modalTitle: { fontSize: 18, fontWeight: '800', color: V.textPrimary, textAlign: 'center', marginBottom: 8 },
+  modalDesc: { fontSize: 13, color: V.textMuted, textAlign: 'center', marginBottom: 24, lineHeight: 20 },
   upgradeBtn: {
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: '#F59E0B',
+    paddingVertical: 14, borderRadius: 100, backgroundColor: V.primary,
     alignItems: 'center',
+    shadowColor: V.primary, shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4, shadowRadius: 16, elevation: 8,
   },
-  upgradeBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  upgradeBtnText: { fontSize: 14, fontWeight: '700', color: '#271B00' },
 });

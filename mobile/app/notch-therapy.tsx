@@ -95,7 +95,7 @@ export default function NotchTherapyScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#94A3B8" />
+          <ChevronLeft size={24} color="#938F9C" />
         </TouchableOpacity>
         <Text style={styles.title}>Notch Therapy</Text>
         <View style={{ width: 40 }} />
@@ -153,18 +153,18 @@ export default function NotchTherapyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617', paddingHorizontal: 24 },
+  container: { flex: 1, backgroundColor: '#151120', paddingHorizontal: 24 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingTop: 8, paddingBottom: 16,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: '700', color: '#E0E7FF' },
+  title: { fontSize: 18, fontWeight: '700', color: '#E7DFF5' },
 
   waveContainer: {
     height: 180, width: width - 48,
     backgroundColor: '#0A0F1E',
-    borderRadius: 20, borderWidth: 1, borderColor: '#1E293B',
+    borderRadius: 20, borderWidth: 1, borderColor: '#2C2837',
     marginBottom: 24,
     alignItems: 'center', justifyContent: 'flex-end',
     overflow: 'hidden', paddingBottom: 16,
@@ -189,49 +189,49 @@ const styles = StyleSheet.create({
   },
   freqLabel: {
     position: 'absolute', bottom: 8,
-    fontSize: 12, color: '#475569', fontWeight: '600',
+    fontSize: 12, color: '#938F9C', fontWeight: '600',
   },
 
   infoCard: {
     alignItems: 'center', paddingVertical: 16,
-    backgroundColor: '#0F172A', borderRadius: 16,
-    borderWidth: 1, borderColor: '#1E293B', marginBottom: 20,
+    backgroundColor: '#1D1928', borderRadius: 16,
+    borderWidth: 1, borderColor: '#2C2837', marginBottom: 20,
   },
-  infoLabel: { fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: 1 },
+  infoLabel: { fontSize: 11, color: '#938F9C', textTransform: 'uppercase', letterSpacing: 1 },
   infoHz: { fontSize: 32, fontWeight: '800', color: '#EC4899', marginVertical: 4 },
-  infoDesc: { fontSize: 12, color: '#64748B' },
+  infoDesc: { fontSize: 12, color: '#484551' },
 
   freqGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
   freqChip: {
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 100,
-    borderWidth: 1, borderColor: '#1E293B', backgroundColor: '#0F172A',
+    borderWidth: 1, borderColor: '#2C2837', backgroundColor: '#1D1928',
   },
   freqChipActive: { borderColor: '#EC4899', backgroundColor: '#EC489918' },
-  freqChipText: { fontSize: 13, color: '#475569', fontWeight: '600' },
+  freqChipText: { fontSize: 13, color: '#938F9C', fontWeight: '600' },
   freqChipTextActive: { color: '#EC4899' },
 
   progressRow: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
-    backgroundColor: '#0F172A', borderRadius: 16,
-    borderWidth: 1, borderColor: '#1E293B',
+    backgroundColor: '#1D1928', borderRadius: 16,
+    borderWidth: 1, borderColor: '#2C2837',
     padding: 16, marginBottom: 24,
   },
   progressRing: {
     width: 70, height: 70, borderRadius: 35,
-    borderWidth: 3, borderColor: '#4F46E5',
+    borderWidth: 3, borderColor: '#4533AD',
     alignItems: 'center', justifyContent: 'center',
     backgroundColor: '#0A0F1E',
   },
-  progressNum: { fontSize: 15, fontWeight: '800', color: '#818CF8' },
-  progressSub: { fontSize: 10, color: '#475569' },
+  progressNum: { fontSize: 15, fontWeight: '800', color: '#C7BFFF' },
+  progressSub: { fontSize: 10, color: '#938F9C' },
   progressInfo: { flex: 1 },
-  progressTitle: { fontSize: 14, fontWeight: '700', color: '#E0E7FF', marginBottom: 4 },
-  progressDesc: { fontSize: 12, color: '#64748B', lineHeight: 18 },
+  progressTitle: { fontSize: 14, fontWeight: '700', color: '#E7DFF5', marginBottom: 4 },
+  progressDesc: { fontSize: 12, color: '#484551', lineHeight: 18 },
 
   startBtn: {
-    backgroundColor: '#4F46E5', borderRadius: 100,
+    backgroundColor: '#4533AD', borderRadius: 100,
     paddingVertical: 16, alignItems: 'center',
-    shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 0 },
+    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5, shadowRadius: 14, elevation: 8,
   },
   startBtnActive: { backgroundColor: '#7C3AED' },

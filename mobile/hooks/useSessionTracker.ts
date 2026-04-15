@@ -16,7 +16,7 @@ function toScreenName(path: string): string {
   if (path.includes('journal')) return 'journal';
   if (path.includes('sleep'))   return 'sleep';
   if (path.includes('cbti'))    return 'cbti';
-  if (path.includes('zentitone'))    return 'zentitone';
+  if (path.includes('zentones'))     return 'zentones';
   if (path.includes('breathing'))    return 'breathing';
   if (path.includes('notch'))        return 'notch_therapy';
   if (path.includes('login'))        return 'login';

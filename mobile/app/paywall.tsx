@@ -18,7 +18,7 @@ const PLANS = [
     name: 'Miễn phí',
     price: '0₫',
     period: '',
-    color: '#64748B',
+    color: '#484551',
     highlight: false,
     features: [
       '3 âm thanh trị liệu',
@@ -28,7 +28,7 @@ const PLANS = [
     ],
     locked: [
       'Notch therapy cá nhân hóa',
-      'Zentitone tần số tuỳ chỉnh',
+      'Zentones giai điệu fractal',
       'Báo cáo tiến trình sâu',
     ],
   },
@@ -37,13 +37,13 @@ const PLANS = [
     name: 'Pro',
     price: '99.000₫',
     period: '/tháng',
-    color: '#6366F1',
+    color: '#5B4BC4',
     highlight: true,
     badge: '⭐ Phổ biến nhất',
     features: [
       'Tất cả âm thanh + White Noise',
       'Notch therapy cá nhân hóa',
-      'Zentitone • tần số tuỳ chỉnh',
+      'Zentones • giai điệu fractal',
       'Tinni AI không giới hạn',
       'Nhật ký & báo cáo chi tiết',
       'Ngủ & thiền không giới hạn',
@@ -70,7 +70,7 @@ const PLANS = [
 const BENEFITS = [
   { icon: Headphones, text: 'Âm thanh trị liệu không giới hạn' },
   { icon: Brain,      text: 'Notch therapy cá nhân theo tần số ù tai' },
-  { icon: Zap,        text: 'Zentitone — tone trị liệu tùy chỉnh' },
+  { icon: Zap,        text: 'Zentones — giai điệu fractal trị liệu' },
   { icon: BarChart3,  text: 'Báo cáo tiến trình & điểm THI theo thời gian' },
 ];
 
@@ -122,7 +122,7 @@ function PlanCard({
         ))}
         {plan.locked.map(f => (
           <View key={f} style={styles.featureRow}>
-            <Shield size={13} color="#1E293B" />
+            <Shield size={13} color="#2C2837" />
             <Text style={[styles.featureText, styles.featureLocked]}>{f}</Text>
           </View>
         ))}
@@ -162,7 +162,7 @@ export default function PaywallScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#94A3B8" />
+          <ChevronLeft size={24} color="#938F9C" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nâng cấp tài khoản</Text>
         <View style={{ width: 40 }} />
@@ -182,7 +182,7 @@ export default function PaywallScreen() {
           {BENEFITS.map(({ icon: Icon, text }) => (
             <View key={text} style={styles.benefit}>
               <View style={styles.benefitIcon}>
-                <Icon size={18} color="#6366F1" />
+                <Icon size={18} color="#5B4BC4" />
               </View>
               <Text style={styles.benefitText}>{text}</Text>
             </View>
@@ -222,22 +222,22 @@ export default function PaywallScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#151120' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#E0E7FF' },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: '#E7DFF5' },
 
   scroll: { paddingHorizontal: 20, paddingBottom: 40 },
 
   hero: { alignItems: 'center', marginBottom: 24 },
   heroTitle: {
-    fontSize: 26, fontWeight: '900', color: '#E0E7FF',
+    fontSize: 26, fontWeight: '900', color: '#E7DFF5',
     textAlign: 'center', marginTop: 16, letterSpacing: -0.5, lineHeight: 32,
   },
-  heroSub: { fontSize: 13, color: '#475569', marginTop: 6, textAlign: 'center' },
+  heroSub: { fontSize: 13, color: '#938F9C', marginTop: 6, textAlign: 'center' },
 
   benefitsRow: { gap: 10, marginBottom: 28 },
   benefit: { flexDirection: 'row', alignItems: 'center', gap: 12 },
@@ -245,21 +245,21 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 10,
     backgroundColor: '#6366F118', alignItems: 'center', justifyContent: 'center',
   },
-  benefitText: { fontSize: 14, color: '#CBD5E1', flex: 1, lineHeight: 20 },
+  benefitText: { fontSize: 14, color: '#C9C4D3', flex: 1, lineHeight: 20 },
 
   sectionLabel: {
-    fontSize: 11, color: '#334155', fontWeight: '700',
+    fontSize: 11, color: '#484551', fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12,
   },
   plansList: { gap: 12, marginBottom: 24 },
 
   planCard: {
-    backgroundColor: '#0F172A', borderRadius: 18,
-    borderWidth: 1.5, borderColor: '#1E293B', padding: 16,
+    backgroundColor: '#1D1928', borderRadius: 18,
+    borderWidth: 1.5, borderColor: '#2C2837', padding: 16,
   },
   planCardHighlight: {
-    borderColor: '#6366F1',
-    shadowColor: '#6366F1', shadowOffset: { width: 0, height: 0 },
+    borderColor: '#5B4BC4',
+    shadowColor: '#5B4BC4', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25, shadowRadius: 12, elevation: 6,
   },
   planBadge: {
@@ -271,19 +271,19 @@ const styles = StyleSheet.create({
   planHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
   radio: {
     width: 22, height: 22, borderRadius: 11, borderWidth: 2,
-    borderColor: '#334155', alignItems: 'center', justifyContent: 'center',
+    borderColor: '#484551', alignItems: 'center', justifyContent: 'center',
   },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#fff' },
 
-  planName: { fontSize: 15, fontWeight: '700', color: '#E0E7FF' },
+  planName: { fontSize: 15, fontWeight: '700', color: '#E7DFF5' },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 2, marginTop: 2 },
   planPrice: { fontSize: 20, fontWeight: '900' },
-  planPeriod: { fontSize: 12, color: '#64748B' },
+  planPeriod: { fontSize: 12, color: '#484551' },
 
   featureList: { gap: 7 },
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  featureText: { fontSize: 13, color: '#94A3B8', flex: 1 },
-  featureLocked: { color: '#1E293B' },
+  featureText: { fontSize: 13, color: '#938F9C', flex: 1 },
+  featureLocked: { color: '#2C2837' },
 
   ctaBtn: {
     borderRadius: 100, paddingVertical: 17,
@@ -292,5 +292,5 @@ const styles = StyleSheet.create({
   },
   ctaText: { fontSize: 16, fontWeight: '800', color: '#fff', letterSpacing: 0.3 },
 
-  legalNote: { textAlign: 'center', fontSize: 11, color: '#1E293B', lineHeight: 16 },
+  legalNote: { textAlign: 'center', fontSize: 11, color: '#2C2837', lineHeight: 16 },
 });

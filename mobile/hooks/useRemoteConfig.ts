@@ -5,7 +5,7 @@ const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'https://tinnimate.vuinghe.c
 // ── Default config — used before network response arrives ─────────────────
 export const DEFAULT_CONFIG: MobileConfig = {
   features: {
-    zentitone: true,
+    zentones: true,
     notch_therapy: true,
     breathing: true,
     cbti: false,
@@ -36,7 +36,7 @@ export const DEFAULT_CONFIG: MobileConfig = {
 // ── Types ─────────────────────────────────────────────────────────────────
 export interface MobileConfig {
   features: {
-    zentitone: boolean;
+    zentones: boolean;
     notch_therapy: boolean;
     breathing: boolean;
     cbti: boolean;

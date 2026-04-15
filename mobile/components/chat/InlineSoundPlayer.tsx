@@ -129,7 +129,7 @@ export function InlineSoundPlayer({ soundType, durationMinutes = 15, onResult }:
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1D1928',
     borderWidth: 1,
     borderColor: '#10B981',
     borderRadius: 16,
@@ -151,12 +151,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 11,
-    color: '#64748B',
+    color: '#484551',
   },
   controls: {
     flexDirection: 'row',
@@ -179,11 +179,11 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#CBD5E1',
+    color: '#C9C4D3',
   },
   progress: {
     height: 4,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 2,
     marginTop: 12,
     overflow: 'hidden',

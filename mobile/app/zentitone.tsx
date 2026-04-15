@@ -107,7 +107,7 @@ export default function ZentitoneScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#94A3B8" />
+          <ChevronLeft size={24} color="#938F9C" />
         </TouchableOpacity>
         <View>
           <Text style={styles.title}>Zentitone</Text>
@@ -159,14 +159,14 @@ export default function ZentitoneScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617', paddingHorizontal: 24 },
+  container: { flex: 1, backgroundColor: '#151120', paddingHorizontal: 24 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingTop: 8, paddingBottom: 12,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: 20, fontWeight: '800', color: '#E0E7FF', textAlign: 'center' },
-  titleSub: { fontSize: 11, color: '#475569', textAlign: 'center' },
+  title: { fontSize: 20, fontWeight: '800', color: '#E7DFF5', textAlign: 'center' },
+  titleSub: { fontSize: 11, color: '#938F9C', textAlign: 'center' },
 
   center: {
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
@@ -175,53 +175,53 @@ const styles = StyleSheet.create({
   freqOverlay: {
     position: 'absolute', alignItems: 'center',
   },
-  freqHz: { fontSize: 34, fontWeight: '900', color: '#E0E7FF' },
-  freqUnit: { fontSize: 12, color: '#64748B', marginTop: -4 },
+  freqHz: { fontSize: 34, fontWeight: '900', color: '#E7DFF5' },
+  freqUnit: { fontSize: 12, color: '#484551', marginTop: -4 },
 
   section: { marginBottom: 20 },
   sectionLabel: {
-    fontSize: 11, color: '#334155', fontWeight: '700',
+    fontSize: 11, color: '#484551', fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10,
   },
 
   sliderWrap: { gap: 6 },
   sliderTrack: { height: 40, justifyContent: 'center' },
   sliderFill: {
-    height: 6, backgroundColor: '#1E293B', borderRadius: 3,
+    height: 6, backgroundColor: '#2C2837', borderRadius: 3,
     overflow: 'hidden',
   },
   sliderFillInner: {
-    height: '100%', backgroundColor: '#6366F1', borderRadius: 3,
+    height: '100%', backgroundColor: '#5B4BC4', borderRadius: 3,
   },
   sliderThumb: {
     position: 'absolute', width: 24, height: 24, borderRadius: 12,
-    backgroundColor: '#818CF8',
-    shadowColor: '#6366F1', shadowOffset: { width: 0, height: 0 },
+    backgroundColor: '#C7BFFF',
+    shadowColor: '#5B4BC4', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6, shadowRadius: 8, elevation: 6,
     top: 8,
   },
   sliderLabels: { flexDirection: 'row', justifyContent: 'space-between' },
-  sliderLabelText: { fontSize: 10, color: '#334155' },
+  sliderLabelText: { fontSize: 10, color: '#484551' },
   freqCurrent: {
-    fontSize: 13, color: '#818CF8', fontWeight: '700',
+    fontSize: 13, color: '#C7BFFF', fontWeight: '700',
     textAlign: 'center', marginTop: 4,
   },
 
   presetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   presetCard: {
     width: (width - 48 - 8) / 2,
-    backgroundColor: '#0F172A', borderRadius: 14,
-    borderWidth: 1, borderColor: '#1E293B',
+    backgroundColor: '#1D1928', borderRadius: 14,
+    borderWidth: 1, borderColor: '#2C2837',
     padding: 12,
   },
-  presetCardActive: { borderColor: '#6366F1', backgroundColor: '#6366F118' },
-  presetLabel: { fontSize: 13, fontWeight: '700', color: '#CBD5E1', marginBottom: 2 },
-  presetDesc: { fontSize: 10, color: '#475569' },
+  presetCardActive: { borderColor: '#5B4BC4', backgroundColor: '#6366F118' },
+  presetLabel: { fontSize: 13, fontWeight: '700', color: '#C9C4D3', marginBottom: 2 },
+  presetDesc: { fontSize: 10, color: '#938F9C' },
 
   playBtn: {
-    backgroundColor: '#4F46E5', borderRadius: 100, paddingVertical: 16,
+    backgroundColor: '#4533AD', borderRadius: 100, paddingVertical: 16,
     alignItems: 'center', marginBottom: 24,
-    shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 0 },
+    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5, shadowRadius: 14, elevation: 8,
   },
   playBtnActive: { backgroundColor: '#7C3AED', shadowColor: '#7C3AED' },

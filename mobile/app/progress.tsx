@@ -59,7 +59,7 @@ const MOCK_STATS: StatCard[] = [
     value: '7/10',
     change: 1,
     icon: Moon,
-    color: '#6366F1',
+    color: '#5B4BC4',
   },
 ];
 
@@ -91,7 +91,7 @@ export default function ProgressScreen() {
   const getChangeColor = (change: number) => {
     if (change > 0) return '#10B981';
     if (change < 0) return '#EF4444';
-    return '#94A3B8';
+    return '#938F9C';
   };
 
   const formatDate = (dateStr: string) => {
@@ -121,7 +121,7 @@ export default function ProgressScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#E0E7FF" />
+          <ChevronLeft size={24} color="#E7DFF5" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
           {lang === 'vi' ? 'Tiến độ' : 'Progress'}
@@ -292,7 +292,7 @@ export default function ProgressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#151120',
   },
   scrollView: {
     flex: 1,
@@ -319,14 +319,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     letterSpacing: 0.2,
   },
 
   // Time Range
   timeRangeContainer: {
     flexDirection: 'row',
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 12,
     padding: 4,
     marginHorizontal: 20,
@@ -339,12 +339,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeRangeBtnActive: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
   },
   timeRangeText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#64748B',
+    color: '#484551',
   },
   timeRangeTextActive: {
     color: '#FFFFFF',
@@ -360,10 +360,10 @@ const styles = StyleSheet.create({
   },
   statCard: {
     width: (width - 52) / 2,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#484551',
     padding: 16,
   },
   statIcon: {
@@ -376,13 +376,13 @@ const styles = StyleSheet.create({
   },
   statTitle: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: '#938F9C',
     marginBottom: 6,
   },
   statValue: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     marginBottom: 6,
   },
   statChange: {
@@ -403,26 +403,26 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     marginBottom: 12,
   },
   chartPlaceholder: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#484551',
     padding: 40,
     alignItems: 'center',
   },
   chartPlaceholderText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#938F9C',
     marginBottom: 6,
   },
   chartPlaceholderSubtext: {
     fontSize: 12,
-    color: '#64748B',
+    color: '#484551',
   },
 
   // Assessment Section
@@ -434,10 +434,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   assessmentCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#484551',
     padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -449,12 +449,12 @@ const styles = StyleSheet.create({
   assessmentType: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     marginBottom: 4,
   },
   assessmentDate: {
     fontSize: 12,
-    color: '#64748B',
+    color: '#484551',
   },
   assessmentRight: {
     alignItems: 'flex-end',
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
   assessmentScore: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: '#938F9C',
     marginBottom: 6,
   },
   severityBadge: {
@@ -477,20 +477,20 @@ const styles = StyleSheet.create({
   },
 
   emptyState: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#484551',
     padding: 32,
     alignItems: 'center',
   },
   emptyText: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: '#938F9C',
     marginBottom: 16,
   },
   emptyBtn: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 12,
@@ -506,10 +506,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   insightCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#484551',
     padding: 16,
     flexDirection: 'row',
     gap: 12,
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   insightText: {
     flex: 1,
     fontSize: 14,
-    color: '#CBD5E1',
+    color: '#C9C4D3',
     lineHeight: 20,
   },
 });

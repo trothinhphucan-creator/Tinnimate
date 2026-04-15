@@ -217,7 +217,7 @@ export default function HearingTestScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color="#E0E7FF" />
+            <ChevronLeft size={24} color="#E7DFF5" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
             {lang === 'vi' ? 'Kiểm tra thính lực' : 'Hearing Test'}
@@ -264,7 +264,7 @@ export default function HearingTestScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color="#E0E7FF" />
+            <ChevronLeft size={24} color="#E7DFF5" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
             {lang === 'vi' ? 'Kết quả' : 'Results'}
@@ -325,7 +325,7 @@ export default function HearingTestScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#E0E7FF" />
+          <ChevronLeft size={24} color="#E7DFF5" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
           {lang === 'vi' ? 'Kiểm tra thính lực' : 'Hearing Test'}
@@ -421,7 +421,7 @@ export default function HearingTestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#151120',
   },
 
   header: {
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     letterSpacing: 0.2,
   },
 
@@ -454,19 +454,19 @@ const styles = StyleSheet.create({
   introTitle: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     textAlign: 'center',
     marginBottom: 16,
   },
   introDesc: {
     fontSize: 15,
-    color: '#94A3B8',
+    color: '#938F9C',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 32,
   },
   instructions: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     padding: 20,
     marginBottom: 32,
@@ -474,16 +474,16 @@ const styles = StyleSheet.create({
   instructionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     marginBottom: 12,
   },
   instructionText: {
     fontSize: 14,
-    color: '#CBD5E1',
+    color: '#C9C4D3',
     lineHeight: 22,
   },
   startBtn: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
     paddingVertical: 16,
     borderRadius: 16,
     flexDirection: 'row',
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: '#938F9C',
     textAlign: 'center',
     marginBottom: 12,
   },
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#334155',
+    backgroundColor: '#484551',
   },
   progressDotActive: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
   },
 
   freqDisplay: {
@@ -533,13 +533,13 @@ const styles = StyleSheet.create({
   },
   freqLabel: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: '#938F9C',
     marginBottom: 8,
   },
   freqValue: {
     fontSize: 48,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
   },
 
   volumeDisplay: {
@@ -548,37 +548,37 @@ const styles = StyleSheet.create({
   },
   volumeLabel: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: '#938F9C',
     marginBottom: 8,
   },
   volumeValue: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#818CF8',
+    color: '#C7BFFF',
     marginBottom: 12,
   },
   volumeBar: {
     width: '100%',
     height: 8,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 4,
     overflow: 'hidden',
   },
   volumeFill: {
     height: '100%',
-    backgroundColor: '#818CF8',
+    backgroundColor: '#C7BFFF',
   },
 
   playButton: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
     marginBottom: 32,
-    shadowColor: '#4F46E5',
+    shadowColor: '#4533AD',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   responseBtnNo: {
-    backgroundColor: '#64748B',
+    backgroundColor: '#484551',
   },
   responseBtnYes: {
     backgroundColor: '#10B981',
@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   resultCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderRadius: 16,
     padding: 20,
     flexDirection: 'row',
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
   resultFreq: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
   },
   resultStatus: {
     fontSize: 15,
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
   },
   resultVolume: {
     fontSize: 13,
-    color: '#94A3B8',
+    color: '#938F9C',
   },
 
   disclaimer: {
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
   },
 
   restartBtn: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: 'center',

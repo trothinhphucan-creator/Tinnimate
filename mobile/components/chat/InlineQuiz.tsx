@@ -157,9 +157,9 @@ export function InlineQuiz({ quizType, onResult }: Props) {
                         activeOpacity={0.7}
                       >
                         {selected === opt.value ? (
-                          <CheckCircle2 size={16} color="#4F46E5" />
+                          <CheckCircle2 size={16} color="#4533AD" />
                         ) : (
-                          <Circle size={16} color="#475569" />
+                          <Circle size={16} color="#938F9C" />
                         )}
                         <Text
                           style={[
@@ -215,16 +215,16 @@ export function InlineQuiz({ quizType, onResult }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1D1928',
     borderWidth: 1,
-    borderColor: '#6366F1',
+    borderColor: '#5B4BC4',
     borderRadius: 16,
     padding: 12,
     marginTop: 8,
     maxHeight: 400,
   },
   card: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#1D1928',
     borderWidth: 1,
     borderColor: '#F59E0B',
     borderRadius: 16,
@@ -251,12 +251,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 11,
-    color: '#64748B',
+    color: '#484551',
   },
   questions: {
     maxHeight: 240,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 13,
-    color: '#CBD5E1',
+    color: '#C9C4D3',
     marginBottom: 8,
     lineHeight: 18,
   },
@@ -280,31 +280,31 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#2C2837',
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#484551',
   },
   optionSelected: {
     backgroundColor: '#4F46E520',
-    borderColor: '#4F46E5',
+    borderColor: '#4533AD',
   },
   optionText: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: '#938F9C',
   },
   optionTextSelected: {
-    color: '#C7D2FE',
+    color: '#FBBC00',
     fontWeight: '600',
   },
   submitBtn: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#4533AD',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 12,
   },
   submitBtnDisabled: {
-    backgroundColor: '#334155',
+    backgroundColor: '#484551',
   },
   submitBtnText: {
     fontSize: 13,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   scoreValue: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#E0E7FF',
+    color: '#E7DFF5',
   },
   severityBadge: {
     paddingHorizontal: 16,
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontSize: 12,
-    color: '#64748B',
+    color: '#484551',
     textAlign: 'center',
   },
 });

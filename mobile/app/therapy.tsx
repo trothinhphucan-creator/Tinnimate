@@ -19,14 +19,14 @@ const { width, height } = Dimensions.get('window');
 const TRACKS = [
   { id: 'rain',     name: 'Mưa',   nameEn: 'Rain',   fullName: 'Tiếng Mưa',   fullNameEn: 'Rain Sounds',   emoji: '🌧️', color: '#06B6D4', free: true,  file: require('@/assets/audio/rain.mp3')     },
   { id: 'ocean',    name: 'Sóng',  nameEn: 'Ocean',  fullName: 'Sóng Biển',   fullNameEn: 'Ocean Waves',   emoji: '🌊', color: '#0EA5E9', free: true,  file: require('@/assets/audio/ocean.mp3')    },
-  { id: 'white',    name: 'White', nameEn: 'White',  fullName: 'Ồn Trắng',    fullNameEn: 'White Noise',   emoji: '⬜', color: '#94A3B8', free: true,  file: require('@/assets/audio/white.mp3')    },
+  { id: 'white',    name: 'White', nameEn: 'White',  fullName: 'Ồn Trắng',    fullNameEn: 'White Noise',   emoji: '⬜', color: '#938F9C', free: true,  file: require('@/assets/audio/white.mp3')    },
   { id: 'pink',     name: 'Pink',  nameEn: 'Pink',   fullName: 'Ồn Hồng',     fullNameEn: 'Pink Noise',    emoji: '🌸', color: '#EC4899', free: true,  file: require('@/assets/audio/pink.mp3')     },
   { id: 'brown',    name: 'Brown', nameEn: 'Brown',  fullName: 'Ồn Nâu',      fullNameEn: 'Brown Noise',   emoji: '🟤', color: '#92400E', free: true,  file: require('@/assets/audio/brown.mp3')    },
   { id: 'forest',   name: 'Rừng',  nameEn: 'Forest', fullName: 'Rừng Đêm',    fullNameEn: 'Forest Night',  emoji: '🌲', color: '#16A34A', free: false, file: require('@/assets/audio/forest.mp3')   },
   { id: 'campfire', name: 'Lửa',   nameEn: 'Fire',   fullName: 'Lửa Trại',    fullNameEn: 'Campfire',      emoji: '🔥', color: '#F97316', free: false, file: require('@/assets/audio/campfire.mp3') },
   { id: 'birds',    name: 'Chim',  nameEn: 'Birds',  fullName: 'Tiếng Chim',  fullNameEn: 'Bird Songs',    emoji: '🐦', color: '#84CC16', free: false, file: require('@/assets/audio/birds.mp3')    },
   { id: 'zen',      name: 'Zen',   nameEn: 'Zen',    fullName: 'Zen Bells',   fullNameEn: 'Zen Bells',     emoji: '🔔', color: '#A855F7', free: false, file: require('@/assets/audio/zen.mp3')      },
-  { id: '528hz',    name: '528Hz', nameEn: '528Hz',  fullName: 'Tone 528Hz',  fullNameEn: 'Tone 528Hz',    emoji: '✨', color: '#6366F1', free: false, file: require('@/assets/audio/528hz.mp3')    },
+  { id: '528hz',    name: '528Hz', nameEn: '528Hz',  fullName: 'Tone 528Hz',  fullNameEn: 'Tone 528Hz',    emoji: '✨', color: '#5B4BC4', free: false, file: require('@/assets/audio/528hz.mp3')    },
 ];
 
 // Radial bar waveform (circular, animated when playing)
@@ -184,7 +184,7 @@ export default function TherapyScreen() {
       {/* Top Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#E0E7FF" />
+          <ChevronLeft size={24} color="#E7DFF5" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{lang === 'vi' ? 'Âm thanh trị liệu' : 'Sound Therapy'}</Text>
         <View style={{ width: 40 }} />
@@ -229,25 +229,25 @@ export default function TherapyScreen() {
           onPress={() => { Haptics.selectionAsync(); setIsShuffle(v => !v); }}
           style={styles.ctrlSmall}
         >
-          <Shuffle size={20} color={isShuffle ? track.color : '#334155'} />
+          <Shuffle size={20} color={isShuffle ? track.color : '#484551'} />
         </TouchableOpacity>
 
         {/* Prev */}
         <TouchableOpacity onPress={prevTrack} style={styles.ctrlMed}>
-          <SkipBack fill="#CBD5E1" color="#CBD5E1" size={26} />
+          <SkipBack fill="#C9C4D3" color="#C9C4D3" size={26} />
         </TouchableOpacity>
 
         {/* Play/Pause main button */}
-        <TouchableOpacity onPress={togglePlay} style={[styles.playBtn, { backgroundColor: isPlaying ? '#4F46E5' : '#E2E8F0' }]}>
+        <TouchableOpacity onPress={togglePlay} style={[styles.playBtn, { backgroundColor: isPlaying ? '#4533AD' : '#E2E8F0' }]}>
           {isPlaying
             ? <Pause fill="#fff" color="#fff" size={28} />
-            : <Play fill="#020617" color="#020617" size={28} style={{ marginLeft: 3 }} />
+            : <Play fill="#151120" color="#151120" size={28} style={{ marginLeft: 3 }} />
           }
         </TouchableOpacity>
 
         {/* Next */}
         <TouchableOpacity onPress={nextTrack} style={styles.ctrlMed}>
-          <SkipForward fill="#CBD5E1" color="#CBD5E1" size={26} />
+          <SkipForward fill="#C9C4D3" color="#C9C4D3" size={26} />
         </TouchableOpacity>
 
         {/* Repeat */}
@@ -255,7 +255,7 @@ export default function TherapyScreen() {
           onPress={() => { Haptics.selectionAsync(); setIsRepeat(v => !v); }}
           style={styles.ctrlSmall}
         >
-          <Repeat size={20} color={isRepeat ? track.color : '#334155'} />
+          <Repeat size={20} color={isRepeat ? track.color : '#484551'} />
         </TouchableOpacity>
       </View>
 
@@ -274,13 +274,13 @@ export default function TherapyScreen() {
               key={t.id}
               style={[
                 styles.chip,
-                active && { backgroundColor: '#1E293B', borderColor: t.color + '60' },
+                active && { backgroundColor: '#2C2837', borderColor: t.color + '60' },
               ]}
               onPress={() => playTrack(i)}
               activeOpacity={0.7}
             >
               <Text style={styles.chipEmoji}>{t.emoji}</Text>
-              <Text style={[styles.chipText, active && { color: '#E0E7FF' }]}>{chipName}</Text>
+              <Text style={[styles.chipText, active && { color: '#E7DFF5' }]}>{chipName}</Text>
             </TouchableOpacity>
           );
         })}
@@ -290,7 +290,7 @@ export default function TherapyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617', alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#151120', alignItems: 'center' },
 
   header: {
     width: '100%', flexDirection: 'row', alignItems: 'center',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     width: 40, height: 40, alignItems: 'center', justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 16, fontWeight: '600', color: '#E0E7FF', letterSpacing: 0.2,
+    fontSize: 16, fontWeight: '600', color: '#E7DFF5', letterSpacing: 0.2,
   },
 
   stage: {
@@ -312,16 +312,16 @@ const styles = StyleSheet.create({
   waveContainer: { alignItems: 'center', justifyContent: 'center' },
 
   trackInfo: { alignItems: 'center', marginTop: 16, marginBottom: 12 },
-  trackName: { fontSize: 20, fontWeight: '700', color: '#E0E7FF', letterSpacing: 0.2 },
-  trackSubtitle: { fontSize: 13, color: '#475569', marginTop: 3 },
+  trackName: { fontSize: 20, fontWeight: '700', color: '#E7DFF5', letterSpacing: 0.2 },
+  trackSubtitle: { fontSize: 13, color: '#938F9C', marginTop: 3 },
 
   progressContainer: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 24, width: '100%', marginBottom: 24,
   },
-  progressTime: { fontSize: 11, color: '#475569', width: 36 },
+  progressTime: { fontSize: 11, color: '#938F9C', width: 36 },
   progressBar: {
-    flex: 1, height: 4, backgroundColor: '#1E293B', borderRadius: 2,
+    flex: 1, height: 4, backgroundColor: '#2C2837', borderRadius: 2,
     overflow: 'visible', position: 'relative',
   },
   progressFill: { height: 4, borderRadius: 2 },
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   playBtn: {
     width: 68, height: 68, borderRadius: 34,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 0 },
+    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5, shadowRadius: 16, elevation: 10,
   },
 
@@ -348,8 +348,8 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 100,
-    borderWidth: 1, borderColor: '#1E293B', backgroundColor: 'transparent',
+    borderWidth: 1, borderColor: '#2C2837', backgroundColor: 'transparent',
   },
   chipEmoji: { fontSize: 13 },
-  chipText: { fontSize: 13, color: '#334155', fontWeight: '600' },
+  chipText: { fontSize: 13, color: '#484551', fontWeight: '600' },
 });

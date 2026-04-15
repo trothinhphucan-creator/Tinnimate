@@ -97,7 +97,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Email"
-            placeholderTextColor="#334155"
+            placeholderTextColor="#484551"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -107,7 +107,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Mật khẩu"
-            placeholderTextColor="#334155"
+            placeholderTextColor="#484551"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -133,7 +133,7 @@ export default function LoginScreen() {
             disabled={loading}
             activeOpacity={0.85}>
             {loading
-              ? <ActivityIndicator color="#0F172A" />
+              ? <ActivityIndicator color="#1D1928" />
               : <Text style={styles.submitText}>
                   {mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}
                 </Text>}
@@ -148,7 +148,7 @@ export default function LoginScreen() {
         {/* Note */}
         <Text style={styles.note}>
           Cùng account với{' '}
-          <Text style={{ color: '#818CF8' }}>tinnimate.vuinghe.com</Text>
+          <Text style={{ color: '#C7BFFF' }}>tinnimate.vuinghe.com</Text>
         </Text>
 
       </KeyboardAvoidingView>
@@ -157,27 +157,27 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#020617' },
+  container: { flex: 1, backgroundColor: '#151120' },
   inner: { flex: 1, paddingHorizontal: 28, justifyContent: 'center' },
 
   logoArea: { alignItems: 'center', marginBottom: 40 },
-  appName: { fontSize: 28, fontWeight: '800', color: '#E0E7FF', marginTop: 16, letterSpacing: -0.5 },
-  tagline: { fontSize: 13, color: '#475569', marginTop: 4 },
+  appName: { fontSize: 28, fontWeight: '800', color: '#E7DFF5', marginTop: 16, letterSpacing: -0.5 },
+  tagline: { fontSize: 13, color: '#938F9C', marginTop: 4 },
 
   modeTabs: {
-    flexDirection: 'row', backgroundColor: '#0F172A',
+    flexDirection: 'row', backgroundColor: '#1D1928',
     borderRadius: 14, padding: 4, marginBottom: 24,
-    borderWidth: 1, borderColor: '#1E293B',
+    borderWidth: 1, borderColor: '#2C2837',
   },
   modeTab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10 },
-  modeTabActive: { backgroundColor: '#4F46E5' },
-  modeTabText: { fontSize: 14, fontWeight: '600', color: '#475569' },
+  modeTabActive: { backgroundColor: '#4533AD' },
+  modeTabText: { fontSize: 14, fontWeight: '600', color: '#938F9C' },
   modeTabTextActive: { color: '#fff' },
 
   form: { gap: 12, marginBottom: 20 },
   input: {
-    backgroundColor: '#0F172A', borderRadius: 14,
-    borderWidth: 1, borderColor: '#1E293B',
+    backgroundColor: '#1D1928', borderRadius: 14,
+    borderWidth: 1, borderColor: '#2C2837',
     paddingHorizontal: 16, paddingVertical: 14,
     fontSize: 15, color: '#E2E8F0',
   },
@@ -195,16 +195,16 @@ const styles = StyleSheet.create({
   successText: { fontSize: 13, color: '#6EE7B7', lineHeight: 18 },
 
   submitBtn: {
-    backgroundColor: '#C7D2FE', borderRadius: 100,
+    backgroundColor: '#FBBC00', borderRadius: 100,
     paddingVertical: 16, alignItems: 'center',
-    shadowColor: '#818CF8', shadowOffset: { width: 0, height: 0 },
+    shadowColor: '#C7BFFF', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4, shadowRadius: 12, elevation: 8,
   },
   submitBtnDisabled: { opacity: 0.6 },
-  submitText: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
+  submitText: { fontSize: 16, fontWeight: '700', color: '#1D1928' },
 
   skipBtn: { alignItems: 'center', paddingVertical: 12 },
-  skipText: { fontSize: 13, color: '#334155' },
+  skipText: { fontSize: 13, color: '#484551' },
 
-  note: { textAlign: 'center', fontSize: 11, color: '#1E293B', marginTop: 8 },
+  note: { textAlign: 'center', fontSize: 11, color: '#2C2837', marginTop: 8 },
 });
