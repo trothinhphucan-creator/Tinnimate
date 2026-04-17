@@ -18,7 +18,7 @@ const SCREEN_LABELS: Record<string, string> = {
   journal: '📖 Nhật ký',
   sleep: '🌙 Ngủ',
   cbti: '🧠 CBT-i',
-  zentitone: '🎛️ Zentitone',
+  zentones: '🎵 Zentones',
   breathing: '🌬️ Hít thở',
   notch_therapy: '🎚️ Notch',
   profile: '👤 Profile',

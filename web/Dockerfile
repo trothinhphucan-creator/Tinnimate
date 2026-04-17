@@ -10,7 +10,7 @@ RUN apk add --no-cache dumb-init wget
 
 # Copy package files and install production deps only
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts
 
 # Copy pre-built Next.js output and static assets
 COPY .next ./.next

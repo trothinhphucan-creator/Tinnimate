@@ -8,7 +8,7 @@ import { BookOpen, Plus, ChevronRight, X, Smile, Frown, Meh, Star } from 'lucide
 import * as Haptics from 'expo-haptics';
 import { TinniOrb } from '@/components/TinniOrb';
 import { supabase } from '@/lib/supabase';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/use-user-store';
 
 const { width } = Dimensions.get('window');
 

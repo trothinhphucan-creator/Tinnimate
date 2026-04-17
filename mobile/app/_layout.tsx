@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useUserStore as useLegacyStore } from '@/store/userStore';
 import { useUserStore } from '@/store/use-user-store';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
@@ -31,8 +30,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { session, setSession } = useLegacyStore();
-  const { setUser, clearUser } = useUserStore();
+  const { user, setUser, clearUser } = useUserStore();
   const [isInitialized, setIsInitialized] = useState(false);
   const segments = useSegments();
   const router = useRouter();
@@ -44,7 +42,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
       if (session?.user) {
         loadUserProfile(session.user.id, session.user.email ?? '');
       }
@@ -52,7 +49,6 @@ export default function RootLayout() {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
       if (session?.user) {
         await loadUserProfile(session.user.id, session.user.email ?? '');
       } else {
@@ -99,12 +95,13 @@ export default function RootLayout() {
   useEffect(() => {
     if (!isInitialized) return;
     const inAuthGroup = segments[0] === '(auth)';
-    if (!session && !inAuthGroup) {
+    // Use user from store instead of raw session for routing guard
+    if (!user && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (session && inAuthGroup) {
+    } else if (user && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [session, isInitialized, segments]);
+  }, [user, isInitialized, segments]);
 
   if (!isInitialized) return null;
 

@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "schema_version": "1.1.0",
+    "awf_version": "4.0.2",
+    "created_at": "2026-04-15T01:35:00Z",
+    "updated_at": "2026-04-15T01:35:00Z"
+  },
+  "project": {
+    "name": "TinniMate",
+    "type": "fullstack-app",
+    "status": "active",
+    "description": "App hỗ trợ người bị ù tai (tinnitus) — AI chat, liệu pháp âm thanh, theo dõi tiến độ. Platform: Web + Mobile (iOS/Android).",
+    "repo": "trothinhphucan-creator/tinnimate",
+    "domain": "tinnitus therapy, mental health, audio therapy"
+  },
+  "tech_stack": {
+    "web": {
+      "framework": "Next.js 16 (App Router)",
+      "language": "TypeScript",
+      "styling": "CSS Modules / Tailwind",
+      "auth": "Supabase Auth",
+      "database": "Supabase (PostgreSQL)",
+      "ai": "Google Gemini (via AI SDK)",
+      "payment": "MoMo, VNPay, Stripe",
+      "deploy": "Docker + nginx"
+    },
+    "mobile": {
+      "framework": "Expo SDK 54",
+      "runtime": "React Native 0.81.5",
+      "router": "expo-router v6",
+      "audio": "expo-av",
+      "auth": "Supabase Auth (@supabase/supabase-js)",
+      "deep_link": "tinnimate:// scheme + @capacitor/browser"
+    },
+    "video": {
+      "framework": "Remotion",
+      "output": "TikTok/Social videos (50 HTML templates + batch scripts)"
+    },
+    "infra": {
+      "docker": true,
+      "nginx": true,
+      "pm2": true
+    }
+  },
+  "features": [
+    {
+      "name": "AI Chat (Tinni)",
+      "status": "implemented",
+      "description": "AI chatbot hỗ trợ người bị ù tai, dùng Gemini model, có tool calling, chat suggestions",
+      "tiers": ["Free", "Pro", "Ultra"],
+      "web_path": "/chat",
+      "mobile_path": "chat.tsx"
+    },
+    {
+      "name": "Sound Therapy",
+      "status": "implemented",
+      "description": "White noise, pink noise, brown noise, nature sounds, binaural beats",
+      "web_path": "/therapy",
+      "mobile_path": "zen.tsx + mixer.tsx"
+    },
+    {
+      "name": "Zentones (Exclusive)",
+      "status": "implemented",
+      "description": "Notch therapy tones — exclusive Ultra tier feature",
+      "tiers": ["Ultra"],
+      "web_path": "/zen",
+      "mobile_path": "zentones.tsx"
+    },
+    {
+      "name": "Hearing Test",
+      "status": "implemented",
+      "description": "Online hearing frequency test",
+      "web_path": "/hearing-test",
+      "mobile_path": "hearing-test.tsx"
+    },
+    {
+      "name": "CBT-i Program",
+      "status": "implemented",
+      "description": "Cognitive Behavioral Therapy for insomnia",
+      "web_path": "/cbti",
+      "mobile_path": "cbti.tsx"
+    },
+    {
+      "name": "Breathing Exercises",
+      "status": "implemented",
+      "description": "Hít thở 4-7-8 và các bài tập khác",
+      "web_path": "/therapy",
+      "mobile_path": "breathing.tsx"
+    },
+    {
+      "name": "Sleep Mode",
+      "status": "implemented",
+      "description": "Sleep timer kết hợp sound therapy",
+      "mobile_path": "sleep.tsx"
+    },
+    {
+      "name": "Journal",
+      "status": "implemented",
+      "description": "Nhật ký triệu chứng / cảm xúc",
+      "mobile_path": "journal.tsx"
+    },
+    {
+      "name": "Notch Therapy",
+      "status": "implemented",
+      "description": "Notch filter therapy cho tần số ù tai",
+      "web_path": "/notch-therapy",
+      "mobile_path": "notch-therapy.tsx"
+    },
+    {
+      "name": "Progress Tracking",
+      "status": "implemented",
+      "description": "Theo dõi streak, check-in hàng ngày",
+      "mobile_path": "progress.tsx"
+    },
+    {
+      "name": "Paywall / Pricing",
+      "status": "implemented",
+      "description": "Free / Pro / Ultra tiers. Payment: MoMo, VNPay, Stripe",
+      "mobile_path": "paywall.tsx + pricing.tsx",
+      "web_path": "/pricing"
+    },
+    {
+      "name": "Admin Panel",
+      "status": "implemented",
+      "description": "Quản lý: AI config, users, models, training data, prompts, knowledge base, mobile config, video creator, usage stats, notifications"
+    },
+    {
+      "name": "Landing Page",
+      "status": "active_development",
+      "description": "Trang chủ marketing — hero 3D Brain Knowledge Graph (não bộ + auditory cortex + animated neuron nodes). Redesigned testimonials & features sections.",
+      "components": [
+        "web/components/landing/brain-hero.tsx — 3D brain visualization, SVG animateMotion edges, neuron nodes, sound wave rings"
+      ]
+    },
+    {
+      "name": "TikTok Videos",
+      "status": "active_development",
+      "description": "50 HTML video templates + Remotion + batch generation + TikTok upload scripts"
+    },
+    {
+      "name": "Mobile App",
+      "status": "active_development",
+      "description": "Full Expo app — đang refactor toàn bộ screens để đạt parity với web"
+    }
+  ],
+  "api_endpoints": [
+    { "path": "/api/chat", "method": "POST", "explained": "Chat với AI Tinni, có tool calling" },
+    { "path": "/api/chat/suggestions", "method": "GET", "explained": "Lấy gợi ý câu hỏi tiếp theo" },
+    { "path": "/api/pricing-config", "method": "GET/POST", "explained": "Cấu hình gói giá Free/Pro/Ultra" },
+    { "path": "/api/save-assessment", "method": "POST", "explained": "Lưu kết quả đánh giá người dùng" },
+    { "path": "/api/save-checkin", "method": "POST", "explained": "Lưu daily check-in" },
+    { "path": "/api/mobile-config", "method": "GET", "explained": "Remote config cho mobile app" },
+    { "path": "/api/payment/momo", "method": "POST", "explained": "Tạo payment MoMo" },
+    { "path": "/api/payment/momo/callback", "method": "POST", "explained": "Webhook callback MoMo" },
+    { "path": "/api/payment/vnpay", "method": "POST", "explained": "Tạo payment VNPay" },
+    { "path": "/api/payment/vnpay/callback", "method": "GET", "explained": "Callback VNPay" },
+    { "path": "/api/stripe/checkout", "method": "POST", "explained": "Tạo Stripe checkout session" },
+    { "path": "/api/stripe/webhook", "method": "POST", "explained": "Stripe webhook events" },
+    { "path": "/api/admin/config", "method": "GET/POST", "explained": "Cấu hình admin (AI model, temperature, tools)" },
+    { "path": "/api/admin/users", "method": "GET", "explained": "Danh sách users" },
+    { "path": "/api/admin/models", "method": "GET", "explained": "Danh sách AI models" },
+    { "path": "/api/admin/training", "method": "GET/POST", "explained": "Training data cho AI" },
+    { "path": "/api/admin/prompts", "method": "GET/POST", "explained": "System prompts" },
+    { "path": "/api/admin/knowledge", "method": "GET/POST", "explained": "Knowledge base" },
+    { "path": "/api/admin/mobile-config", "method": "GET/POST", "explained": "Config mobile app" },
+    { "path": "/api/admin/mobile-analytics", "method": "GET", "explained": "Analytics từ mobile" },
+    { "path": "/api/admin/notifications", "method": "POST", "explained": "Push notifications" },
+    { "path": "/api/admin/usage", "method": "GET", "explained": "Usage stats AI" },
+    { "path": "/api/admin/examples", "method": "GET/POST", "explained": "Few-shot examples cho AI" },
+    { "path": "/api/admin/video-bg-prompt", "method": "POST", "explained": "Generate video background prompt" },
+    { "path": "/api/auth/*", "method": "Various", "explained": "Supabase OAuth callback" }
+  ],
+  "business_rules": [
+    "Free tier: AI chat cơ bản, sound therapy, hearing test",
+    "Pro tier: Không giới hạn AI chat, full features",
+    "Ultra tier: Pro + Zentones (exclusive notch therapy tones)",
+    "Payment: MoMo và VNPay cho Việt Nam, Stripe cho international",
+    "Rate limit auth: 10 requests/15 phút/IP",
+    "Rate limit chat: 30 requests/phút/IP",
+    "Load user từ bảng 'profiles' (không phải 'users')"
+  ],
+  "knowledge_items": {
+    "gotchas": [
+      {
+        "issue": "Deploy pipeline — CRITICAL",
+        "solution": "Site tinnimate.vuinghe.com chạy qua PM2 (NOT Docker). Cloudflare tunnel → localhost:3000 = PM2 process. Docker nginx expose port 3005 (không dùng cho production). ĐÚNG FLOW: cd web && npm run build → pm2 restart tinnimate"
+      },
+      {
+        "issue": "Cloudflare cache sau deploy",
+        "solution": "Sau deploy lớn (thay đổi HTML/CSS), phải purge Cloudflare cache: Dashboard → Caching → Purge Cache. Hoặc có API token dùng curl API."
+      },
+      {
+        "issue": "Load user data",
+        "solution": "Dùng bảng 'profiles', KHÔNG phải 'users' — fixed tại commit 1e6eb7e"
+      },
+      {
+        "issue": "IntersectionObserver trên WKWebView (iOS)",
+        "solution": "Set threshold=0 + 300ms fallback timer — fixed tại RevealSection component"
+      },
+      {
+        "issue": "WKWebView cache stale code",
+        "solution": "Global no-cache headers trong middleware — fixed commit 163a189"
+      },
+      {
+        "issue": "Admin pages render SSR",
+        "solution": "Phải add force-dynamic directive — fixed commit 3601f60"
+      },
+      {
+        "issue": "OAuth deep link mobile",
+        "solution": "tinnimate:// scheme với @capacitor/browser + appUrlOpen handler — commit 2680d76"
+      },
+      {
+        "issue": "Rate limit redirect loop",
+        "solution": "Skip rate limit nếu URL đã có ?error param để tránh loop /login → /login"
+      }
+    ],
+    "patterns": [
+      "Supabase client: dùng lib/supabase/server.ts cho server, lib/supabase/middleware.ts cho middleware",
+      "Admin API: authenticate bằng Supabase session trước khi xử lý",
+      "Mobile remote config: hook useRemoteConfig.ts fetch từ /api/mobile-config",
+      "i18n: useLangStore (vi/en) dùng cho landing page và một số pages"
+    ],
+    "conventions": [
+      "TypeScript strict mode",
+      "API routes trong web/app/api/**",
+      "Admin pages trong web/app/(admin)/admin/**",
+      "App pages trong web/app/(app)/**",
+      "Landing page: web/app/page.tsx"
+    ]
+  },
+  "structure": {
+    "web/": "Next.js 16 web app",
+    "mobile/": "Expo React Native app",
+    "videos/": "50 HTML video templates + batch upload scripts",
+    "video-intro/": "Remotion project cho intro video",
+    "stitch_designs/": "UI mockups (Stitch/Figma exports)",
+    "docs/": "Documentation",
+    ".agents/": "AI agent configs + remotion skills",
+    "scripts/": "Utility scripts",
+    "docker-compose.yml": "Production Docker config",
+    "nginx.conf": "nginx reverse proxy config"
+  }
+}

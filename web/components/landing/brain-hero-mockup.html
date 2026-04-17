@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TinniMate — Hero Banner Mockup (3D Brain)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0a14;
+      --purple-deep: #1a1030;
+      --violet: #7c3aed;
+      --indigo: #4f46e5;
+      --lavender: #c7bfff;
+      --gold: #fbbc00;
+      --coral: #ff6b6b;
+      --teal: #06b6d4;
+      --text-muted: #938f9c;
+      --text-dim: #615d6b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #e7dff5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ─────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 64px;
+      background: rgba(12, 10, 20, 0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-orb {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: conic-gradient(from 0deg, #4f46e5, #7c3aed, #fbbc00, #ec4899, #4f46e5);
+      border: 1px solid rgba(255,255,255,0.2);
+      animation: spin 8s linear infinite;
+      box-shadow: 0 0 20px rgba(124,58,237,0.5);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .logo-text { font-weight: 800; font-size: 18px; color: white; letter-spacing: 0.02em; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover { color: white; }
+    .nav-cta {
+      padding: 10px 22px; border-radius: 100px;
+      background: linear-gradient(135deg, var(--gold), #ffa726);
+      color: #3d2700; font-weight: 700; font-size: 14px;
+      text-decoration: none; transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(251,188,0,0.3);
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(251,188,0,0.4); }
+
+    /* ─── HERO SECTION ─────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 0;
+      padding: 80px 60px 60px;
+      max-width: 1300px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* ─── AMBIENT BG ─────────────────────────── */
+    .ambient {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .ambient-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(130px); opacity: 0.5;
+      animation: pulse-slow 6s ease-in-out infinite;
+    }
+    .orb1 { width: 700px; height: 700px; top: -15%; left: -10%; background: radial-gradient(circle, rgba(124,58,237,0.3), transparent); }
+    .orb2 { width: 500px; height: 500px; top: 30%; right: -10%; background: radial-gradient(circle, rgba(79,70,229,0.25), transparent); animation-delay: 2s; }
+    .orb3 { width: 400px; height: 400px; bottom: -10%; left: 30%; background: radial-gradient(circle, rgba(251,188,0,0.15), transparent); animation-delay: 4s; }
+    @keyframes pulse-slow { 0%,100%{opacity:.4;transform:scale(1)} 50%{opacity:.6;transform:scale(1.05)} }
+
+    /* ─── LEFT COPY ──────────────────────────── */
+    .hero-left { position: relative; z-index: 10; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 100px;
+      background: rgba(251,188,0,0.1); border: 1px solid rgba(251,188,0,0.25);
+      color: var(--gold); font-size: 12px; font-weight: 600; margin-bottom: 28px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: ping 1.5s ease infinite; }
+    @keyframes ping { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:.5} }
+
+    .hero-title {
+      font-size: clamp(40px, 5vw, 68px);
+      font-weight: 900; line-height: 1.08; margin-bottom: 24px;
+    }
+    .title-line1 {
+      background: linear-gradient(135deg, #fff 0%, #c7bfff 80%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .title-line2 { color: var(--text-muted); font-size: 0.65em; font-weight: 600; display: block; margin-top: 4px; }
+    .title-line3 {
+      display: block; margin-top: 4px;
+      background: linear-gradient(90deg, var(--coral) 0%, #ff9966 50%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite;
+      background-size: 200% auto;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    .hero-desc {
+      font-size: 16px; color: var(--text-muted);
+      line-height: 1.7; margin-bottom: 36px; max-width: 440px;
+    }
+    .highlight-text { color: var(--lavender); font-weight: 500; }
+
+    .cta-group { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 100px;
+      background: linear-gradient(135deg, var(--gold), #ffa726);
+      color: #3d2700; font-weight: 700; font-size: 15px; text-decoration: none;
+      box-shadow: 0 4px 24px rgba(251,188,0,0.35); transition: all 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(251,188,0,0.5); }
+    .btn-secondary {
+      padding: 14px 24px; border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #cac5cc; font-size: 14px; text-decoration: none;
+      transition: all 0.25s;
+    }
+    .btn-secondary:hover { border-color: rgba(199,191,255,0.4); color: white; background: rgba(199,191,255,0.06); }
+
+    .online-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 100px;
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+      color: #34d399; font-size: 12px; font-weight: 500; margin-top: 8px;
+    }
+    .ping-dot {
+      position: relative; display: inline-flex;
+      width: 10px; height: 10px;
+    }
+    .ping-outer {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: #34d399; animation: ripple 1.5s ease-out infinite;
+    }
+    .ping-inner { position: relative; width: 10px; height: 10px; border-radius: 50%; background: #10b981; }
+    @keyframes ripple { 0%{transform:scale(1);opacity:.8} 100%{transform:scale(2.5);opacity:0} }
+
+    .stats-row {
+      display: flex; gap: 36px; margin-top: 40px; padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-item {}
+    .stat-value { font-size: 26px; font-weight: 800; color: white; }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+    /* ─── RIGHT: 3D BRAIN CANVAS ─────────────── */
+    .hero-right {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      height: 620px;
+    }
+
+    .brain-container {
+      position: relative; width: 520px; height: 520px;
+    }
+
+    /* Canvas SVG brain */
+    .brain-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* Outer glow rings */
+    .brain-ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid; animation: ring-pulse 3s ease-in-out infinite;
+    }
+    .ring1 {
+      inset: -20px; border-color: rgba(124,58,237,0.2);
+      box-shadow: inset 0 0 40px rgba(124,58,237,0.05);
+      animation-delay: 0s;
+    }
+    .ring2 {
+      inset: -50px; border-color: rgba(99,102,241,0.12);
+      animation-delay: 1s;
+    }
+    .ring3 {
+      inset: -85px; border-color: rgba(251,188,0,0.08);
+      animation-delay: 2s;
+    }
+    @keyframes ring-pulse {
+      0%,100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.02); }
+    }
+
+    /* Sound wave emanating from brain */
+    .sound-wave {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%; border: 2px solid;
+      animation: wave-expand 2.5s ease-out infinite;
+      pointer-events: none;
+    }
+    .wave1 { width: 160px; height: 100px; border-color: rgba(255,107,107,0.6); animation-delay: 0s; }
+    .wave2 { width: 160px; height: 100px; border-color: rgba(255,107,107,0.4); animation-delay: 0.5s; }
+    .wave3 { width: 160px; height: 100px; border-color: rgba(255,107,107,0.25); animation-delay: 1s; }
+    .wave4 { width: 160px; height: 100px; border-color: rgba(255,107,107,0.12); animation-delay: 1.5s; }
+    @keyframes wave-expand {
+      0% { transform: translate(-50%,-50%) scale(0.8); opacity: 0.9; }
+      100% { transform: translate(-50%,-50%) scale(3.5); opacity: 0; }
+    }
+
+    /* Floating neuron nodes */
+    .neuron-node {
+      position: absolute; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: white;
+      text-align: center; line-height: 1.2;
+      cursor: pointer; transition: all 0.3s;
+      z-index: 20;
+    }
+    .neuron-node:hover { transform: scale(1.15); z-index: 30; }
+    .neuron-node .label {
+      position: absolute; white-space: nowrap;
+      font-size: 10px; font-weight: 500;
+      color: rgba(255,255,255,0.7); pointer-events: none;
+    }
+
+    /* Auditory Cortex — the main "deaf" zone */
+    .node-auditory-cortex {
+      width: 90px; height: 90px;
+      top: 38%; left: 50%; transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 40% 40%, rgba(255,107,107,0.9), rgba(220,38,38,0.7));
+      border: 2px solid rgba(255,107,107,0.8);
+      box-shadow: 0 0 40px rgba(255,107,107,0.5), 0 0 80px rgba(220,38,38,0.2), inset 0 1px 1px rgba(255,255,255,0.2);
+      animation: cortex-pulse 2s ease-in-out infinite;
+      font-size: 12px; font-weight: 700;
+    }
+    @keyframes cortex-pulse {
+      0%,100% { box-shadow: 0 0 40px rgba(255,107,107,0.5), 0 0 80px rgba(220,38,38,0.2); }
+      50% { box-shadow: 0 0 60px rgba(255,107,107,0.7), 0 0 120px rgba(220,38,38,0.35); }
+    }
+    .node-auditory-cortex .label { bottom: -22px; left: 50%; transform: translateX(-50%); color: #ff6b6b; font-size: 9px; }
+
+    /* Secondary brain regions */
+    .node-prefrontal {
+      width: 62px; height: 62px;
+      top: 18%; left: 42%;
+      background: radial-gradient(circle at 40% 40%, rgba(167,139,250,0.8), rgba(124,58,237,0.5));
+      border: 1.5px solid rgba(167,139,250,0.5);
+      box-shadow: 0 0 20px rgba(124,58,237,0.3);
+      animation: node-float 4s ease-in-out infinite;
+    }
+    .node-amygdala {
+      width: 52px; height: 52px;
+      top: 55%; left: 22%;
+      background: radial-gradient(circle at 40% 40%, rgba(251,188,0,0.8), rgba(245,158,11,0.4));
+      border: 1.5px solid rgba(251,188,0,0.5);
+      box-shadow: 0 0 20px rgba(251,188,0,0.3);
+      animation: node-float 4.5s ease-in-out infinite 0.5s;
+    }
+    .node-limbic {
+      width: 48px; height: 48px;
+      top: 55%; right: 20%;
+      background: radial-gradient(circle at 40% 40%, rgba(6,182,212,0.8), rgba(14,116,144,0.4));
+      border: 1.5px solid rgba(6,182,212,0.5);
+      box-shadow: 0 0 20px rgba(6,182,212,0.3);
+      animation: node-float 3.8s ease-in-out infinite 1s;
+    }
+    .node-thalamus {
+      width: 44px; height: 44px;
+      top: 35%; left: 20%;
+      background: radial-gradient(circle at 40% 40%, rgba(52,211,153,0.8), rgba(16,185,129,0.4));
+      border: 1.5px solid rgba(52,211,153,0.5);
+      box-shadow: 0 0 18px rgba(52,211,153,0.3);
+      animation: node-float 5s ease-in-out infinite 0.3s;
+    }
+    .node-cochlea {
+      width: 40px; height: 40px;
+      top: 72%; left: 50%; transform: translateX(-50%);
+      background: radial-gradient(circle at 40% 40%, rgba(199,191,255,0.7), rgba(99,102,241,0.4));
+      border: 1.5px solid rgba(199,191,255,0.4);
+      box-shadow: 0 0 15px rgba(99,102,241,0.3);
+      animation: node-float 4.2s ease-in-out infinite 0.8s;
+      opacity: 0.6; /* cochlea is damaged / silent */
+    }
+    .node-brainstem {
+      width: 38px; height: 38px;
+      top: 78%; left: 30%;
+      background: radial-gradient(circle at 40% 40%, rgba(156,163,175,0.6), rgba(75,85,99,0.3));
+      border: 1.5px solid rgba(156,163,175,0.3);
+      box-shadow: 0 0 12px rgba(107,114,128,0.2);
+      animation: node-float 5.5s ease-in-out infinite 1.2s;
+      opacity: 0.5;
+    }
+    .node-hippocampus {
+      width: 46px; height: 46px;
+      top: 35%; right: 18%;
+      background: radial-gradient(circle at 40% 40%, rgba(251,146,60,0.8), rgba(234,88,12,0.4));
+      border: 1.5px solid rgba(251,146,60,0.5);
+      box-shadow: 0 0 18px rgba(251,146,60,0.3);
+      animation: node-float 4.7s ease-in-out infinite 0.6s;
+    }
+    @keyframes node-float {
+      0%,100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* SVG connection edges */
+    .edges-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+
+    /* Info cards floating */
+    .info-card {
+      position: absolute; z-index: 40;
+      background: rgba(12,10,20,0.85); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+      padding: 12px 16px; min-width: 160px;
+    }
+    .card-cortex-info {
+      bottom: 5%; right: -5%;
+      border-color: rgba(255,107,107,0.3);
+      box-shadow: 0 4px 24px rgba(255,107,107,0.15);
+    }
+    .card-pathway {
+      top: 5%; left: -8%;
+      border-color: rgba(199,191,255,0.2);
+    }
+    .card-title { font-size: 11px; font-weight: 700; color: white; margin-bottom: 4px; }
+    .card-desc { font-size: 10px; color: var(--text-muted); line-height: 1.5; }
+    .card-badge {
+      display: inline-block; margin-top: 6px;
+      padding: 2px 8px; border-radius: 100px;
+      font-size: 9px; font-weight: 600;
+    }
+    .badge-red { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.3); color: #ff6b6b; }
+    .badge-lavender { background: rgba(199,191,255,0.1); border: 1px solid rgba(199,191,255,0.2); color: var(--lavender); }
+
+    /* Frequency visualizer bar */
+    .freq-card {
+      position: absolute; left: -10%; top: 45%; z-index: 40;
+      background: rgba(12,10,20,0.85); backdrop-filter: blur(16px);
+      border: 1px solid rgba(251,188,0,0.2); border-radius: 14px;
+      padding: 12px 16px; width: 150px;
+      box-shadow: 0 4px 20px rgba(251,188,0,0.1);
+    }
+    .freq-label { font-size: 9px; color: var(--gold); font-weight: 600; margin-bottom: 8px; letter-spacing: .06em; text-transform: uppercase; }
+    .freq-bars { display: flex; align-items: flex-end; gap: 3px; height: 36px; }
+    .freq-bar {
+      width: 6px; border-radius: 3px 3px 0 0;
+      background: linear-gradient(to top, var(--gold), #ffa726);
+      animation: bar-dance var(--dur, 0.8s) ease-in-out infinite alternate;
+    }
+    @keyframes bar-dance { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+
+    /* Neural signal sparks */
+    .signal-spark {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--coral); box-shadow: 0 0 10px var(--coral);
+      animation: spark-travel linear infinite;
+      z-index: 25; pointer-events: none;
+    }
+    @keyframes spark-travel {
+      0% { offset-distance: 0%; opacity: 1; }
+      90% { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+
+    /* Tinnitus label floating */
+    .tinnitus-label {
+      position: absolute; z-index: 50;
+      top: 10%; right: -5%;
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: 4px;
+    }
+    .tinnitus-label-text {
+      font-size: 12px; font-weight: 700; color: #ff6b6b; letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .tinnitus-hz {
+      font-size: 28px; font-weight: 900; color: white; line-height: 1;
+      background: linear-gradient(90deg, #ff6b6b, #ffb347);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .tinnitus-suffix { font-size: 13px; color: var(--text-muted); }
+
+    /* Tooltip on hover */
+    .neuron-tooltip {
+      position: absolute; z-index: 100; pointer-events: none;
+      background: rgba(15,12,28,0.95); border-radius: 10px;
+      border: 1px solid rgba(199,191,255,0.2); padding: 10px 14px;
+      font-size: 11px; color: #e7dff5; line-height: 1.5;
+      max-width: 180px; opacity: 0; transition: opacity 0.2s;
+      white-space: normal; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* ─── PROOF SECTION MINI ─────────────────── */
+    .proof-strip {
+      position: absolute; bottom: -30px; left: 0; right: 0;
+      display: flex; justify-content: center; gap: 24px;
+    }
+    .proof-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .proof-icon { font-size: 16px; }
+
+    /* Label tags on nodes */
+    .node-tag {
+      position: absolute; white-space: nowrap;
+      background: rgba(12,10,20,0.8); border-radius: 6px;
+      padding: 2px 8px; font-size: 9px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+      pointer-events: none;
+    }
+
+    /* Cortex cross indicator */
+    .deaf-cross {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 30px; height: 30px; opacity: 0.7;
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: var(--text-dim); font-size: 11px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+    /* ─── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding: 100px 24px 80px; }
+      .hero-right { height: 400px; }
+      .brain-container { width: 360px; height: 360px; }
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Ambient Background -->
+<div class="ambient">
+  <div class="ambient-orb orb1"></div>
+  <div class="ambient-orb orb2"></div>
+  <div class="ambient-orb orb3"></div>
+</div>
+
+<!-- Navbar -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-orb"></div>
+    <span class="logo-text">TinniMate</span>
+  </a>
+  <div class="nav-links">
+    <a href="#">Ù tai là gì</a>
+    <a href="#">Tính năng</a>
+    <a href="#">Phản hồi</a>
+    <a href="#">Bảng giá</a>
+  </div>
+  <a href="#" class="nav-cta">Bắt đầu ngay →</a>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+
+  <!-- LEFT COPY -->
+  <div class="hero-left">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      🧠 Ứng dụng trị liệu ù tai #1 Việt Nam
+    </div>
+
+    <h1 class="hero-title">
+      <span class="title-line1">Não bộ bạn</span>
+      <span class="title-line2">đang tạo ra âm thanh không có thật</span>
+      <span class="title-line3">Chúng tôi giúp bạn tắt nó</span>
+    </h1>
+
+    <p class="hero-desc">
+      <span class="highlight-text">Tiếng ù tai không phát sinh từ tai</span> — mà từ vùng
+      <span class="highlight-text">vỏ não thính giác bị "đói" tín hiệu</span>. Khi tai không nghe, não bộ
+      tự sinh ra âm thanh giả để bù đắp. TinniMate phá vỡ vòng xoắn này.
+    </p>
+
+    <div class="cta-group">
+      <a href="#" class="btn-primary">
+        💬 Tư vấn miễn phí với Tinni <span>→</span>
+      </a>
+      <a href="#" class="btn-secondary">Tìm hiểu cơ chế →</a>
+    </div>
+
+    <div class="online-badge">
+      <span class="ping-dot">
+        <span class="ping-outer"></span>
+        <span class="ping-inner"></span>
+      </span>
+      Tinni đang online 24/7 · Phản hồi tức thì
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value">10K+</div>
+        <div class="stat-label">Người dùng</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">89%</div>
+        <div class="stat-label">Cải thiện sau 3 tháng</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">4.8★</div>
+        <div class="stat-label">Đánh giá</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: 3D BRAIN VISUALIZATION -->
+  <div class="hero-right">
+    <div class="brain-container" id="brainContainer">
+
+      <!-- Outer rings -->
+      <div class="brain-ring ring1"></div>
+      <div class="brain-ring ring2"></div>
+      <div class="brain-ring ring3"></div>
+
+      <!-- SVG Brain shape + edges background -->
+      <svg class="edges-svg" viewBox="0 0 520 520" id="edgesSvg">
+        <!-- Gradient definitions -->
+        <defs>
+          <radialGradient id="brainGrad" cx="50%" cy="45%" r="50%">
+            <stop offset="0%" stop-color="#2d1f5e" stop-opacity="0.9"/>
+            <stop offset="60%" stop-color="#1a1030" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#0c0a14" stop-opacity="0.6"/>
+          </radialGradient>
+          <radialGradient id="cortexGrad" cx="40%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow-red">
+            <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-purple">
+            <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <marker id="arrow-red" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,107,107,0.6)"/>
+          </marker>
+          <marker id="arrow-gray" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(107,114,128,0.4)"/>
+          </marker>
+          <!-- Animated stroke dash -->
+          <linearGradient id="edgeGradRed" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(255,107,107,0)"/>
+            <stop offset="50%" stop-color="rgba(255,107,107,0.7)"/>
+            <stop offset="100%" stop-color="rgba(255,107,107,0)"/>
+          </linearGradient>
+          <linearGradient id="edgeGradPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(167,139,250,0)"/>
+            <stop offset="50%" stop-color="rgba(167,139,250,0.6)"/>
+            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Brain silhouette shape (stylized) -->
+        <ellipse cx="262" cy="230" rx="175" ry="155"
+          fill="url(#brainGrad)"
+          stroke="rgba(124,58,237,0.18)" stroke-width="1.5"/>
+
+        <!-- Cortex highlight area (deaf zone) -->
+        <ellipse cx="262" cy="200" rx="80" ry="60"
+          fill="url(#cortexGrad)" filter="url(#glow-red)"/>
+
+        <!-- Brain fold lines (sulci) -->
+        <!-- Top folds -->
+        <path d="M 160 140 Q 200 110 240 130 Q 270 115 310 130 Q 340 110 380 145"
+          fill="none" stroke="rgba(124,58,237,0.15)" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M 145 180 Q 180 160 215 175 Q 245 155 275 168 Q 305 150 340 165 Q 365 150 395 175"
+          fill="none" stroke="rgba(124,58,237,0.12)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M 130 220 Q 165 205 195 215 Q 225 200 255 210 Q 280 196 310 205 Q 340 195 375 215 Q 400 200 420 220"
+          fill="none" stroke="rgba(124,58,237,0.1)" stroke-width="1" stroke-linecap="round"/>
+        <!-- Lateral fissure -->
+        <path d="M 155 250 Q 200 240 245 250 Q 275 238 310 248 Q 345 235 390 250"
+          fill="none" stroke="rgba(124,58,237,0.12)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Temporal folds -->
+        <path d="M 160 285 Q 195 278 230 285 Q 255 275 290 282"
+          fill="none" stroke="rgba(124,58,237,0.1)" stroke-width="1" stroke-linecap="round"/>
+
+        <!-- Connection edges: Cortex → Amygdala (hyperactive = red) -->
+        <path id="edge-cortex-amygdala"
+          d="M 215 205 Q 165 235 165 285"
+          fill="none" stroke="rgba(255,107,107,0.4)" stroke-width="2"
+          stroke-dasharray="6,4" marker-end="url(#arrow-red)">
+          <animate attributeName="stroke-dashoffset" from="0" to="-40" dur="1.5s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Connection edges: Cortex → Prefrontal (activated) -->
+        <path id="edge-cortex-prefrontal"
+          d="M 248 165 Q 235 135 230 115"
+          fill="none" stroke="rgba(167,139,250,0.45)" stroke-width="2"
+          stroke-dasharray="5,4" marker-end="url(#arrow-red)">
+          <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="1.2s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Connection edges: Cortex → Hippocampus -->
+        <path d="M 295 195 Q 325 180 310 185"
+          fill="none" stroke="rgba(251,146,60,0.4)" stroke-width="1.5"
+          stroke-dasharray="4,4">
+          <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.8s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Connection: Thalamus → Cortex (faded = broken signal) -->
+        <path d="M 155 230 Q 190 215 220 205"
+          fill="none" stroke="rgba(107,114,128,0.25)" stroke-width="1.5"
+          stroke-dasharray="3,6" marker-end="url(#arrow-gray)">
+          <animate attributeName="stroke-dashoffset" from="0" to="-36" dur="2.5s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Connection: Cochlea → Brainstem (severely faded = silent cochlea) -->
+        <path d="M 250 375 Q 215 380 195 395"
+          fill="none" stroke="rgba(107,114,128,0.15)" stroke-width="1.2"
+          stroke-dasharray="2,8">
+        </path>
+
+        <!-- Cortex → Limbic stress loop -->
+        <path d="M 295 215 Q 335 248 310 295"
+          fill="none" stroke="rgba(255,107,107,0.3)" stroke-width="1.5"
+          stroke-dasharray="5,5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-40" dur="2s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Phantom signal sparks on cortex edge (the tinnitus signal) -->
+        <circle r="3" fill="#ff6b6b" filter="url(#glow-red)">
+          <animateMotion dur="1.8s" repeatCount="indefinite"
+            path="M 215 205 Q 165 235 165 285"/>
+          <animate attributeName="opacity" values="0;1;0" dur="1.8s" repeatCount="indefinite"/>
+        </circle>
+
+        <circle r="3" fill="#ff6b6b" filter="url(#glow-red)">
+          <animateMotion dur="1.4s" begin="0.6s" repeatCount="indefinite"
+            path="M 248 165 Q 235 135 230 115"/>
+          <animate attributeName="opacity" values="0;1;0" dur="1.4s" begin="0.6s" repeatCount="indefinite"/>
+        </circle>
+
+        <circle r="2.5" fill="#a78bfa" filter="url(#glow-purple)">
+          <animateMotion dur="2s" begin="0.3s" repeatCount="indefinite"
+            path="M 295 215 Q 335 248 310 295"/>
+          <animate attributeName="opacity" values="0;0.8;0" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Broken signal from ear = grayed out spark going nowhere -->
+        <circle r="2" fill="rgba(156,163,175,0.3)">
+          <animateMotion dur="3s" repeatCount="indefinite"
+            path="M 250 375 Q 215 380 195 395"/>
+          <animate attributeName="opacity" values="0;0.3;0" dur="3s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+
+      <!-- Neuron nodes -->
+      <!-- Auditory Cortex (primary node - red, hyperactive) -->
+      <div class="neuron-node node-auditory-cortex" title="Vỏ não thính giác" id="nodeAuditory">
+        🧠<br/>
+        <span style="font-size:9px;opacity:.8">VỎ NÃO<br/>THÍNH GIÁC</span>
+        <span class="node-tag" style="bottom:-22px;left:50%;transform:translateX(-50%);color:#ff6b6b;border-color:rgba(255,107,107,0.3)">⚡ Hoạt động quá mức</span>
+      </div>
+
+      <!-- Prefrontal cortex -->
+      <div class="neuron-node node-prefrontal" style="font-size:10px;" title="Vỏ não trước trán">
+        💭
+        <span class="node-tag" style="top:-18px;left:50%;transform:translateX(-50%)">Tiền Trán</span>
+      </div>
+
+      <!-- Amygdala (fear/anxiety) -->
+      <div class="neuron-node node-amygdala" style="font-size:11px;" title="Hạch hạnh nhân">
+        😰
+        <span class="node-tag" style="bottom:-18px;left:50%;transform:translateX(-50%);color:#fbbc00;border-color:rgba(251,188,0,0.3)">Amygdala</span>
+      </div>
+
+      <!-- Limbic (stress loop) -->
+      <div class="neuron-node node-limbic" style="font-size:10px;" title="Hệ limbic">
+        🔄
+        <span class="node-tag" style="bottom:-18px;left:50%;transform:translateX(-50%);color:#06b6d4;border-color:rgba(6,182,212,0.3)">Limbic</span>
+      </div>
+
+      <!-- Thalamus (relay) -->
+      <div class="neuron-node node-thalamus" style="font-size:10px;" title="Đồi thị">
+        📡
+        <span class="node-tag" style="left:-45px;top:50%;transform:translateY(-50%)">Đồi Thị</span>
+      </div>
+
+      <!-- Hippocampus (memory) -->
+      <div class="neuron-node node-hippocampus" style="font-size:10px;" title="Hải mã">
+        📚
+        <span class="node-tag" style="right:-50px;top:50%;transform:translateY(-50%)">Hải Mã</span>
+      </div>
+
+      <!-- Cochlea (damaged/silent) -->
+      <div class="neuron-node node-cochlea" style="font-size:11px;" title="Ốc tai (im lặng)">
+        🐚
+        <span class="node-tag" style="bottom:-20px;left:50%;transform:translateX(-50%)">Ốc Tai ×</span>
+      </div>
+
+      <!-- Brainstem -->
+      <div class="neuron-node node-brainstem" style="font-size:10px;" title="Thân não">
+        ⬇️
+        <span class="node-tag" style="left:-48px;top:50%;transform:translateY(-50%)">Thân Não</span>
+      </div>
+
+      <!-- Sound waves from cortex center -->
+      <div class="sound-wave wave1"></div>
+      <div class="sound-wave wave2"></div>
+      <div class="sound-wave wave3"></div>
+      <div class="sound-wave wave4"></div>
+
+      <!-- Info cards -->
+      <div class="info-card card-cortex-info">
+        <div class="card-title">🔴 Nguồn gốc tiếng ù</div>
+        <div class="card-desc">Vỏ não thính giác tạo ra "tiếng ù giả" khi không nhận được tín hiệu từ tai</div>
+        <span class="card-badge badge-red">Cortical Hyperactivity</span>
+      </div>
+
+      <div class="info-card card-pathway">
+        <div class="card-title">🔇 Tín hiệu bị gián đoạn</div>
+        <div class="card-desc">Ốc tai tổn thương → não bộ mất tín hiệu → tự tạo âm thanh bù đắp</div>
+        <span class="card-badge badge-lavender">Maladaptive Plasticity</span>
+      </div>
+
+      <!-- Frequency bar card -->
+      <div class="freq-card">
+        <div class="freq-label">🎵 Tần số ù tai</div>
+        <div class="freq-bars" id="freqBars">
+          <!-- Generated by JS -->
+        </div>
+        <div style="font-size:20px;font-weight:800;color:white;margin-top:6px;" id="freqValue">4,200 Hz</div>
+        <div style="font-size:9px;color:var(--text-muted)">Phantom signal</div>
+      </div>
+
+      <!-- Tinnitus Hz label -->
+      <div class="tinnitus-label">
+        <div class="tinnitus-label-text">Phantom Sound</div>
+        <div class="tinnitus-hz" id="tinnitusHz">4,200<span class="tinnitus-suffix"> Hz</span></div>
+        <div style="font-size:10px;color:var(--text-muted)">Vỏ não sinh ra</div>
+      </div>
+
+    </div><!-- /brain-container -->
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%)">
+      <span>Khám phá cơ chế</span>
+      <span>↓</span>
+    </div>
+  </div><!-- /hero-right -->
+
+</section>
+
+<script>
+// ── Frequency bars
+const freqBars = document.getElementById('freqBars');
+const heights = [20, 35, 55, 70, 90, 100, 88, 72, 55, 38, 24, 14];
+const durations = [0.6, 0.8, 0.7, 0.9, 0.65, 0.75, 0.85, 0.7, 0.9, 0.8, 0.65, 0.95];
+heights.forEach((h, i) => {
+  const bar = document.createElement('div');
+  bar.className = 'freq-bar';
+  bar.style.height = h * 0.36 + 'px';
+  bar.style.setProperty('--dur', durations[i] + 's');
+  bar.style.animationDelay = (i * 0.05) + 's';
+  // Highlight the "tinnitus peak" bar
+  if (i >= 4 && i <= 6) {
+    bar.style.background = 'linear-gradient(to top, #ff6b6b, #ff9966)';
+    bar.style.boxShadow = '0 0 8px rgba(255,107,107,0.5)';
+  }
+  freqBars.appendChild(bar);
+});
+
+// ── Animated Hz counter
+let baseHz = 4200;
+let direction = 1;
+const hzEl = document.getElementById('tinnitusHz');
+const freqVal = document.getElementById('freqValue');
+function animateHz() {
+  baseHz += direction * (Math.random() * 30 - 15);
+  if (baseHz > 6000) direction = -1;
+  if (baseHz < 3500) direction = 1;
+  const display = Math.round(baseHz).toLocaleString();
+  hzEl.innerHTML = display + '<span class="tinnitus-suffix"> Hz</span>';
+  freqVal.textContent = display + ' Hz';
+  setTimeout(animateHz, 800 + Math.random() * 400);
+}
+animateHz();
+
+// ── Node hover tooltips
+const tooltipData = {
+  nodeAuditory: {
+    title: 'Vỏ não thính giác',
+    desc: 'Khi không nhận tín hiệu, vùng này tăng hoạt động và tự tạo ra "tiếng ù giả" — đây là nguồn gốc thực sự của tinnitus.',
+    color: '#ff6b6b'
+  }
+};
+
+// ── 3D tilt effect on brain container
+const container = document.getElementById('brainContainer');
+document.addEventListener('mousemove', (e) => {
+  if (!container) return;
+  const rect = container.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = (e.clientX - cx) / rect.width;
+  const dy = (e.clientY - cy) / rect.height;
+  container.style.transform = `perspective(800px) rotateY(${dx * 12}deg) rotateX(${-dy * 8}deg)`;
+});
+document.addEventListener('mouseleave', () => {
+  if (container) container.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
+});
+container.style.transition = 'transform 0.15s ease';
+</script>
+</body>
+</html>

@@ -58,7 +58,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [setUser, clearUser])
 
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden text-[15px]">
+    <div className="flex h-screen bg-[#0b1515] overflow-hidden text-[15px]">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-[220px] shrink-0">
         <AppSidebar />
@@ -84,15 +84,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Mobile top bar */}
-        <header className="flex items-center h-14 px-4 border-b border-slate-800 md:hidden shrink-0">
+        <header className="flex items-center h-14 px-4 border-b border-[#3f4848]/30 md:hidden shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-white/[0.04] text-[#bfc8c8] hover:text-[#dae5e4] transition-all duration-300"
             aria-label="Open menu"
           >
             <Menu size={20} />
           </button>
-          <span className="ml-3 font-semibold">TinniMate 💙</span>
+          <span className="ml-3 font-semibold text-[#dae5e4]">TinniMate 🌿</span>
         </header>
 
         <main className="flex-1 overflow-hidden">

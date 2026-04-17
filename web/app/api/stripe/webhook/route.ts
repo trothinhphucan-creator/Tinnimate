@@ -36,6 +36,23 @@ export async function POST(request: Request) {
 
     const serviceClient = createServiceClient()
 
+    // ── Idempotency guard ──────────────────────────────────────────────
+    // Insert event.id (unique PK) — if already exists, Stripe retried this event.
+    // PostgreSQL UNIQUE constraint handles concurrent retries safely.
+    const { error: idempotencyError } = await serviceClient
+      .from('stripe_events')
+      .insert({ id: event.id, type: event.type })
+
+    if (idempotencyError) {
+      // Duplicate key → already processed; acknowledge to stop Stripe retrying
+      if (idempotencyError.code === '23505') {
+        console.log(`[stripe-webhook] Duplicate event ${event.id} — skipping`)
+        return Response.json({ received: true, skipped: true })
+      }
+      // Unexpected DB error — log but don't fail (let it retry)
+      console.error('[stripe-webhook] Idempotency insert error:', idempotencyError)
+    }
+
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session

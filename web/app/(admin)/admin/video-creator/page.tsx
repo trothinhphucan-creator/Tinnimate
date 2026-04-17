@@ -193,11 +193,11 @@ const TEMPLATES: Template[] = [
     label: 'White Noise Therapy',
     emoji: '🌊',
     desc: 'Âm thanh trị liệu ù tai',
-    watermark: '@tinnimate • tinnitus.vuinghe.com',
+    watermark: '@tinnimate • tinnimate.vuinghe.com',
     scenes: [
       { id: '1', emoji: '🌊', title: 'White Noise\ngiúp bạn ngủ ngon', subtitle: 'Âm thanh trị liệu che phủ tiếng ù tai\ngiúp não bộ thư giãn và dễ ngủ hơn', bg: 'linear-gradient(135deg,#10b981,#3b82f6)', accent: '#10b981' },
       { id: '2', emoji: '🎧', title: '11 âm thanh trị liệu', subtitle: 'White • Pink • Brown Noise\nMưa • Sóng biển • Rừng đêm\nLửa trại • Zen Bells • 528Hz', bg: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', accent: '#3b82f6' },
-      { id: '3', emoji: '🌙', title: 'Nghe thử ngay đêm nay', subtitle: 'Miễn phí • Không cần tải app\ntinnitus.vuinghe.com', bg: 'linear-gradient(135deg,#8b5cf6,#ec4899)', accent: '#8b5cf6' },
+      { id: '3', emoji: '🌙', title: 'Nghe thử ngay đêm nay', subtitle: 'Miễn phí • Không cần tải app\ntinnimate.vuinghe.com', bg: 'linear-gradient(135deg,#8b5cf6,#ec4899)', accent: '#8b5cf6' },
     ],
   },
   {
@@ -205,7 +205,7 @@ const TEMPLATES: Template[] = [
     label: 'Notch Therapy',
     emoji: '🎯',
     desc: 'Liệu pháp Notch giảm ù tai',
-    watermark: '@tinnimate • tinnitus.vuinghe.com',
+    watermark: '@tinnimate • tinnimate.vuinghe.com',
     scenes: [
       { id: '1', emoji: '🎯', title: 'Notch Therapy\nlà gì?', subtitle: 'Phương pháp lọc tần số ù tai\nbằng âm nhạc đặc biệt', bg: 'linear-gradient(135deg,#f59e0b,#ef4444)', accent: '#f59e0b' },
       { id: '2', emoji: '🧠', title: 'Cơ chế hoạt động', subtitle: 'Loại bỏ tần số ù tai khỏi nhạc\nNão bộ tự điều chỉnh lại\nTiếng ù giảm dần theo tuần', bg: 'linear-gradient(135deg,#ef4444,#8b5cf6)', accent: '#ef4444' },
@@ -217,7 +217,7 @@ const TEMPLATES: Template[] = [
     label: 'Breathing Exercise',
     emoji: '🌬️',
     desc: 'Kỹ thuật thở 4-7-8',
-    watermark: '@tinnimate • tinnitus.vuinghe.com',
+    watermark: '@tinnimate • tinnimate.vuinghe.com',
     scenes: [
       { id: '1', emoji: '🌬️', title: 'Kỹ thuật thở 4-7-8\ngiảm lo âu tức thì', subtitle: 'Được bác sĩ khuyên dùng\ncho người bị ù tai', bg: 'linear-gradient(135deg,#06b6d4,#3b82f6)', accent: '#06b6d4' },
       { id: '2', emoji: '⏱️', title: 'Hít vào 4 giây\nGiữ 7 giây\nThở ra 8 giây', subtitle: 'Kích hoạt hệ thần kinh phó giao cảm\nGiảm cortisol ngay lập tức', bg: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', accent: '#3b82f6' },
@@ -229,7 +229,7 @@ const TEMPLATES: Template[] = [
     label: 'Video Tùy Chỉnh',
     emoji: '✏️',
     desc: 'Tạo từ đầu hoàn toàn',
-    watermark: '@tinnimate • tinnitus.vuinghe.com',
+    watermark: '@tinnimate • tinnimate.vuinghe.com',
     scenes: [
       { id: '1', emoji: '✨', title: 'Tiêu đề cảnh 1', subtitle: 'Nội dung mô tả cảnh 1\nDòng thứ hai', bg: 'linear-gradient(135deg,#4f46e5,#7c3aed)', accent: '#6366f1' },
       { id: '2', emoji: '🎯', title: 'Tiêu đề cảnh 2', subtitle: 'Nội dung mô tả cảnh 2\nDòng thứ hai', bg: 'linear-gradient(135deg,#0ea5e9,#6366f1)', accent: '#0ea5e9' },

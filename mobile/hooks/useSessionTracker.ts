@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Platform, AppState, AppStateStatus } from 'react-native';
 import { usePathname } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/use-user-store';
 import Constants from 'expo-constants';
 
 const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';

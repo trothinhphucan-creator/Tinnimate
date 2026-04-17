@@ -14,16 +14,9 @@ export async function GET(req: NextRequest) {
     const lang = searchParams.get('lang') || 'vi';
     const messageCount = parseInt(searchParams.get('messageCount') || '0');
 
-    // Get user ID from header (for mobile) or session
-    const userIdHeader = req.headers.get('X-User-ID');
-    let userId: string | null = null;
-
-    if (userIdHeader) {
-      userId = userIdHeader;
-    } else {
-      const { data: { user } } = await supabase.auth.getUser();
-      userId = user?.id || null;
-    }
+    // Always verify identity via Supabase session — never trust client headers
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id ?? null;
 
     // If no user, return generic suggestions
     if (!userId) {
@@ -38,24 +31,30 @@ export async function GET(req: NextRequest) {
       { data: recentSessions },
       { data: templates },
     ] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('profiles').select('created_at').eq('id', userId).single(),
       supabase
         .from('assessments')
-        .select('*')
+        .select('score')
         .eq('user_id', userId)
         .eq('quiz_type', 'THI')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single(),
+        .maybeSingle(),
       supabase
         .from('daily_checkins')
-        .select('*')
+        .select('id')
         .eq('user_id', userId)
-        .gte('created_at', new Date().toISOString().split('T')[0])
-        .single(),
+        .gte('created_at', (() => {
+          // Use Vietnam timezone (UTC+7) to avoid midnight boundary mismatch
+          const now = new Date();
+          const vnOffset = 7 * 60 * 60 * 1000;
+          const vnDate = new Date(now.getTime() + vnOffset);
+          return vnDate.toISOString().split('T')[0]; // YYYY-MM-DD in VN time
+        })())
+        .maybeSingle(),
       supabase
         .from('therapy_sessions')
-        .select('*')
+        .select('id')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(5),
@@ -70,7 +69,7 @@ export async function GET(req: NextRequest) {
     const context = {
       isNewUser: !profile || new Date(profile.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       hasAssessment: !!latestAssessment,
-      thiScoreHigh: latestAssessment && latestAssessment.score >= 38, // Moderate to severe
+      thiScoreHigh: !!latestAssessment && latestAssessment.score >= 38, // Moderate to severe
       hasCheckinToday: !!todayCheckin,
       hasRecentSessions: (recentSessions || []).length > 0,
       messageCount,

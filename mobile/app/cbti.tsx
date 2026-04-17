@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight, CheckCircle2, Lock, BookOpen } from 'lucide-
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { TinniOrb } from '@/components/TinniOrb';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/use-user-store';
 
 const { width } = Dimensions.get('window');
 

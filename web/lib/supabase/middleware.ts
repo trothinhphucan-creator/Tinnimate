@@ -20,16 +20,12 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) => {
-            // Ensure cookies persist with proper options
-            supabaseResponse.cookies.set(name, value, {
-              ...options,
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'lax',
-              maxAge: 60 * 60 * 24 * 7, // 7 days
-            })
+            supabaseResponse.cookies.set(name, value, options)
           })
         },
+      },
+      cookieOptions: {
+        maxAge: 60 * 60 * 24 * 30, // 30 days
       },
     }
   )
@@ -46,9 +42,17 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Protect /app routes — require auth (except /chat which allows guest mode)
-  if (request.nextUrl.pathname.startsWith('/(app)') ||
-      ['/dashboard', '/therapy', '/hearing-test', '/profile', '/pricing'].includes(request.nextUrl.pathname)) {
+  // Protect app routes — require auth (except /chat which allows guest mode)
+  // Note: Next.js route groups like (app) are NOT reflected in URLs
+  const protectedRoutes = [
+    '/dashboard', '/therapy', '/hearing-test', '/profile', '/pricing',
+    '/mixer', '/journal', '/zen', '/coach', '/sleep',
+    '/cbti', '/notch-therapy', '/onboarding',
+  ]
+  const isProtected = protectedRoutes.some(
+    (r) => request.nextUrl.pathname === r || request.nextUrl.pathname.startsWith(r + '/')
+  )
+  if (isProtected) {
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'

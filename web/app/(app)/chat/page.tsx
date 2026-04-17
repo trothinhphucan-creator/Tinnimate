@@ -15,12 +15,12 @@ const GUEST_MAX = 2
 
 /* ── Tool Card Config ── */
 const TOOL_STYLES = {
-  hearing_test:  { emoji: '🎧', color: 'from-blue-600/20 to-blue-800/10 border-blue-500/20 hover:border-blue-400/40', iconBg: 'bg-blue-500/20' },
-  sound_therapy: { emoji: '🎵', color: 'from-emerald-600/20 to-emerald-800/10 border-emerald-500/20 hover:border-emerald-400/40', iconBg: 'bg-emerald-500/20' },
-  quiz:          { emoji: '📋', color: 'from-purple-600/20 to-purple-800/10 border-purple-500/20 hover:border-purple-400/40', iconBg: 'bg-purple-500/20' },
-  relaxation:    { emoji: '🧘', color: 'from-teal-600/20 to-teal-800/10 border-teal-500/20 hover:border-teal-400/40', iconBg: 'bg-teal-500/20' },
-  diagnosis:     { emoji: '🔍', color: 'from-rose-600/20 to-rose-800/10 border-rose-500/20 hover:border-rose-400/40', iconBg: 'bg-rose-500/20' },
-  checkin:       { emoji: '📝', color: 'from-amber-600/20 to-amber-800/10 border-amber-500/20 hover:border-amber-400/40', iconBg: 'bg-amber-500/20' },
+  hearing_test:  { emoji: '🎧', color: 'from-[#024e41]/30 to-[#165042]/10 border-[#94d3c1]/20 hover:border-[#94d3c1]/40', iconBg: 'bg-[#94d3c1]/20' },
+  sound_therapy: { emoji: '🎵', color: 'from-[#165042]/30 to-[#024e41]/10 border-[#9ad2c0]/20 hover:border-[#9ad2c0]/40', iconBg: 'bg-[#9ad2c0]/20' },
+  quiz:          { emoji: '📋', color: 'from-[#603d00]/30 to-[#452b00]/10 border-[#ffb954]/20 hover:border-[#ffb954]/40', iconBg: 'bg-[#ffb954]/20' },
+  relaxation:    { emoji: '🧘', color: 'from-[#024e41]/30 to-[#172121]/10 border-[#afefdd]/20 hover:border-[#afefdd]/40', iconBg: 'bg-[#afefdd]/20' },
+  diagnosis:     { emoji: '🔍', color: 'from-[#93000a]/15 to-[#172121]/10 border-[#ffb4ab]/20 hover:border-[#ffb4ab]/40', iconBg: 'bg-[#ffb4ab]/20' },
+  checkin:       { emoji: '📝', color: 'from-[#603d00]/20 to-[#172121]/10 border-[#ffddb4]/20 hover:border-[#ffddb4]/40', iconBg: 'bg-[#ffddb4]/20' },
 } as const
 
 function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void }) {
@@ -30,13 +30,13 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-6 text-center max-w-lg mx-auto">
-      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center text-3xl shadow-lg shadow-blue-500/10">
+      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#024e41]/30 to-[#94d3c1]/20 border border-[#94d3c1]/30 flex items-center justify-center text-3xl shadow-lg shadow-[#94d3c1]/10">
         💙
       </div>
       <div className="space-y-2">
-        <h2 className="font-bold text-xl text-slate-100">{d.chat.greeting}</h2>
-        <p className="text-sm text-slate-300 leading-relaxed max-w-sm mx-auto" dangerouslySetInnerHTML={{ __html: d.chat.intro }} />
-        <p className="text-xs text-slate-500">{d.chat.pickTool}</p>
+        <h2 className="font-bold text-xl text-[#dae5e4]">{d.chat.greeting}</h2>
+        <p className="text-sm text-[#bfc8c8] leading-relaxed max-w-sm mx-auto" dangerouslySetInnerHTML={{ __html: d.chat.intro }} />
+        <p className="text-xs text-[#899392]">{d.chat.pickTool}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2 w-full">
@@ -47,14 +47,14 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
             <button
               key={key}
               onClick={() => onSelectTool(text.trigger)}
-              className={`group flex flex-col items-start gap-1.5 p-3 rounded-xl border bg-gradient-to-br text-left transition-all duration-200 ${style.color} hover:scale-[1.02] active:scale-[0.98]`}
+              className={`group flex flex-col items-start gap-1.5 p-3 rounded-xl border bg-gradient-to-br text-left transition-all duration-300 ${style.color} hover:scale-[1.02] active:scale-[0.98]`}
             >
               <div className={`w-8 h-8 rounded-lg ${style.iconBg} flex items-center justify-center text-base`}>
                 {style.emoji}
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-200 group-hover:text-white transition-colors">{text.label}</p>
-                <p className="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors">{text.desc}</p>
+                <p className="text-xs font-semibold text-[#dae5e4] group-hover:text-white transition-colors">{text.label}</p>
+                <p className="text-[10px] text-[#899392] group-hover:text-[#bfc8c8] transition-colors">{text.desc}</p>
               </div>
             </button>
           )
@@ -63,13 +63,13 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
 
       {/* New user question suggestions */}
       <div className="w-full space-y-1.5">
-        <p className="text-[9px] text-slate-600 text-center">{lang === 'vi' ? '💡 Hoặc hỏi Tinni:' : '💡 Or ask Tinni:'}</p>
+        <p className="text-[9px] text-[#899392] text-center">{lang === 'vi' ? '💡 Hoặc hỏi Tinni:' : '💡 Or ask Tinni:'}</p>
         <div className="flex flex-wrap justify-center gap-1.5">
           {'newUserQuestions' in d && Array.isArray(d.newUserQuestions) && d.newUserQuestions.map((q: string) => (
             <button
               key={q}
               onClick={() => onSelectTool(q)}
-              className="px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/15 text-[10px] text-slate-400 hover:text-white transition-all"
+              className="px-3 py-1.5 rounded-full border border-[#3f4848]/30 bg-white/[0.02] hover:bg-white/[0.06] hover:border-[#94d3c1]/30 text-[10px] text-[#bfc8c8] hover:text-white transition-all duration-300"
             >
               {q}
             </button>
@@ -77,10 +77,10 @@ function EmptyState({ onSelectTool }: { onSelectTool: (trigger: string) => void 
         </div>
       </div>
 
-      <p className="text-[10px] text-slate-600 mt-1">{d.chat.orChat}</p>
+      <p className="text-[10px] text-[#899392] mt-1">{d.chat.orChat}</p>
 
       {/* Medical disclaimer */}
-      <p className="text-[8px] text-slate-700 text-center max-w-xs mt-2 leading-relaxed">
+      <p className="text-[8px] text-[#3f4848] text-center max-w-xs mt-2 leading-relaxed">
         ⚕️ {'disclaimer' in d && typeof d.disclaimer === 'string' ? d.disclaimer : ''}
       </p>
     </div>
@@ -98,13 +98,21 @@ export default function ChatPage() {
   const [showSignupModal, setShowSignupModal] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Wait for user store to hydrate before showing guest UI
+  // Wait for Zustand store to hydrate before showing guest/user UI
+  // Using onRehydrateStorage or a simple store subscription avoids 500ms flicker
   useEffect(() => {
-    const timer = setTimeout(() => setUserLoaded(true), 500)
+    // If user is already available (SSR hydrated), mark immediately
+    if (user !== undefined) {
+      setUserLoaded(true)
+      return
+    }
+    // Otherwise wait briefly for client-side hydration
+    const timer = setTimeout(() => setUserLoaded(true), 150)
     return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // If user becomes available, mark as loaded immediately
+  // If user becomes available after mount, mark as loaded immediately
   useEffect(() => {
     if (user) setUserLoaded(true)
   }, [user])
@@ -170,10 +178,23 @@ export default function ChatPage() {
             updateLastMessage('')
             return
           }
-          const msg = errData?.error ?? `Lỗi ${response.status}`
-          updateLastMessage(`⚠️ ${msg}`)
+          if (response.status === 429) {
+            updateLastMessage(lang === 'vi'
+              ? '😅 Ôi, bạn đang chat nhanh quá! Tinni cần nghỉ một chút. Vui lòng đợi khoảng 1 phút rồi thử lại nhé 💙'
+              : '😅 Oops, you\'re chatting too fast! Tinni needs a short break. Please wait about 1 minute and try again 💙')
+          } else if (response.status === 503 || response.status === 502) {
+            updateLastMessage(lang === 'vi'
+              ? '🔧 Xin lỗi bạn, Tinni đang được bảo trì hoặc gặp sự cố kết nối tạm thời. Bạn vui lòng thử lại sau vài phút nhé!\n\n💡 Trong lúc đợi, bạn vẫn có thể sử dụng các tính năng khác như **Liệu pháp âm thanh**, **Kiểm tra thính lực** hoặc **Bài tập thở** mà không cần chat.\n\nNếu lỗi vẫn tiếp tục, hãy liên hệ quản trị viên để được hỗ trợ 🙏'
+              : '🔧 Sorry, Tinni is currently under maintenance or experiencing a temporary connection issue. Please try again in a few minutes!\n\n💡 While waiting, you can still use features like **Sound Therapy**, **Hearing Test** or **Breathing Exercises** without chat.\n\nIf the error persists, please contact the admin for support 🙏')
+          } else {
+            updateLastMessage(lang === 'vi'
+              ? `😔 Xin lỗi bạn, Tinni gặp trục trặc khi xử lý tin nhắn. Bạn thử gửi lại nhé!\n\n💡 Nếu lỗi tiếp tục, hãy thử:\n• Tải lại trang (F5)\n• Bắt đầu cuộc chat mới\n• Liên hệ quản trị viên nếu cần hỗ trợ\n\nTinni rất tiếc vì sự bất tiện này 🙏`
+              : `😔 Sorry, Tinni encountered an issue processing your message. Please try resending!\n\n💡 If the error continues, try:\n• Refresh the page (F5)\n• Start a new chat\n• Contact admin if you need support\n\nTinni apologizes for the inconvenience 🙏`)
+          }
         } catch {
-          updateLastMessage(`⚠️ Lỗi ${response.status}. Vui lòng thử lại.`)
+          updateLastMessage(lang === 'vi'
+            ? '😔 Xin lỗi bạn, Tinni gặp trục trặc không mong muốn. Bạn vui lòng thử lại nhé!\n\n💡 Nếu lỗi tiếp tục, hãy tải lại trang hoặc liên hệ quản trị viên để được hỗ trợ 🙏'
+            : '😔 Sorry, Tinni encountered an unexpected issue. Please try again!\n\n💡 If the error continues, try refreshing the page or contacting the admin for support 🙏')
         }
         return
       }
@@ -189,14 +210,19 @@ export default function ChatPage() {
       }
 
       const reader = response.body.getReader()
-      const decoder = new TextDecoder()
+      // {stream:true} enables proper multi-chunk UTF-8 decoding without boundary splits
+      const decoder = new TextDecoder('utf-8', { fatal: false })
+      let buffer = ''
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        const text = decoder.decode(value)
-        const lines = text.split('\n').filter((l) => l.startsWith('data: '))
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        // Keep the last (potentially incomplete) line in the buffer
+        buffer = lines.pop() ?? ''
         for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
           try {
             const data = JSON.parse(line.slice(6))
             // Capture conversationId from server
@@ -214,7 +240,9 @@ export default function ChatPage() {
         }
       }
     } catch {
-      updateLastMessage('Không thể kết nối. Vui lòng kiểm tra mạng.')
+      updateLastMessage(lang === 'vi'
+        ? '📡 Ôi, Tinni không thể kết nối được. Có vẻ mạng internet đang gặp vấn đề.\n\n💡 Bạn hãy thử:\n• Kiểm tra kết nối WiFi/4G\n• Tải lại trang\n• Thử lại sau vài giây\n\nTinni xin lỗi vì sự bất tiện này nhé 💙'
+        : '📡 Oops, Tinni can\'t connect right now. It seems like there\'s a network issue.\n\n💡 Please try:\n• Check your WiFi/mobile data\n• Refresh the page\n• Try again in a few seconds\n\nTinni apologizes for the inconvenience 💙')
     } finally {
       setLoading(false)
     }
@@ -222,28 +250,22 @@ export default function ChatPage() {
 
   // Callback when a tool widget reports its result (e.g. quiz score, hearing test)
   const handleToolResult = useCallback((toolName: string, result: Record<string, unknown>) => {
-    const resultMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: `[Kết quả ${toolName}]: ${JSON.stringify(result)}`,
-      timestamp: new Date(),
-    }
-    addMessage(resultMsg)
+    // sendMessage internally calls addMessage for the user message — don't double-add
     sendMessage(`Tôi vừa hoàn thành ${toolName}. Kết quả: ${JSON.stringify(result)}`)
-  }, [addMessage, sendMessage])
+  }, [sendMessage])
 
   return (
-    <div className="flex flex-col h-full bg-slate-950">
+    <div className="flex flex-col h-full bg-[#0b1515]">
       {/* Guest banner */}
       {isGuest && !showSignupModal && (
-        <div className="bg-gradient-to-r from-blue-600/20 to-violet-600/20 border-b border-blue-500/20 px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-blue-300">
+        <div className="bg-gradient-to-r from-[#024e41]/30 to-[#94d3c1]/10 border-b border-[#94d3c1]/20 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-[#94d3c1]">
             <Sparkles size={12} />
             {lang === 'vi'
               ? `Bạn đang dùng thử! Còn ${Math.max(0, GUEST_MAX - guestCount)} tin nhắn miễn phí`
               : `You're trying Tinni! ${Math.max(0, GUEST_MAX - guestCount)} free messages left`}
           </div>
-          <Link href="/signup" className="text-[10px] font-semibold text-blue-400 hover:text-blue-300 transition-colors">
+          <Link href="/signup" className="text-[10px] font-semibold text-[#94d3c1] hover:text-[#afefdd] transition-colors">
             {lang === 'vi' ? 'Đăng ký miễn phí →' : 'Sign up free →'}
           </Link>
         </div>
@@ -252,22 +274,22 @@ export default function ChatPage() {
       {/* Signup modal after guest limit */}
       {showSignupModal && (
         <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-blue-500/30 flex items-center justify-center text-3xl mx-auto mb-4">
+          <div className="bg-[#172121] border border-[#3f4848]/30 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#024e41]/30 to-[#94d3c1]/20 border border-[#94d3c1]/30 flex items-center justify-center text-3xl mx-auto mb-4">
               💙
             </div>
             <h3 className="text-lg font-bold text-white mb-2">
               {lang === 'vi' ? 'Bạn thích Tinni chứ? 😊' : 'Enjoying Tinni? 😊'}
             </h3>
-            <p className="text-sm text-slate-400 mb-6">
+            <p className="text-sm text-[#bfc8c8] mb-6">
               {lang === 'vi'
                 ? 'Đăng ký miễn phí để tiếp tục chat, lưu lịch sử và trải nghiệm tất cả tính năng!'
                 : 'Sign up free to continue chatting, save history, and unlock all features!'}
             </p>
-            <Link href="/signup" className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/25">
+            <Link href="/signup" className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#024e41] to-[#94d3c1] hover:from-[#165042] hover:to-[#afefdd] text-[#00201a] rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#94d3c1]/25">
               <LogIn size={16} /> {lang === 'vi' ? 'Đăng ký miễn phí' : 'Sign Up Free'}
             </Link>
-            <Link href="/login" className="block mt-3 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <Link href="/login" className="block mt-3 text-xs text-[#899392] hover:text-[#bfc8c8] transition-colors">
               {lang === 'vi' ? 'Đã có tài khoản? Đăng nhập' : 'Already have an account? Log in'}
             </Link>
           </div>
@@ -275,17 +297,17 @@ export default function ChatPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#3f4848]/30 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold">Tinni 💙</span>
+          <span className="text-lg font-semibold text-[#dae5e4]">Tinni 🌿</span>
           {isLoading && (
-            <span className="text-xs text-slate-500 animate-pulse">{d.common.loading}</span>
+            <span className="text-xs text-[#899392] animate-pulse">{d.common.loading}</span>
           )}
         </div>
         <button
           onClick={clearMessages}
           title={d.chat.newChat}
-          className="flex items-center gap-1.5 rounded-xl border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors"
+          className="flex items-center gap-1.5 rounded-xl border border-[#3f4848]/30 px-3 py-1.5 text-xs text-[#bfc8c8] hover:bg-white/[0.04] hover:text-[#dae5e4] transition-all duration-300"
         >
           <SquarePen size={13} />
           {d.chat.newChat}

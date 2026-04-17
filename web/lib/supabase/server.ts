@@ -14,19 +14,15 @@ export async function createClient() {
         setAll: (cookiesToSet) => {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Ensure cookies persist with proper options
-              cookieStore.set(name, value, {
-                ...options,
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7, // 7 days
-              })
+              cookieStore.set(name, value, options)
             })
           } catch {
             // Server Component — cannot set cookies (ignore)
           }
         },
+      },
+      cookieOptions: {
+        maxAge: 60 * 60 * 24 * 30, // 30 days
       },
     }
   )
@@ -39,3 +35,4 @@ export function createServiceClient() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 }
+

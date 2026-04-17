@@ -1,0 +1,4 @@
+session/
+output/
+node_modules/
+*.log

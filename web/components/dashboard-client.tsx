@@ -40,7 +40,7 @@ function GradientBar({ label, value, max = 10, gradient }: { label: string; valu
         <span className="text-white font-medium">{value}/{max}</span>
       </div>
       <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-        <div className={`h-full rounded-full bg-gradient-to-r ${gradient} transition-all duration-700`} style={{ width: `${pct}%` }} />
+        <div className={`h-full rounded-full bg-gradient-to-r ${gradient} transition-all duration-500`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   )
@@ -50,8 +50,8 @@ function GradientBar({ label, value, max = 10, gradient }: { label: string; valu
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-slate-800 border border-slate-600/50 rounded-lg px-3 py-2 text-xs shadow-xl">
-      <p className="text-slate-400 mb-1">{label}</p>
+    <div className="bg-[#222c2c] border border-[#3f4848]/20 rounded-lg px-3 py-2 text-xs shadow-xl">
+      <p className="text-[#bfc8c8] mb-1">{label}</p>
       {payload.map((p: any) => (
         <p key={p.dataKey} style={{ color: p.color }} className="font-medium">
           {p.name}: {p.value}
@@ -109,16 +109,16 @@ export default function DashboardClient({ data }: DashboardClientProps) {
   }))
 
   const stats = [
-    { icon: Headphones, label: d.dashboard.therapySessions, value: therapyCount.toString(), gradient: 'from-blue-500 to-cyan-400', glow: 'shadow-blue-500/20' },
-    { icon: ClipboardList, label: d.dashboard.recentAssessments, value: assessments.length.toString(), gradient: 'from-violet-500 to-purple-400', glow: 'shadow-violet-500/20' },
-    { icon: Flame, label: d.dashboard.streak, value: `${streak} ${d.dashboard.days}`, gradient: 'from-orange-500 to-amber-400', glow: 'shadow-orange-500/20' },
-    { icon: Heart, label: d.dashboard.mood, value: lastCheckin ? `${lastCheckin.mood_score}/10` : '--', gradient: 'from-pink-500 to-rose-400', glow: 'shadow-pink-500/20' },
+    { icon: Headphones, label: d.dashboard.therapySessions, value: therapyCount.toString(), gradient: 'from-[#94d3c1] to-[#9ad2c0]', glow: 'shadow-[#94d3c1]/20' },
+    { icon: ClipboardList, label: d.dashboard.recentAssessments, value: assessments.length.toString(), gradient: 'from-[#024e41] to-[#165042]', glow: 'shadow-[#024e41]/20' },
+    { icon: Flame, label: d.dashboard.streak, value: `${streak} ${d.dashboard.days}`, gradient: 'from-[#ffb954] to-[#ffddb4]', glow: 'shadow-[#ffb954]/20' },
+    { icon: Heart, label: d.dashboard.mood, value: lastCheckin ? `${lastCheckin.mood_score}/10` : '--', gradient: 'from-[#9ad2c0] to-[#afefdd]', glow: 'shadow-[#9ad2c0]/20' },
   ]
 
   const quickActions = [
-    { icon: MessageSquare, label: d.dashboard.chatWithTinni, desc: d.dashboard.chatDesc, href: '/chat', gradient: 'from-blue-500 to-cyan-400' },
-    { icon: Music, label: d.dashboard.soundTherapy, desc: d.dashboard.soundDesc, href: '/therapy', gradient: 'from-violet-500 to-purple-400' },
-    { icon: Ear, label: d.dashboard.hearingTest, desc: d.dashboard.hearingDesc, href: '/hearing-test', gradient: 'from-emerald-500 to-teal-400' },
+    { icon: MessageSquare, label: d.dashboard.chatWithTinni, desc: d.dashboard.chatDesc, href: '/chat', gradient: 'from-[#94d3c1] to-[#9ad2c0]' },
+    { icon: Music, label: d.dashboard.soundTherapy, desc: d.dashboard.soundDesc, href: '/therapy', gradient: 'from-[#024e41] to-[#165042]' },
+    { icon: Ear, label: d.dashboard.hearingTest, desc: d.dashboard.hearingDesc, href: '/hearing-test', gradient: 'from-[#ffb954] to-[#ffddb4]' },
   ]
 
   const locale = lang === 'vi' ? 'vi-VN' : 'en-US'
@@ -130,40 +130,40 @@ export default function DashboardClient({ data }: DashboardClientProps) {
   return (
     <div className="h-full overflow-y-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl mx-auto">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-[5%] right-[20%] w-[250px] h-[250px] rounded-full bg-blue-600/8 blur-[80px]" />
-        <div className="absolute bottom-[30%] left-[10%] w-[200px] h-[200px] rounded-full bg-violet-600/8 blur-[80px]" />
+        <div className="absolute top-[5%] right-[20%] w-[250px] h-[250px] rounded-full bg-[#024e41]/20 blur-[80px]" />
+        <div className="absolute bottom-[30%] left-[10%] w-[200px] h-[200px] rounded-full bg-[#ffb954]/8 blur-[80px]" />
       </div>
 
       {/* Welcome */}
       <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
-            {d.dashboard.greeting}, <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">{name}</span>! 👋
+            {d.dashboard.greeting}, <span className="bg-gradient-to-r from-[#94d3c1] to-[#ffb954] bg-clip-text text-transparent">{name}</span>! 👋
           </h1>
-          <p className="mt-1 text-slate-400 text-xs sm:text-sm">
+          <p className="mt-1 text-[#bfc8c8] text-xs sm:text-sm">
             {isEn ? "Here's your journey overview" : 'Đây là tổng quan hành trình của bạn'}
           </p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/[0.03] border border-white/5 rounded-full">
-          <Zap size={14} className="text-amber-400" />
-          <span className="text-xs text-slate-400 capitalize">{data.tier}</span>
+        <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/[0.03] border border-[#3f4848]/20 rounded-full">
+          <Zap size={14} className="text-[#ffb954]" />
+          <span className="text-xs text-[#bfc8c8] capitalize">{data.tier}</span>
         </div>
       </div>
 
       {/* Daily Tip */}
-      <div className="mb-6 sm:mb-8 p-4 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 backdrop-blur border border-emerald-500/15 rounded-2xl">
+      <div className="mb-6 sm:mb-8 p-4 bg-gradient-to-r from-[#024e41]/15 to-[#94d3c1]/5 backdrop-blur border border-[#94d3c1]/15 rounded-2xl">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-sm flex-shrink-0">💡</div>
+          <div className="w-8 h-8 rounded-lg bg-[#94d3c1]/20 flex items-center justify-center text-sm flex-shrink-0">💡</div>
           <div>
-            <p className="text-emerald-400 text-xs font-medium mb-0.5">{isEn ? 'Tip of the Day' : 'Mẹo hôm nay'}</p>
-            <p className="text-slate-400 text-xs leading-relaxed">{getDailyTip(lang)}</p>
+            <p className="text-[#94d3c1] text-xs font-medium mb-0.5">{isEn ? 'Tip of the Day' : 'Mẹo hôm nay'}</p>
+            <p className="text-[#bfc8c8] text-xs leading-relaxed">{getDailyTip(lang)}</p>
           </div>
         </div>
       </div>
 
       {/* Onboarding nudge for new users */}
       {checkins.length === 0 && assessments.length === 0 && therapyCount === 0 && (
-        <div className="mb-6 sm:mb-8 p-5 bg-gradient-to-br from-blue-500/10 via-violet-500/5 to-transparent border border-blue-500/20 rounded-2xl">
+        <div className="mb-6 sm:mb-8 p-5 bg-gradient-to-br from-[#024e41]/20 via-[#94d3c1]/5 to-transparent border border-[#94d3c1]/20 rounded-2xl">
           <h3 className="text-white font-semibold text-sm mb-2">
             {isEn ? '🌟 Start your tinnitus management journey!' : '🌟 Bắt đầu hành trình kiểm soát ù tai!'}
           </h3>
@@ -173,21 +173,21 @@ export default function DashboardClient({ data }: DashboardClientProps) {
               : 'Dưới đây là 3 bước đơn giản để bắt đầu. Mỗi bước mất chưa đầy 5 phút:'}
           </p>
           <div className="grid sm:grid-cols-3 gap-3">
-            <Link href="/chat" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-blue-500/30 rounded-xl transition-all">
+            <Link href="/chat" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-[#94d3c1]/30 rounded-xl transition-all">
               <span className="text-xl">💬</span>
               <div>
                 <p className="text-white text-xs font-medium">{isEn ? '1. Talk to Tinni' : '1. Nói chuyện với Tinni'}</p>
                 <p className="text-slate-600 text-[9px]">{isEn ? 'Share your symptoms' : 'Chia sẻ triệu chứng'}</p>
               </div>
             </Link>
-            <Link href="/hearing-test" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all">
+            <Link href="/hearing-test" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-[#ffb954]/30 rounded-xl transition-all">
               <span className="text-xl">🎧</span>
               <div>
                 <p className="text-white text-xs font-medium">{isEn ? '2. Test your hearing' : '2. Kiểm tra thính lực'}</p>
                 <p className="text-slate-600 text-[9px]">{isEn ? '5 minutes, free' : '5 phút, miễn phí'}</p>
               </div>
             </Link>
-            <Link href="/therapy" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-violet-500/30 rounded-xl transition-all">
+            <Link href="/therapy" className="flex items-center gap-3 p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-[#9ad2c0]/30 rounded-xl transition-all">
               <span className="text-xl">🎵</span>
               <div>
                 <p className="text-white text-xs font-medium">{isEn ? '3. Try sound therapy' : '3. Nghe âm thanh trị liệu'}</p>
@@ -201,11 +201,11 @@ export default function DashboardClient({ data }: DashboardClientProps) {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {stats.map(s => (
-          <div key={s.label} className={`relative bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl p-4 sm:p-5 hover:bg-white/[0.04] transition-all hover:-translate-y-0.5 hover:shadow-lg ${s.glow}`}>
+          <div key={s.label} className={`relative bg-[#172121] backdrop-blur border border-[#3f4848]/20 rounded-2xl p-4 sm:p-5 hover:bg-[#222c2c] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${s.glow}`}>
             <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center mb-2 sm:mb-3 shadow-lg ${s.glow}`}>
               <s.icon size={18} className="text-white" />
             </div>
-            <div className="text-[10px] sm:text-xs text-slate-500 mb-1">{s.label}</div>
+            <div className="text-[10px] sm:text-xs text-[#bfc8c8] mb-1">{s.label}</div>
             <div className="text-xl sm:text-2xl font-bold text-white">{s.value}</div>
           </div>
         ))}
@@ -214,9 +214,9 @@ export default function DashboardClient({ data }: DashboardClientProps) {
       {/* Charts Section */}
       <div className="grid md:grid-cols-2 gap-4 mb-6 sm:mb-8">
         {/* Check-in Trends Chart */}
-        <div className="bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl p-4 sm:p-5">
+        <div className="bg-[#172121] backdrop-blur border border-[#3f4848]/20 rounded-2xl p-4 sm:p-5">
           <h2 className="font-semibold text-white flex items-center gap-2 mb-4 text-sm">
-            <TrendingUp size={16} className="text-blue-400" />
+            <TrendingUp size={16} className="text-[#94d3c1]" />
             {isEn ? 'Daily Check-in Trends' : 'Xu Hướng Check-in'}
           </h2>
           {checkinChartData.length > 1 ? (
@@ -226,32 +226,32 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                 <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis domain={[0, 10]} tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} width={25} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey={moodKey} stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                <Line type="monotone" dataKey={sleepKey} stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey={tinnitusKey} stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey={moodKey} stroke="#94d3c1" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey={sleepKey} stroke="#9ad2c0" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey={tinnitusKey} stroke="#ffb954" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex flex-col items-center justify-center h-[200px] text-center">
               <p className="text-sm text-slate-500 mb-3">{isEn ? 'Check in daily to see trends!' : 'Check-in hàng ngày để xem xu hướng!'}</p>
-              <Link href="/chat" className="inline-flex px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs rounded-lg">
+              <Link href="/chat" className="inline-flex px-4 py-2 bg-gradient-to-r from-[#024e41] to-[#94d3c1] text-[#00201a] text-xs rounded-lg font-medium">
                 {d.dashboard.startNow} →
               </Link>
             </div>
           )}
           {checkinChartData.length > 1 && (
             <div className="flex justify-center gap-4 mt-2 text-[10px]">
-              <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 rounded-full" />{moodKey}</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-violet-500 rounded-full" />{sleepKey}</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-amber-500 rounded-full" />{tinnitusKey}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#94d3c1] rounded-full" />{moodKey}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#9ad2c0] rounded-full" />{sleepKey}</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#ffb954] rounded-full" />{tinnitusKey}</span>
             </div>
           )}
         </div>
 
         {/* Assessment History Chart */}
-        <div className="bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl p-4 sm:p-5">
+        <div className="bg-[#172121] backdrop-blur border border-[#3f4848]/20 rounded-2xl p-4 sm:p-5">
           <h2 className="font-semibold text-white flex items-center gap-2 mb-4 text-sm">
-            <ClipboardList size={16} className="text-violet-400" />
+            <ClipboardList size={16} className="text-[#ffb954]" />
             {isEn ? 'Assessment History' : 'Lịch Sử Đánh Giá'}
           </h2>
           {assessmentChartData.length > 0 ? (
@@ -264,8 +264,8 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                 <Bar dataKey="score" fill="url(#barGrad)" radius={[4, 4, 0, 0]} name={isEn ? 'Score' : 'Điểm'} />
                 <defs>
                   <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#3b82f6" />
+                    <stop offset="0%" stopColor="#94d3c1" />
+                    <stop offset="100%" stopColor="#024e41" />
                   </linearGradient>
                 </defs>
               </BarChart>
@@ -273,7 +273,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
           ) : (
             <div className="flex flex-col items-center justify-center h-[200px] text-center">
               <p className="text-sm text-slate-500 mb-3">{d.dashboard.noAssessments}</p>
-              <Link href="/chat" className="inline-flex px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs rounded-lg">
+              <Link href="/chat" className="inline-flex px-4 py-2 bg-gradient-to-r from-[#024e41] to-[#94d3c1] text-[#00201a] text-xs rounded-lg font-medium">
                 {d.dashboard.startNow} →
               </Link>
             </div>
@@ -283,28 +283,28 @@ export default function DashboardClient({ data }: DashboardClientProps) {
 
       {/* Last Check-in Detail */}
       <div className="grid md:grid-cols-2 gap-4 mb-6 sm:mb-8">
-        <div className="bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl p-4 sm:p-5">
+        <div className="bg-[#172121] backdrop-blur border border-[#3f4848]/20 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-white flex items-center gap-2 text-sm">
-              <TrendingUp size={16} className="text-blue-400" />
+              <TrendingUp size={16} className="text-[#94d3c1]" />
               {d.dashboard.todayCheckin}
             </h2>
             {lastCheckin && (
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-[#899392]">
                 {new Date(lastCheckin.created_at).toLocaleDateString(locale)}
               </span>
             )}
           </div>
           {lastCheckin ? (
             <div className="space-y-3">
-              <GradientBar label={`😊 ${d.dashboard.mood}`} value={lastCheckin.mood_score} gradient="from-blue-500 to-cyan-400" />
-              <GradientBar label={`😴 ${d.dashboard.sleep}`} value={lastCheckin.sleep_score} gradient="from-violet-500 to-purple-400" />
-              <GradientBar label={`🔔 ${d.dashboard.tinnitusLoudness}`} value={lastCheckin.tinnitus_loudness} gradient="from-amber-500 to-orange-400" />
+              <GradientBar label={`😊 ${d.dashboard.mood}`} value={lastCheckin.mood_score} gradient="from-[#94d3c1] to-[#9ad2c0]" />
+              <GradientBar label={`😴 ${d.dashboard.sleep}`} value={lastCheckin.sleep_score} gradient="from-[#024e41] to-[#165042]" />
+              <GradientBar label={`🔔 ${d.dashboard.tinnitusLoudness}`} value={lastCheckin.tinnitus_loudness} gradient="from-[#ffb954] to-[#ffddb4]" />
             </div>
           ) : (
             <div className="text-center py-6">
               <p className="text-sm text-slate-500 mb-3">{d.dashboard.noCheckin}</p>
-              <Link href="/chat" className="inline-flex px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs rounded-lg">
+              <Link href="/chat" className="inline-flex px-4 py-2 bg-gradient-to-r from-[#024e41] to-[#94d3c1] text-[#00201a] text-xs rounded-lg font-medium">
                 {d.dashboard.startNow} →
               </Link>
             </div>
@@ -312,13 +312,13 @@ export default function DashboardClient({ data }: DashboardClientProps) {
         </div>
 
         {/* Streak Card */}
-        <div className="bg-white/[0.02] backdrop-blur border border-white/5 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center">
+        <div className="bg-[#172121] backdrop-blur border border-[#3f4848]/20 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center">
           <div className="text-5xl mb-3">{streak > 0 ? '🔥' : '💪'}</div>
           <div className="text-3xl font-bold text-white">{streak}</div>
-          <div className="text-xs text-slate-400 mt-1">
+          <div className="text-xs text-[#bfc8c8] mt-1">
             {isEn ? 'day streak' : 'ngày liên tiếp'}
           </div>
-          <p className="text-[10px] text-slate-600 mt-3 max-w-[200px]">
+          <p className="text-[10px] text-[#899392] mt-3 max-w-[200px]">
             {isEn
               ? streak > 0 ? 'Keep going! Consistency is key to managing tinnitus.' : 'Start checking in daily to build your streak!'
               : streak > 0 ? 'Tiếp tục nhé! Kiên trì là chìa khóa quản lý ù tai.' : 'Bắt đầu check-in hàng ngày để xây dựng streak!'}
@@ -328,17 +328,17 @@ export default function DashboardClient({ data }: DashboardClientProps) {
 
       {/* Quick actions */}
       <div>
-        <h2 className="font-semibold text-sm text-slate-400 uppercase tracking-wider mb-3">{d.dashboard.quickActions}</h2>
+        <h2 className="font-semibold text-sm text-[#bfc8c8] uppercase tracking-wider mb-3">{d.dashboard.quickActions}</h2>
         <div className="grid sm:grid-cols-3 gap-3">
           {quickActions.map(a => (
             <Link key={a.href} href={a.href}
-              className="group flex items-center gap-3 sm:gap-4 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+              className="group flex items-center gap-3 sm:gap-4 bg-[#172121] hover:bg-[#222c2c] border border-[#3f4848]/20 hover:border-[#94d3c1]/20 rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
               <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br ${a.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
                 <a.icon size={20} className="text-white" />
               </div>
               <div>
-                <div className="font-medium text-xs sm:text-sm text-white group-hover:text-blue-300 transition-colors">{a.label}</div>
-                <div className="text-[10px] sm:text-xs text-slate-500">{a.desc}</div>
+                <div className="font-medium text-xs sm:text-sm text-white group-hover:text-[#94d3c1] transition-colors">{a.label}</div>
+                <div className="text-[10px] sm:text-xs text-[#899392]">{a.desc}</div>
               </div>
             </Link>
           ))}

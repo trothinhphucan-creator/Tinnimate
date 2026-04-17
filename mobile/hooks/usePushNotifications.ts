@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/use-user-store';
 
 // Configure how notifications appear when app is foreground
 Notifications.setNotificationHandler({

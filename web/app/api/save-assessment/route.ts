@@ -10,18 +10,21 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { quiz_type, total_score, severity, answers } = body
+    // Support both field-name conventions: {score|total_score} and {interpretation|severity}
+    const { quiz_type, score, total_score, interpretation, severity, answers } = body
+    const resolvedScore = score ?? total_score
+    const resolvedInterpretation = interpretation ?? severity ?? null
 
-    if (!quiz_type || total_score === undefined) {
-      return NextResponse.json({ error: 'Missing quiz_type or total_score' }, { status: 400 })
+    if (!quiz_type || resolvedScore === undefined) {
+      return NextResponse.json({ error: 'Missing quiz_type or score' }, { status: 400 })
     }
 
     const { error } = await supabase.from('assessments').insert({
       user_id: user.id,
       quiz_type,
-      total_score,
-      severity: severity ?? null,
-      answers: answers ?? null,
+      score: resolvedScore,
+      interpretation: resolvedInterpretation,
+      answers: answers ?? [],
     })
 
     if (error) {

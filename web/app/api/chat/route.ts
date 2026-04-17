@@ -1,21 +1,22 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { streamChat } from '@/lib/ai/gemini'
 import { getAdminConfig } from '@/lib/ai/config-loader'
+import { checkGuestRateLimit, getClientIp } from '@/lib/rate-limit'
 import type { ChatMessage, SubscriptionTier, TokenUsage } from '@/types'
 
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
   try {
-    // 1. Authenticate user (allow guest mode with 2 free messages)
+    // 1. Authenticate user (allow guest mode with limited free messages)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     const isGuest = !user
     if (isGuest) {
-      // Guest mode: allow max 2 messages (tracked client-side via header)
-      const guestCount = parseInt(request.headers.get('X-Guest-Count') ?? '0')
-      if (guestCount >= 2) {
+      const ip = getClientIp(request)
+      const { allowed } = await checkGuestRateLimit(ip)
+      if (!allowed) {
         return Response.json({ error: 'guest_limit', message: 'Sign up for free to continue chatting!' }, { status: 403 })
       }
     }
@@ -95,6 +96,19 @@ export async function POST(request: Request) {
     // 5. Save user message to DB (skip for guests)
     const lastMessage = messages[messages.length - 1]
     if (!isGuest && lastMessage?.role === 'user' && conversationId) {
+      // Security: verify this conversation belongs to the current user
+      // (serviceClient bypasses RLS, so we must enforce ownership manually)
+      const { data: conv, error: ownerErr } = await serviceClient
+        .from('conversations')
+        .select('id')
+        .eq('id', conversationId)
+        .eq('user_id', user!.id)
+        .maybeSingle()
+
+      if (ownerErr || !conv) {
+        return Response.json({ error: 'Conversation not found or access denied' }, { status: 403 })
+      }
+
       await serviceClient.from('messages').insert({
         conversation_id: conversationId,
         role: 'user',
@@ -141,7 +155,8 @@ export async function POST(request: Request) {
 
         let fullContent = ''
         const reader = stream.getReader()
-        const decoder = new TextDecoder()
+        const decoder = new TextDecoder('utf-8', { fatal: false })
+        let sseBuffer = ''
 
         try {
           while (true) {
@@ -151,9 +166,12 @@ export async function POST(request: Request) {
             // Forward raw SSE bytes to client
             controller.enqueue(value)
 
-            // Parse for DB side-effects
-            const text = decoder.decode(value)
-            for (const line of text.split('\n').filter(l => l.startsWith('data: '))) {
+            // Parse for DB side-effects — buffer to handle chunk boundaries
+            sseBuffer += decoder.decode(value, { stream: true })
+            const lines = sseBuffer.split('\n')
+            sseBuffer = lines.pop() ?? '' // keep last (possibly incomplete) line
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue
               try {
                 const chunk = JSON.parse(line.slice(6))
                 if (chunk.type === 'text' && chunk.content) fullContent += chunk.content
