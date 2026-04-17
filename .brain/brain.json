@@ -3,26 +3,29 @@
     "schema_version": "1.1.0",
     "awf_version": "4.0.2",
     "created_at": "2026-04-15T01:35:00Z",
-    "updated_at": "2026-04-15T01:35:00Z"
+    "updated_at": "2026-04-17T10:33:00+07:00"
   },
   "project": {
     "name": "TinniMate",
     "type": "fullstack-app",
-    "status": "active",
+    "status": "production",
     "description": "App hỗ trợ người bị ù tai (tinnitus) — AI chat, liệu pháp âm thanh, theo dõi tiến độ. Platform: Web + Mobile (iOS/Android).",
     "repo": "trothinhphucan-creator/tinnimate",
-    "domain": "tinnitus therapy, mental health, audio therapy"
+    "domain": "tinnitus therapy, mental health, audio therapy",
+    "production_url": "https://tinnimate.vuinghe.com",
+    "deploy_method": "Docker + nginx, port 3005 (nginx) → 3000 (next.js)"
   },
   "tech_stack": {
     "web": {
-      "framework": "Next.js 16 (App Router)",
+      "framework": "Next.js 16 (App Router, Turbopack)",
       "language": "TypeScript",
       "styling": "CSS Modules / Tailwind",
-      "auth": "Supabase Auth",
+      "auth": "Supabase Auth (session cookie, NO X-User-ID header trust)",
       "database": "Supabase (PostgreSQL)",
       "ai": "Google Gemini (via AI SDK)",
-      "payment": "MoMo, VNPay, Stripe",
-      "deploy": "Docker + nginx"
+      "payment": "Stripe (webhook idempotency via stripe_events table)",
+      "rate_limit": "lib/rate-limit.ts — Upstash Redis (env) + in-memory fallback",
+      "deploy": "Docker + nginx (docker-compose.yml, Dockerfile in web/)"
     },
     "mobile": {
       "framework": "Expo SDK 54",
@@ -30,6 +33,7 @@
       "router": "expo-router v6",
       "audio": "expo-av",
       "auth": "Supabase Auth (@supabase/supabase-js)",
+      "state": "Zustand — SINGLE STORE: @/store/use-user-store (legacy userStore.ts DEPRECATED)",
       "deep_link": "tinnimate:// scheme + @capacitor/browser"
     },
     "video": {
@@ -39,205 +43,140 @@
     "infra": {
       "docker": true,
       "nginx": true,
-      "pm2": true
+      "pm2": false,
+      "redis": "Upstash (optional — app works without it via fallback)"
     }
+  },
+  "security": {
+    "auth_pattern": "Always use supabase.auth.getUser() server-side. Never trust client headers (X-User-ID removed)",
+    "idor_fix": "All API routes verify resource ownership (conversations.user_id === user.id) before write",
+    "guest_rate_limit": "IP-based, 2 messages/24h, via lib/rate-limit.ts (Upstash or in-memory)",
+    "stripe_idempotency": "stripe_events table (PK: event.id) — duplicate events → 200 skip",
+    "middleware_matcher": "Explicit route list in lib/supabase/middleware.ts. sitemap.xml and robots.txt excluded from middleware."
+  },
+  "database_schema": {
+    "summary": "Supabase PostgreSQL. RLS enabled on all user tables. Service role (bypass RLS) used in API routes.",
+    "key_tables": [
+      { "name": "profiles", "key_cols": ["id", "email", "name", "subscription_tier", "is_admin", "created_at"] },
+      { "name": "conversations", "key_cols": ["id", "user_id", "title", "created_at"] },
+      { "name": "messages", "key_cols": ["id", "conversation_id", "role", "content", "created_at"] },
+      { "name": "assessments", "key_cols": ["id", "user_id", "type", "score", "interpretation", "answers", "created_at"] },
+      { "name": "daily_checkins", "key_cols": ["id", "user_id", "date", "tinnitus_score", "mood_score", "sleep_score"] },
+      { "name": "subscriptions", "key_cols": ["stripe_customer_id", "stripe_subscription_id", "user_id", "status", "tier"] },
+      { "name": "stripe_events", "key_cols": ["id (PK = event.id)", "type", "processed_at"], "note": "Idempotency guard — added Sprint 4" },
+      { "name": "push_tokens", "key_cols": ["user_id", "token", "platform", "device_name"] },
+      { "name": "mobile_sessions", "key_cols": ["id", "user_id", "platform", "screens", "duration_secs"] },
+      { "name": "journal_entries", "key_cols": ["id", "user_id", "mood", "text", "tinnitus_level", "created_at"] }
+    ],
+    "critical_gotcha": "assessments table uses 'score' and 'interpretation' — NOT 'total_score' or 'severity'. API supports both for backward compat."
   },
   "features": [
     {
       "name": "AI Chat (Tinni)",
       "status": "implemented",
-      "description": "AI chatbot hỗ trợ người bị ù tai, dùng Gemini model, có tool calling, chat suggestions",
-      "tiers": ["Free", "Pro", "Ultra"],
+      "description": "AI chatbot hỗ trợ người bị ù tai, dùng Gemini model, có tool calling, chat suggestions, guest mode (2 msgs free)",
+      "tiers": ["Free (2 guest msg)", "Pro", "Ultra"],
       "web_path": "/chat",
-      "mobile_path": "chat.tsx"
+      "mobile_path": "chat.tsx",
+      "sse_parser": "lib/ai/gemini.ts — TextDecoder({stream:true}) + buffer accumulator for chunked JSON"
     },
     {
-      "name": "Sound Therapy",
+      "name": "Sound Mixer",
       "status": "implemented",
-      "description": "White noise, pink noise, brown noise, nature sounds, binaural beats",
-      "web_path": "/therapy",
-      "mobile_path": "zen.tsx + mixer.tsx"
+      "description": "Mix 11 sounds: white/pink/brown noise, rain, ocean, forest, campfire, birds, river, wind, singing bowl. Tier-gated.",
+      "tier_limits": "Free = 1 layer max, Premium/Pro/Ultra = 4 layers",
+      "sounds": ["white", "pink", "brown", "rain", "ocean", "forest", "campfire", "birds", "river", "wind", "bowl"],
+      "web_path": "/mixer",
+      "mobile_path": "mixer.tsx"
     },
     {
-      "name": "Zentones (Exclusive)",
+      "name": "Assessments (THI/TFI/PHQ-9/GAD-7/ISI)",
       "status": "implemented",
-      "description": "Notch therapy tones — exclusive Ultra tier feature",
-      "tiers": ["Ultra"],
-      "web_path": "/zen",
-      "mobile_path": "zentones.tsx"
+      "description": "Đánh giá mức độ ù tai và sức khoẻ tâm thần",
+      "api": "/api/save-assessment",
+      "db_fields": "score (int), interpretation (text) — NOT total_score/severity"
     },
     {
-      "name": "Hearing Test",
+      "name": "Chat Suggestions",
       "status": "implemented",
-      "description": "Online hearing frequency test",
-      "web_path": "/hearing-test",
-      "mobile_path": "hearing-test.tsx"
+      "description": "Context-aware gợi ý chủ đề dựa trên lịch sử assessment, daily checkin (VN timezone UTC+7)",
+      "api": "/api/chat/suggestions",
+      "auth": "Session-based only (no header trust)"
     },
     {
-      "name": "CBT-i Program",
+      "name": "CBT-i Therapy",
       "status": "implemented",
-      "description": "Cognitive Behavioral Therapy for insomnia",
+      "description": "4-tuần CBT liệu pháp mất ngủ",
       "web_path": "/cbti",
       "mobile_path": "cbti.tsx"
     },
     {
-      "name": "Breathing Exercises",
-      "status": "implemented",
-      "description": "Hít thở 4-7-8 và các bài tập khác",
-      "web_path": "/therapy",
-      "mobile_path": "breathing.tsx"
-    },
-    {
-      "name": "Sleep Mode",
-      "status": "implemented",
-      "description": "Sleep timer kết hợp sound therapy",
-      "mobile_path": "sleep.tsx"
-    },
-    {
       "name": "Journal",
       "status": "implemented",
-      "description": "Nhật ký triệu chứng / cảm xúc",
+      "description": "Nhật ký cảm xúc + mức độ ù tai hàng ngày",
+      "web_path": "/journal",
       "mobile_path": "journal.tsx"
     },
     {
-      "name": "Notch Therapy",
+      "name": "Stripe Subscription",
       "status": "implemented",
-      "description": "Notch filter therapy cho tần số ù tai",
-      "web_path": "/notch-therapy",
-      "mobile_path": "notch-therapy.tsx"
+      "description": "Checkout, webhook xử lý tier update, idempotency via stripe_events table",
+      "tiers": ["free", "premium", "pro"],
+      "webhook_events": ["checkout.session.completed", "customer.subscription.updated", "customer.subscription.deleted"]
     },
     {
-      "name": "Progress Tracking",
+      "name": "SEO",
       "status": "implemented",
-      "description": "Theo dõi streak, check-in hàng ngày",
-      "mobile_path": "progress.tsx"
+      "description": "sitemap.ts + robots.ts. robots.txt OK (200). sitemap.xml có issue với Next.js 16 middleware (investigate later).",
+      "todo": "sitemap.xml 404 — Next.js 16 deprecated middleware.ts→proxy.ts, may affect dynamic routes"
     },
     {
-      "name": "Paywall / Pricing",
+      "name": "Admin CRM",
       "status": "implemented",
-      "description": "Free / Pro / Ultra tiers. Payment: MoMo, VNPay, Stripe",
-      "mobile_path": "paywall.tsx + pricing.tsx",
-      "web_path": "/pricing"
-    },
-    {
-      "name": "Admin Panel",
-      "status": "implemented",
-      "description": "Quản lý: AI config, users, models, training data, prompts, knowledge base, mobile config, video creator, usage stats, notifications"
-    },
-    {
-      "name": "Landing Page",
-      "status": "active_development",
-      "description": "Trang chủ marketing — hero 3D Brain Knowledge Graph (não bộ + auditory cortex + animated neuron nodes). Redesigned testimonials & features sections.",
-      "components": [
-        "web/components/landing/brain-hero.tsx — 3D brain visualization, SVG animateMotion edges, neuron nodes, sound wave rings"
-      ]
-    },
-    {
-      "name": "TikTok Videos",
-      "status": "active_development",
-      "description": "50 HTML video templates + Remotion + batch generation + TikTok upload scripts"
-    },
-    {
-      "name": "Mobile App",
-      "status": "active_development",
-      "description": "Full Expo app — đang refactor toàn bộ screens để đạt parity với web"
+      "description": "Admin panel: users, mobile analytics, session tracker",
+      "web_path": "/admin/*",
+      "guard": "is_admin === true in profiles"
     }
   ],
   "api_endpoints": [
-    { "path": "/api/chat", "method": "POST", "explained": "Chat với AI Tinni, có tool calling" },
-    { "path": "/api/chat/suggestions", "method": "GET", "explained": "Lấy gợi ý câu hỏi tiếp theo" },
-    { "path": "/api/pricing-config", "method": "GET/POST", "explained": "Cấu hình gói giá Free/Pro/Ultra" },
-    { "path": "/api/save-assessment", "method": "POST", "explained": "Lưu kết quả đánh giá người dùng" },
-    { "path": "/api/save-checkin", "method": "POST", "explained": "Lưu daily check-in" },
-    { "path": "/api/mobile-config", "method": "GET", "explained": "Remote config cho mobile app" },
-    { "path": "/api/payment/momo", "method": "POST", "explained": "Tạo payment MoMo" },
-    { "path": "/api/payment/momo/callback", "method": "POST", "explained": "Webhook callback MoMo" },
-    { "path": "/api/payment/vnpay", "method": "POST", "explained": "Tạo payment VNPay" },
-    { "path": "/api/payment/vnpay/callback", "method": "GET", "explained": "Callback VNPay" },
-    { "path": "/api/stripe/checkout", "method": "POST", "explained": "Tạo Stripe checkout session" },
-    { "path": "/api/stripe/webhook", "method": "POST", "explained": "Stripe webhook events" },
-    { "path": "/api/admin/config", "method": "GET/POST", "explained": "Cấu hình admin (AI model, temperature, tools)" },
-    { "path": "/api/admin/users", "method": "GET", "explained": "Danh sách users" },
-    { "path": "/api/admin/models", "method": "GET", "explained": "Danh sách AI models" },
-    { "path": "/api/admin/training", "method": "GET/POST", "explained": "Training data cho AI" },
-    { "path": "/api/admin/prompts", "method": "GET/POST", "explained": "System prompts" },
-    { "path": "/api/admin/knowledge", "method": "GET/POST", "explained": "Knowledge base" },
-    { "path": "/api/admin/mobile-config", "method": "GET/POST", "explained": "Config mobile app" },
-    { "path": "/api/admin/mobile-analytics", "method": "GET", "explained": "Analytics từ mobile" },
-    { "path": "/api/admin/notifications", "method": "POST", "explained": "Push notifications" },
-    { "path": "/api/admin/usage", "method": "GET", "explained": "Usage stats AI" },
-    { "path": "/api/admin/examples", "method": "GET/POST", "explained": "Few-shot examples cho AI" },
-    { "path": "/api/admin/video-bg-prompt", "method": "POST", "explained": "Generate video background prompt" },
-    { "path": "/api/auth/*", "method": "Various", "explained": "Supabase OAuth callback" }
+    { "path": "/api/chat", "method": "POST", "auth": "optional (guest allowed, 2 msgs limit)", "explained": "Main AI chat — SSE streaming, ownership check, IP rate limit" },
+    { "path": "/api/chat/suggestions", "method": "GET", "auth": "session", "explained": "Gợi ý chủ đề dựa trên assessment + checkin hôm nay (UTC+7)" },
+    { "path": "/api/save-assessment", "method": "POST", "auth": "session", "explained": "Lưu kết quả bài test (THI/TFI/PHQ-9/GAD-7/ISI). Field: score, interpretation" },
+    { "path": "/api/stripe/webhook", "method": "POST", "auth": "Stripe signature", "explained": "Webhook Stripe — có idempotency guard via stripe_events table" },
+    { "path": "/api/admin/users", "method": "GET", "auth": "admin only", "explained": "Danh sách users (CRM)" }
   ],
-  "business_rules": [
-    "Free tier: AI chat cơ bản, sound therapy, hearing test",
-    "Pro tier: Không giới hạn AI chat, full features",
-    "Ultra tier: Pro + Zentones (exclusive notch therapy tones)",
-    "Payment: MoMo và VNPay cho Việt Nam, Stripe cho international",
-    "Rate limit auth: 10 requests/15 phút/IP",
-    "Rate limit chat: 30 requests/phút/IP",
-    "Load user từ bảng 'profiles' (không phải 'users')"
+  "known_issues": [
+    {
+      "issue": "sitemap.xml → HTTP 404",
+      "cause": "Next.js 16 đổi middleware.ts → proxy.ts convention. Dynamic routes có thể bị affect.",
+      "workaround": "Tạo public/sitemap.xml tĩnh hoặc migrate sang proxy.ts",
+      "priority": "low — not blocking launch"
+    },
+    {
+      "issue": "Next.js 16 warning: 'middleware file convention is deprecated, use proxy instead'",
+      "cause": "middleware.ts tên file cũ. Next.js 16 dùng proxy.ts",
+      "workaround": "Rename middleware.ts → proxy.ts và update matcher format",
+      "priority": "medium — cần làm trước next major release"
+    }
   ],
-  "knowledge_items": {
-    "gotchas": [
-      {
-        "issue": "Deploy pipeline — CRITICAL",
-        "solution": "Site tinnimate.vuinghe.com chạy qua PM2 (NOT Docker). Cloudflare tunnel → localhost:3000 = PM2 process. Docker nginx expose port 3005 (không dùng cho production). ĐÚNG FLOW: cd web && npm run build → pm2 restart tinnimate"
-      },
-      {
-        "issue": "Cloudflare cache sau deploy",
-        "solution": "Sau deploy lớn (thay đổi HTML/CSS), phải purge Cloudflare cache: Dashboard → Caching → Purge Cache. Hoặc có API token dùng curl API."
-      },
-      {
-        "issue": "Load user data",
-        "solution": "Dùng bảng 'profiles', KHÔNG phải 'users' — fixed tại commit 1e6eb7e"
-      },
-      {
-        "issue": "IntersectionObserver trên WKWebView (iOS)",
-        "solution": "Set threshold=0 + 300ms fallback timer — fixed tại RevealSection component"
-      },
-      {
-        "issue": "WKWebView cache stale code",
-        "solution": "Global no-cache headers trong middleware — fixed commit 163a189"
-      },
-      {
-        "issue": "Admin pages render SSR",
-        "solution": "Phải add force-dynamic directive — fixed commit 3601f60"
-      },
-      {
-        "issue": "OAuth deep link mobile",
-        "solution": "tinnimate:// scheme với @capacitor/browser + appUrlOpen handler — commit 2680d76"
-      },
-      {
-        "issue": "Rate limit redirect loop",
-        "solution": "Skip rate limit nếu URL đã có ?error param để tránh loop /login → /login"
-      }
-    ],
-    "patterns": [
-      "Supabase client: dùng lib/supabase/server.ts cho server, lib/supabase/middleware.ts cho middleware",
-      "Admin API: authenticate bằng Supabase session trước khi xử lý",
-      "Mobile remote config: hook useRemoteConfig.ts fetch từ /api/mobile-config",
-      "i18n: useLangStore (vi/en) dùng cho landing page và một số pages"
-    ],
-    "conventions": [
-      "TypeScript strict mode",
-      "API routes trong web/app/api/**",
-      "Admin pages trong web/app/(admin)/admin/**",
-      "App pages trong web/app/(app)/**",
-      "Landing page: web/app/page.tsx"
-    ]
+  "conventions": {
+    "mobile_store": "ONLY use @/store/use-user-store. Legacy userStore.ts (có session + setSession) đã deprecated, chỉ giữ để tương thích nếu cần.",
+    "supabase_client": "createClient() cho user-context, createServiceClient() để bypass RLS trong API routes",
+    "rate_limiting": "Dùng lib/rate-limit.ts — auto-detect Upstash env, fallback in-memory",
+    "sse_streaming": "Server: flush via WritableStream. Client: TextDecoder({stream:true}) + accumulate buffer",
+    "timezone": "Daily checkins: filter theo VN timezone (UTC+7) — offset applied in SQL query"
   },
-  "structure": {
-    "web/": "Next.js 16 web app",
-    "mobile/": "Expo React Native app",
-    "videos/": "50 HTML video templates + batch upload scripts",
-    "video-intro/": "Remotion project cho intro video",
-    "stitch_designs/": "UI mockups (Stitch/Figma exports)",
-    "docs/": "Documentation",
-    ".agents/": "AI agent configs + remotion skills",
-    "scripts/": "Utility scripts",
-    "docker-compose.yml": "Production Docker config",
-    "nginx.conf": "nginx reverse proxy config"
+  "knowledge_items": {
+    "patterns": [
+      "Ownership check pattern: query resource WHERE id=X AND user_id=authUser.id trước khi write",
+      "Stripe idempotency: INSERT stripe_events(id PK) → conflict code 23505 = already processed",
+      "Mobile store: use-user-store.ts exports useUserStore với { user, setUser, clearUser }"
+    ],
+    "gotchas": [
+      "assessments table: dùng 'score' và 'interpretation', KHÔNG phải total_score/severity",
+      "Next.js route groups (app) KHÔNG xuất hiện trong URL — middleware matcher phải dùng tên thật",
+      ".single() → .maybeSingle() nếu query có thể trả về 0 rows",
+      "Docker Dockerfile copy .next từ local — phải npm run build TRƯỚC rồi mới docker compose build"
+    ]
   }
 }
