@@ -29,6 +29,9 @@ import {
   ListChecks,
   Rss,
   History,
+  MessageCircle,
+  SlidersHorizontal,
+  Activity,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -81,11 +84,14 @@ const navGroups: NavGroup[] = [
     label: "Social Listening",
     icon: Radio,
     items: [
-      { href: "/admin/social-listening", label: "Dashboard", icon: BarChart3 },
-      { href: "/admin/social-listening/queue", label: "Review Queue", icon: ListChecks },
-      { href: "/admin/social-listening/sources", label: "Sources", icon: Rss },
-      { href: "/admin/social-listening/pages", label: "Fanpages", icon: Radio },
-      { href: "/admin/social-listening/history", label: "History", icon: History },
+      { href: "/admin/social-listening",          label: "Dashboard",     icon: BarChart3 },
+      { href: "/admin/social-listening/queue",     label: "Review Queue",  icon: ListChecks },
+      { href: "/admin/social-listening/comments",  label: "Comment Inbox", icon: MessageCircle },
+      { href: "/admin/social-listening/sources",   label: "Sources",       icon: Rss },
+      { href: "/admin/social-listening/pages",     label: "Fanpages",      icon: Radio },
+      { href: "/admin/social-listening/status",    label: "Scrape Status", icon: Activity },
+      { href: "/admin/social-listening/history",   label: "History",       icon: History },
+      { href: "/admin/social-listening/settings",  label: "AI Settings",   icon: SlidersHorizontal },
     ],
   },
 ]
