@@ -1,0 +1,10 @@
+/** Validate UUID v4 format */
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+export function isValidUUID(id: string): boolean {
+  return UUID_RE.test(id)
+}
+
+export function invalidId() {
+  return Response.json({ error: 'Invalid ID format' }, { status: 400 })
+}

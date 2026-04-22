@@ -1,3 +1,4 @@
+import { isValidUUID, invalidId } from '@/lib/social-listening/validate-id'
 import { NextResponse } from 'next/server'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
@@ -11,6 +12,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  if (!isValidUUID(id)) return invalidId()
   const body = await req.json() as { label?: string; fb_page_url?: string }
 
   const updates: Record<string, string> = {}
@@ -38,6 +40,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  if (!isValidUUID(id)) return invalidId()
 
   const { error } = await db()
     .from('fb_pages')

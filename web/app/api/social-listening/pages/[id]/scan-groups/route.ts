@@ -1,3 +1,4 @@
+import { isValidUUID, invalidId } from '@/lib/social-listening/validate-id'
 import { NextResponse } from 'next/server'
 import { workerClient } from '@/lib/social-listening/worker-client'
 
@@ -7,6 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  if (!isValidUUID(id)) return invalidId()
   try {
     const result = await workerClient.scanGroups(id)
     return NextResponse.json(result)

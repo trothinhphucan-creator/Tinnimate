@@ -59,9 +59,9 @@ async function main() {
   const app = express()
   app.use(express.json({ limit: '1mb' }))
 
-  // Auth middleware (X-Worker-Key). Skip /health & /metrics
+  // Auth middleware (X-Worker-Key). Skip /health only — /metrics needs key
   app.use((req: Request, res: Response, next) => {
-    if (req.path === '/health' || req.path === '/metrics') return next()
+    if (req.path === '/health') return next()
     const key = req.header('x-worker-key')
     if (key !== env.WORKER_SHARED_SECRET) {
       res.status(401).json({ error: 'unauthorized' })

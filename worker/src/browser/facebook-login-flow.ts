@@ -219,7 +219,7 @@ async function runLoginFlow(session: LoginSession): Promise<void> {
   } finally {
     clearInterval(captureTimer)
     await page.close().catch(() => {})
-    await browser.close().catch(() => {})
+    await browser?.close().catch(() => {})
     session.context = undefined
     cleanupLater(session.id)
   }

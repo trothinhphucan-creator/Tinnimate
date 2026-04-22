@@ -1,3 +1,4 @@
+import { isValidUUID, invalidId } from '@/lib/social-listening/validate-id'
 import { NextResponse } from 'next/server'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
@@ -10,6 +11,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  if (!isValidUUID(id)) return invalidId()
   const db = adminDb()
   const { error } = await db
     .from('fb_replies')
@@ -26,6 +28,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  if (!isValidUUID(id)) return invalidId()
   const { draft_text, page_id } = (await req.json()) as {
     draft_text?: string
     page_id?: string

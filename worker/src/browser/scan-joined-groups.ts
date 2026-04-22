@@ -67,7 +67,7 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
 
   chromium.use(StealthPlugin())
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
     executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH,
     args: ['--no-sandbox', '--disable-blink-features=AutomationControlled'],
   })
@@ -99,10 +99,10 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
         log.info({ numericId }, 'Found Page numeric ID → will scan as Page')
         actParam = `&act=${numericId}`
       } else {
-        log.warn('Could not extract Page numeric ID — falling back to personal groups')
+        throw new Error('Không tìm được Page numeric ID từ URL: ' + fbPageUrl + '. Hãy kiểm tra lại Facebook Page URL trong mục Chỉnh sửa.')
       }
     } else {
-      log.warn('No fb_page_url provided — scanning personal account groups')
+      throw new Error('Chưa có Facebook Page URL — vào Chỉnh sửa fanpage và nhập URL trước khi quét nhóm.')
     }
 
     // Navigate to groups với context của Page (nếu có act param)

@@ -10,7 +10,7 @@ export async function GET() {
     const db = getAdminSupabase()
     const { data, error } = await db
       .from('fb_pages')
-      .select('id, label, fb_user_id, status, last_active_at, last_error')
+      .select('id, label, fb_user_id, status, last_active_at, last_error, fb_page_url')
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

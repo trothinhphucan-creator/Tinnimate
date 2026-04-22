@@ -11,6 +11,7 @@ export async function GET() {
     .from('fb_target_sources')
     .select('id, type, label, fb_url, keywords, enabled, last_scraped_at, page_id')
     .order('created_at', { ascending: false })
+    .range(0, 199) // W5: max 200 sources per request
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ sources: data })
