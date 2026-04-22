@@ -124,73 +124,75 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
       log.info('No Switch button found — may already be acting as Page')
     }
 
-    log.info({ currentUrl: pw.url() }, 'After switch — navigating to Page groups feed')
+    log.info({ currentUrl: pw.url() }, 'After switch — navigating to Page joined groups')
 
-    // ── Navigate to Page Groups Feed ─────────────────────────────────────────
-    // When acting as a Page, facebook.com/groups/feed/ shows groups the Page joined
-    const groupsFeedUrl = 'https://www.facebook.com/groups/feed/'
-    log.info({ groupsFeedUrl }, 'Navigating to groups feed as Page')
+    // ── Navigate to Page Joined Groups ───────────────────────────────────────
+    // facebook.com/groups/joins/ = danh sách nhóm Page đã tham gia (confirmed by user)
+    const joinsUrl = 'https://www.facebook.com/groups/joins/?nav_source=tab'
+    log.info({ joinsUrl }, 'Navigating to Page joined groups')
 
-    await pw.goto(groupsFeedUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
+    await pw.goto(joinsUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
     await pw.waitForTimeout(3000)
 
     const finalUrl = pw.url()
     log.info({ finalUrl }, 'Final URL after navigation')
 
-    // Scroll to load groups
-    for (let i = 0; i < 6; i++) {
-      await pw.evaluate(() => window.scrollBy(0, window.innerHeight))
-      await pw.waitForTimeout(800)
-    }
+    log.info({ url: pw.url() }, 'Starting scroll+extract passes')
 
-    // Take screenshot for debugging
-    log.info({ url: pw.url() }, 'Extracting groups from page')
 
     // Extract groups — filter out notification noise
-    const SKIP = ['feed', 'create', 'discover', 'joined', 'joins', 'manage', 'you_admin', 'invites', 'search', 'explore']
+    const SKIP = ['feed', 'create', 'discover', 'joined', 'manage', 'you_admin', 'invites', 'search', 'explore']
     const NOISE = ['Chưa đọc', 'bài viết mới', 'ảnh mới', 'giờ·', 'phút·', 'tuần trước', 'ngày trước', 'Lần hoạt động', 'Nhóm của bạn']
+    const SKIP_TEXT = ['Bảng feed của bạn', 'Xem tất cả', 'Tất cả', 'Khám phá', 'Nhóm của bạn', 'Tạo nhóm mới', 'Xem nhóm']
 
-    const allGroups: FbGroupInfo[] = await pw.evaluate((args: { skip: string[]; noise: string[] }) => {
+    // Extract inline function (used per scroll pass)
+    const extractPage = async () => pw.evaluate((args: { skip: string[]; noise: string[]; skipText: string[] }) => {
       const results: Array<{ name: string; url: string; memberCount: string | null }> = []
       const seen = new Set<string>()
-
-      // Get all group links
       for (const a of Array.from(document.querySelectorAll('a[href*="/groups/"]'))) {
         const href = (a as HTMLAnchorElement).href
         const match = href.match(/facebook\.com\/groups\/([^/?#]+)/)
         if (!match) continue
         const slug = match[1]
         if (args.skip.includes(slug) || seen.has(slug)) continue
-
-        // Get name from aria-label or text content
-        const rawName = a.getAttribute('aria-label') || a.textContent?.trim() || slug
-
-        // Filter out notification-style text (contains noise patterns)
-        if (!rawName || rawName.length < 4) continue
+        const rawName = a.getAttribute('aria-label')
+          || a.querySelector('span')?.textContent?.trim()
+          || slug  // fallback to slug so we don't lose any groups
+        if (!rawName || rawName.length < 2) continue
         if (args.noise.some(n => rawName.includes(n))) continue
-        if (rawName.length > 120) continue // Too long = likely notification text
-        // Skip pure timestamp names like '1 ngày', '2 giờ', etc.
+        if (rawName.length > 120) continue
         if (/^\d+\s*(ngày|giờ|phút|tuần|tháng|năm)/.test(rawName)) continue
-        // Skip navigation link text
-        if (['Bảng feed của bạn', 'Xem tất cả', 'Tất cả'].includes(rawName)) continue
-
+        if (args.skipText.includes(rawName)) continue
+        // Skip notification sentences (contains action verbs)
+        if (/đã (bình luận|đăng|chia sẻ|thêm|trả lời|thích|phản ứng)/.test(rawName)) continue
         seen.add(slug)
-
-        // Look for member count in parent container
         const parent = a.closest('[role="listitem"]') ?? a.closest('li') ?? a.parentElement?.parentElement
         const memberText = Array.from(parent?.querySelectorAll('span') ?? [])
           .map(s => s.textContent?.trim() ?? '')
           .find(t => t && (t.includes('thành viên') || t.includes('member') || /^\d+[\.,]?\d*\s*(K|M)?\s*(thành|mem)/i.test(t))) ?? null
-
-        results.push({
-          name: rawName.slice(0, 100).trim(),
-          url: `https://www.facebook.com/groups/${slug}`,
-          memberCount: memberText?.slice(0, 60) ?? null,
-        })
+        results.push({ name: rawName.slice(0, 100).trim(), url: `https://www.facebook.com/groups/${slug}`, memberCount: memberText?.slice(0, 60) ?? null })
       }
-      return results.slice(0, 150)
-    }, { skip: SKIP, noise: NOISE })
+      return results
+    }, { skip: SKIP, noise: NOISE, skipText: SKIP_TEXT })
 
+    // Scroll & extract on each pass to capture virtualized cards
+    const allGroupsMap = new Map<string, FbGroupInfo>()
+
+    for (let i = 0; i < 18; i++) {
+      await pw.evaluate(() => window.scrollBy(0, window.innerHeight * 0.8))
+      await pw.waitForTimeout(600)
+      const batch = await extractPage()
+      for (const g of batch) {
+        const slug = g.url.split('/').pop()!
+        // Prefer entry with a real name over slug-only name
+        const existing = allGroupsMap.get(slug)
+        if (!existing || (existing.name === slug && g.name !== slug)) {
+          allGroupsMap.set(slug, g)
+        }
+      }
+    }
+
+    const allGroups = Array.from(allGroupsMap.values()).slice(0, 150)
 
     // Post-filter: remove any remaining noise
     const groups = allGroups.filter(g => !isNotificationText(g.name))
@@ -198,6 +200,7 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
     log.info({ count: groups.length, finalUrl: pw.url() }, 'Groups scanned from Page')
     await context.close()
     return groups
+
 
   } finally {
     await browser?.close().catch(() => {})
