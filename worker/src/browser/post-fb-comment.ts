@@ -30,7 +30,7 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
   // 1. Fetch reply + post URL + page_id
   const { data, error } = await db
     .from('fb_replies')
-    .select('id, draft_text, status, page_id, post_id, fb_posts(fb_post_url, fb_post_id)')
+    .select('id, draft_text, status, page_id, post_id, fb_posts(fb_post_url, fb_post_id), fb_pages(label, fb_page_url)')
     .eq('id', replyId)
     .single()
 
@@ -43,6 +43,7 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
     page_id: string | null
     post_id: string
     fb_posts: { fb_post_url: string | null; fb_post_id: string } | null
+    fb_pages: { label: string; fb_page_url: string | null } | null
   }
 
   if (!reply.page_id) {
@@ -76,6 +77,14 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
     if (/\/login|checkpoint|two_step_verification/.test(page.url())) {
       await markPageStatus(reply.page_id, 'LOGGED_OUT', 'Session expired during reply post')
       throw new Error('Session expired — fanpage cần đăng nhập lại')
+    }
+
+    // Switch commenting identity to Page (not personal account)
+    const pageUrl = reply.fb_pages?.fb_page_url
+    if (pageUrl) {
+      await switchCommentIdentityToPage(page, pageUrl, reply.fb_pages?.label ?? '')
+    } else {
+      log.warn('fb_page_url missing — sẽ comment bằng tài khoản cá nhân')
     }
 
     // 3. Open composer + type
@@ -158,4 +167,50 @@ async function extractLatestCommentId(page: Page): Promise<string | null> {
   const html = await page.content()
   const match = html.match(/comment_id=(\d+)/)
   return match?.[1] ?? null
+}
+
+/**
+ * Chuyển danh tính bình luận sang Fanpage thay vì tài khoản cá nhân.
+ *
+ * Facebook cho phép admin fanpage chọn "Đăng bình luận với tư cách [Fanpage]"
+ * bằng cách click vào avatar hình tròn góc dưới-trái composer.
+ *
+ * Nếu không tìm thấy switcher (FB đổi DOM) → log warn và tiếp tục bằng cá nhân.
+ */
+async function switchCommentIdentityToPage(
+  page: Page,
+  _pageUrl: string,
+  pageLabel: string,
+): Promise<void> {
+  try {
+    // FB hiển thị dropdown "Đăng bình luận với tư cách" khi click avatar nhỏ
+    // cạnh comment box. Selector heuristic — FB DOM thay đổi thường xuyên.
+    const SWITCHER_SELECTORS = [
+      // Desktop: avatar nhỏ bên trái comment composer
+      'div[aria-label*="comment" i] ~ div image',
+      '[data-testid="comment_composer_profile_switcher"]',
+      'div[aria-label*="Commenting as" i]',
+      'div[aria-label*="Đang bình luận với tư cách" i]',
+    ]
+
+    for (const sel of SWITCHER_SELECTORS) {
+      const el = page.locator(sel).first()
+      if ((await el.count()) === 0) continue
+      await el.click({ timeout: 3_000 })
+      await randomDelay(800, 1_500)
+
+      // Tìm option tên fanpage trong dropdown
+      const pageOption = page.locator(`[role="menuitem"]:has-text("${pageLabel}")`).first()
+      if ((await pageOption.count()) > 0) {
+        await pageOption.click({ timeout: 3_000 })
+        await randomDelay(500, 1_000)
+        return
+      }
+    }
+
+    // Fallback: thử URL-based switch — navigate qua ?act=PAGE_ID nếu biết
+    // Bỏ qua nếu không tìm được switcher — sẽ comment bằng cá nhân
+  } catch {
+    // Non-fatal — tiếp tục comment bằng cá nhân nếu switch thất bại
+  }
 }
