@@ -1,12 +1,12 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { Radio, Plus, LogIn, LogOut, RefreshCw, Loader2, AlertCircle, CheckCircle2, X, Terminal, ImageIcon, Clock, Info, Search, Trash2, Pencil, Users } from 'lucide-react'
+import { Radio, Plus, LogIn, LogOut, RefreshCw, Loader2, AlertCircle, CheckCircle2, X, Terminal, ImageIcon, Clock, Info, Trash2, Pencil, Users } from 'lucide-react'
 import { DropdownMenu } from './_dropdown'
+import { ScanGroupsModal } from './_scan-groups-modal'
 
 type FbPage = { id: string; label: string; fb_user_id: string | null; status: 'IDLE'|'CONNECTING'|'ONLINE'|'ERROR'|'LOGGED_OUT'; last_active_at: string | null; last_error: string | null; fb_page_url?: string | null }
 type LoginLogEntry = { ts: string; level: 'info'|'warn'|'error'; msg: string }
 type LoginStatus = { loginId: string; pageId: string; label: string; status: 'PENDING'|'AWAITING_USER'|'WAITING_2FA'|'SUCCESS'|'FAILED'|'TIMEOUT'|'NEEDS_HELPER'; currentInstruction: string; logs: LoginLogEntry[]; hasScreenshot: boolean; errorMessage: string | null; startedAt: string }
-type GroupInfo = { name: string; url: string; memberCount: string | null }
 
 const SC: Record<string,string> = { ONLINE:'text-green-400 bg-green-400/10 border-green-500/30', CONNECTING:'text-yellow-400 bg-yellow-400/10 border-yellow-500/30', IDLE:'text-slate-400 bg-slate-400/10 border-slate-500/30', LOGGED_OUT:'text-red-400 bg-red-400/10 border-red-500/30', ERROR:'text-red-400 bg-red-400/10 border-red-500/30' }
 const LB: Record<string,string> = { PENDING:'bg-slate-500/20 text-slate-300', AWAITING_USER:'bg-blue-500/20 text-blue-300', WAITING_2FA:'bg-amber-500/20 text-amber-300', SUCCESS:'bg-green-500/20 text-green-300', FAILED:'bg-red-500/20 text-red-300', TIMEOUT:'bg-red-500/20 text-red-300', NEEDS_HELPER:'bg-purple-500/20 text-purple-300' }
@@ -14,7 +14,7 @@ const LB: Record<string,string> = { PENDING:'bg-slate-500/20 text-slate-300', AW
 function LoginModal({ pageId, loginId, onClose }: { pageId: string; loginId: string; onClose: () => void }) {
   const [status, setStatus] = useState<LoginStatus | null>(null)
   const [imgTs, setImgTs] = useState(Date.now())
-  const isTerminal = status?.status === 'SUCCESS' || status?.status === 'FAILED' || status?.status === 'TIMEOUT' || status?.status === 'NEEDS_HELPER'
+  const isTerminal = status && ['SUCCESS','FAILED','TIMEOUT','NEEDS_HELPER'].includes(status.status)
   useEffect(() => {
     let cancelled = false
     async function poll() {
@@ -72,7 +72,7 @@ function EditModal({ page, onClose, onSaved }: { page: FbPage; onClose: () => vo
   const [saving, setSaving] = useState(false)
   async function save() {
     setSaving(true)
-    await fetch(`/api/social-listening/pages/${page.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label, fb_page_url: url }) })
+    await fetch(`/api/social-listening/pages/${page.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label, fb_page_url: url || null }) })
     setSaving(false); onSaved(); onClose()
   }
   return (
@@ -81,87 +81,16 @@ function EditModal({ page, onClose, onSaved }: { page: FbPage; onClose: () => vo
         <div className="flex items-center justify-between mb-5"><h2 className="font-semibold text-lg">Chỉnh sửa Fanpage</h2><button onClick={onClose} className="text-slate-400 hover:text-white"><X className="h-5 w-5" /></button></div>
         <div className="space-y-4">
           <div><label className="text-xs text-slate-400 mb-1 block">Tên hiển thị</label><input value={label} onChange={e=>setLabel(e.target.value)} className="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:border-blue-500" /></div>
-          <div><label className="text-xs text-slate-400 mb-1 block">Facebook Page URL</label><input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://www.facebook.com/tenpage" className="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:border-blue-500" /><p className="text-xs text-slate-500 mt-1">Dùng để switch danh tính khi comment</p></div>
-        </div>
-        <div className="flex justify-end gap-2 mt-6"><button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">Hủy</button><button onClick={save} disabled={saving} className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-sm font-medium flex items-center gap-2">{saving && <Loader2 className="h-4 w-4 animate-spin" />}Lưu</button></div>
-      </div>
-    </div>
-  )
-}
-
-function ScanGroupsModal({ page, onClose, onAdd }: { page: FbPage; onClose: () => void; onAdd: (groups: GroupInfo[]) => Promise<void> }) {
-  const [groups, setGroups] = useState<GroupInfo[]>([])
-  const [scanning, setScanning] = useState(false)
-  const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [adding, setAdding] = useState(false)
-  const [q, setQ] = useState('')
-  const filtered = groups.filter(g => !q || g.name.toLowerCase().includes(q.toLowerCase()))
-
-  async function scan() {
-    setScanning(true); setGroups([]); setSelected(new Set())
-    try {
-      const r = await fetch(`/api/social-listening/pages/${page.id}/scan-groups`)
-      const j = await r.json() as { groups?: GroupInfo[]; error?: string }
-      if (j.error) alert(j.error); else setGroups(j.groups ?? [])
-    } finally { setScanning(false) }
-  }
-
-  function toggle(url: string) {
-    setSelected(s => { const n = new Set(s); n.has(url) ? n.delete(url) : n.add(url); return n })
-  }
-
-  async function addSelected() {
-    const toAdd = groups.filter(g => selected.has(g.url))
-    setAdding(true); await onAdd(toAdd); setAdding(false); onClose()
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-slate-900 rounded-xl border border-slate-700 w-full max-w-2xl max-h-[85vh] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-          <div className="flex items-center gap-2"><Users className="h-5 w-5 text-blue-400" /><div><div className="font-semibold">Quét nhóm — {page.label}</div><div className="text-xs text-slate-500">Tự động tìm nhóm đã tham gia</div></div></div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"><X className="h-5 w-5" /></button>
-        </div>
-        <div className="p-4 border-b border-slate-800 flex gap-2">
-          <button onClick={scan} disabled={scanning} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-sm font-medium">
-            {scanning ? <><Loader2 className="h-4 w-4 animate-spin" /> Đang quét...</> : <><Search className="h-4 w-4" /> Bắt đầu quét</>}
-          </button>
-          {groups.length > 0 && <div className="relative flex-1"><Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" /><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Tìm nhóm..." className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm focus:outline-none focus:border-blue-500" /></div>}
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          {groups.length === 0 && !scanning && <div className="text-center py-12 text-slate-500"><Users className="h-10 w-10 mx-auto mb-3 opacity-30" /><p>Bấm &ldquo;Bắt đầu quét&rdquo; để tìm nhóm</p></div>}
-          {scanning && <div className="flex items-center justify-center gap-2 text-slate-400 py-12"><Loader2 className="h-5 w-5 animate-spin" /> Đang mở trình duyệt và quét...</div>}
-          {filtered.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-3">
-                <span>{filtered.length} nhóm tìm thấy</span>
-                <div className="flex gap-2">
-                  <button onClick={() => setSelected(new Set(filtered.map(g=>g.url)))} className="text-blue-400 hover:text-blue-300">Chọn tất cả</button>
-                  <span>·</span>
-                  <button onClick={() => setSelected(new Set())} className="text-slate-400 hover:text-white">Bỏ chọn</button>
-                </div>
-              </div>
-              {filtered.map(g => (
-                <label key={g.url} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selected.has(g.url)?'border-blue-500/50 bg-blue-500/5':'border-slate-800 bg-slate-800/50 hover:border-slate-700'}`}>
-                  <input type="checkbox" checked={selected.has(g.url)} onChange={()=>toggle(g.url)} className="mt-0.5 accent-blue-500" />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium truncate">{g.name}</div>
-                    <div className="text-xs text-slate-500 truncate">{g.url}</div>
-                    {g.memberCount && <div className="text-xs text-slate-600 mt-0.5">{g.memberCount}</div>}
-                  </div>
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-        {selected.size > 0 && (
-          <div className="px-4 py-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-sm text-slate-400">Đã chọn {selected.size} nhóm</span>
-            <button onClick={addSelected} disabled={adding} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-40 text-sm font-medium">
-              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Thêm vào Sources
-            </button>
+          <div>
+            <label className="text-xs text-slate-400 mb-1 block">Facebook Page URL <span className="text-amber-400">*bắt buộc để quét nhóm*</span></label>
+            <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://www.facebook.com/TenPage" className="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+            <p className="text-xs text-slate-500 mt-1">Hoặc dạng: https://www.facebook.com/profile.php?id=XXXXXXXXX</p>
           </div>
-        )}
+        </div>
+        <div className="flex justify-end gap-2 mt-6">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">Hủy</button>
+          <button onClick={save} disabled={saving} className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-sm font-medium flex items-center gap-2">{saving && <Loader2 className="h-4 w-4 animate-spin" />}Lưu</button>
+        </div>
       </div>
     </div>
   )
@@ -218,25 +147,15 @@ export default function FanpagesAdminPage() {
     setBusyPage(null); void load()
   }
 
-  async function addGroupsToSources(groups: GroupInfo[]) {
-    for (const g of groups) {
-      await fetch('/api/social-listening/sources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'GROUP', label: g.name, fb_url: g.url, enabled: true })
-      })
-    }
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8">
       <div className="mb-6 flex items-center justify-between">
-        <div><h1 className="text-2xl font-bold flex items-center gap-2"><Radio className="h-6 w-6 text-blue-400" /> Fanpages</h1><p className="text-sm text-slate-400 mt-1">Quản lý fanpage Facebook dùng để đăng reply</p></div>
+        <div><h1 className="text-2xl font-bold flex items-center gap-2"><Radio className="h-6 w-6 text-blue-400" /> Fanpages</h1><p className="text-sm text-slate-400 mt-1">Quản lý tài khoản Facebook dùng để reply</p></div>
         <button onClick={() => void load()} className="text-sm flex items-center gap-1.5 text-slate-400 hover:text-white"><RefreshCw className="h-4 w-4" /> Refresh</button>
       </div>
 
       <form onSubmit={handleCreate} className="mb-6 flex gap-2">
-        <input value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="Tên fanpage (vd: TinniMate Official)" className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm focus:outline-none focus:border-blue-500" />
+        <input value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="Tên fanpage (vd: TinniAI Official)" className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm focus:outline-none focus:border-blue-500" />
         <button type="submit" disabled={creating || !newLabel.trim()} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-sm font-medium">
           {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Thêm
         </button>
@@ -254,7 +173,10 @@ export default function FanpagesAdminPage() {
                 <div className="min-w-0 flex-1">
                   <div className="font-medium">{p.label}</div>
                   {p.fb_user_id && <div className="text-xs text-slate-500 mt-0.5">FB ID: {p.fb_user_id}</div>}
-                  {p.fb_page_url && <div className="text-xs text-slate-600 mt-0.5 truncate">{p.fb_page_url}</div>}
+                  {p.fb_page_url
+                    ? <div className="text-xs text-slate-600 mt-0.5 truncate">{p.fb_page_url}</div>
+                    : <div className="text-xs text-amber-500/70 mt-0.5">⚠️ Chưa có Page URL</div>
+                  }
                 </div>
                 <div className="flex items-center gap-2 ml-3 shrink-0">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${SC[p.status] ?? SC['IDLE']}`}>{p.status}</span>
@@ -269,7 +191,7 @@ export default function FanpagesAdminPage() {
                 </div>
               </div>
 
-              {p.last_error && <div className="text-xs text-red-400 bg-red-500/10 rounded p-2 mb-3 flex gap-1.5"><AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" /><span>{p.last_error}</span></div>}
+              {p.last_error && <div className="text-xs text-red-400 bg-red-500/10 rounded p-2 mb-3 flex gap-1.5"><AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" /><span className="truncate">{p.last_error}</span></div>}
               {p.last_active_at && <div className="text-xs text-slate-500 mb-3">Hoạt động: {new Date(p.last_active_at).toLocaleString('vi-VN')}</div>}
 
               <div className="flex gap-2">
@@ -284,7 +206,7 @@ export default function FanpagesAdminPage() {
                 )}
                 {p.status === 'ONLINE' && (
                   <button onClick={() => setScanPage(p)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">
-                    <Search className="h-3.5 w-3.5" /> Quét nhóm
+                    <Users className="h-3.5 w-3.5" /> Quét nhóm
                   </button>
                 )}
                 {p.status === 'ONLINE' && <CheckCircle2 className="h-4 w-4 text-green-400 ml-auto self-center" />}
@@ -296,7 +218,7 @@ export default function FanpagesAdminPage() {
 
       {activeLogin && <LoginModal pageId={activeLogin.pageId} loginId={activeLogin.loginId} onClose={() => { setActiveLogin(null); void load() }} />}
       {editPage && <EditModal page={editPage} onClose={() => setEditPage(null)} onSaved={() => void load()} />}
-      {scanPage && <ScanGroupsModal page={scanPage} onClose={() => setScanPage(null)} onAdd={addGroupsToSources} />}
+      {scanPage && <ScanGroupsModal page={scanPage} onClose={() => setScanPage(null)} onSourcesAdded={() => void load()} />}
     </div>
   )
 }
