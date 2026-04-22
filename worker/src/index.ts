@@ -212,8 +212,12 @@ async function main() {
     const pageId = req.query['pageId'] as string | undefined
     if (!pageId) { res.status(400).json({ error: 'pageId required' }); return }
     try {
-      const groups = await scanJoinedGroups(pageId)
-      res.json({ groups })
+      // Fetch fb_page_url to enable Page context switching
+      const db = getSupabaseServiceClient()
+      const { data } = await db.from('fb_pages').select('fb_page_url').eq('id', pageId).single()
+      const fbPageUrl = (data as { fb_page_url?: string | null } | null)?.fb_page_url ?? null
+      const groups = await scanJoinedGroups(pageId, fbPageUrl)
+      res.json({ groups, scannedAsPage: !!fbPageUrl })
     } catch (err) {
       res.status(502).json({ error: (err as Error).message })
     }
