@@ -98,11 +98,13 @@ const navGroups: NavGroup[] = [
 
 function NavGroup({ group, defaultOpen = true }: { group: NavGroup; defaultOpen?: boolean }) {
   const pathname = usePathname()
-  const [open, setOpen] = useState(defaultOpen)
 
   const isGroupActive = group.items.some(item =>
     item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href)
   )
+
+  // Auto-open if any child route is active; otherwise use defaultOpen
+  const [open, setOpen] = useState(defaultOpen || isGroupActive)
 
   return (
     <div className="mb-1">
