@@ -1,14 +1,12 @@
 /**
  * scan-joined-groups.ts
  *
- * Quét nhóm mà FANPAGE đã tham gia (không phải tài khoản cá nhân).
+ * Quét nhóm mà FANPAGE đã tham gia.
  *
- * Facebook dùng tham số ?act=<PAGE_NUMERIC_ID> để switch context sang Page.
- * Flow:
- *   1. Load session cá nhân (admin fanpage)
- *   2. Navigate tới fb_page_url → lấy Page numeric ID
- *   3. Switch context: facebook.com/groups/?act=<PAGE_ID>&category=joined
- *   4. Scrape danh sách nhóm
+ * Strategy lấy Page numeric ID (theo thứ tự ưu tiên):
+ *   1. URL /profile.php?id=XXXXXXX → extract trực tiếp
+ *   2. Playwright navigate tới Page URL → tìm ID trong HTML/meta
+ *   3. Dùng facebook.com/pg/<name>/about → extract từ URL redirect
  */
 
 import { chromium } from 'playwright-extra'
@@ -22,45 +20,119 @@ export interface FbGroupInfo {
   memberCount: string | null
 }
 
-async function getPageNumericId(page: import('playwright').Page, pageUrl: string): Promise<string | null> {
+function extractIdFromUrl(url: string): string | null {
+  // profile.php?id=123456
+  const m = url.match(/[?&]id=(\d{5,})/)
+  return m?.[1] ?? null
+}
+
+async function getPageNumericId(
+  page: import('playwright').Page,
+  pageUrl: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  log: any,
+): Promise<string | null> {
+
+  // Case 1: URL directly contains numeric ID
+  const fromUrl = extractIdFromUrl(pageUrl)
+  if (fromUrl) {
+    log.info({ numericId: fromUrl, src: 'url-param' }, 'Page ID from URL')
+    return fromUrl
+  }
+
   try {
-    await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 })
+    // Navigate to page
+    const resp = await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
     await page.waitForTimeout(2000)
 
-    // Tìm page ID từ meta tags, data attributes hoặc URL
+    // Case 2: Redirected to numeric URL
+    const finalUrl = page.url()
+    const fromFinalUrl = extractIdFromUrl(finalUrl)
+    if (fromFinalUrl) {
+      log.info({ numericId: fromFinalUrl, src: 'redirect-url' }, 'Page ID from redirect URL')
+      return fromFinalUrl
+    }
+
+    // Case 3: Look for page ID in various HTML patterns
     const pageId = await page.evaluate((): string | null => {
-      // Cách 1: entity_id trong HTML
-      const match1 = document.documentElement.innerHTML.match(/"entity_id":"(\d+)"/)
-      if (match1) return match1[1]
+      const html = document.documentElement.innerHTML
 
-      // Cách 2: pageID
-      const match2 = document.documentElement.innerHTML.match(/"pageID":"(\d+)"/)
-      if (match2) return match2[1]
+      // Try multiple regex patterns used by different FB versions
+      const patterns = [
+        /"pageID"\s*:\s*"(\d+)"/,
+        /"page_id"\s*:\s*"(\d+)"/,
+        /"entity_id"\s*:\s*"(\d+)"/,
+        /content_id\s*=\s*"(\d+)"/,
+        /"ownerID"\s*:\s*"(\d+)"/,
+        /"userID"\s*:\s*"(\d+)"/,
+        /"actorID"\s*:\s*"(\d+)"/,
+        /pages\/(\d{5,})\//,
+        /\/"(\d{10,})"\//,
+      ]
+      for (const p of patterns) {
+        const m = html.match(p)
+        if (m?.[1] && m[1].length >= 5) return m[1]
+      }
 
-      // Cách 3: page_id
-      const match3 = document.documentElement.innerHTML.match(/"page_id":"(\d+)"/)
-      if (match3) return match3[1]
+      // Try meta tags
+      const ogUrl = document.querySelector('meta[property="og:url"]')?.getAttribute('content')
+      if (ogUrl) {
+        const mUrl = ogUrl.match(/\/(\d{5,})\/?$/)
+        if (mUrl) return mUrl[1]
+      }
 
-      // Cách 4: data-pageid attribute
-      const el = document.querySelector('[data-pageid]')
-      if (el) return el.getAttribute('data-pageid')
-
-      // Cách 5: từ URL redirect (numeric page)
-      const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href
-      const matchUrl = canonical?.match(/\/(\d+)$/)
-      if (matchUrl) return matchUrl[1]
+      // Try link canonical
+      const canon = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href
+      if (canon) {
+        const mCanon = canon.match(/\/(\d{5,})\/?$/)
+        if (mCanon) return mCanon[1]
+      }
 
       return null
     })
 
-    return pageId
-  } catch {
+    if (pageId) {
+      log.info({ numericId: pageId, src: 'html-parse' }, 'Page ID from HTML')
+      return pageId
+    }
+
+    // Case 4: Navigate to /about and look for numeric in URL
+    await page.goto(pageUrl.replace(/\/$/, '') + '/about', {
+      waitUntil: 'domcontentloaded',
+      timeout: 15_000,
+    }).catch(() => {})
+    await page.waitForTimeout(1500)
+
+    const aboutId = await page.evaluate((): string | null => {
+      const html = document.documentElement.innerHTML
+      const patterns = [/"pageID"\s*:\s*"(\d+)"/, /"page_id"\s*:\s*"(\d+)"/, /pages\/(\d{5,})\//]
+      for (const p of patterns) {
+        const m = html.match(p)
+        if (m?.[1]) return m[1]
+      }
+      return null
+    })
+
+    if (aboutId) {
+      log.info({ numericId: aboutId, src: 'about-page' }, 'Page ID from /about')
+      return aboutId
+    }
+
+    log.warn({ pageUrl, finalUrl, respStatus: resp?.status() }, 'Could not extract Page numeric ID')
+    return null
+
+  } catch (err) {
+    log.warn({ err: (err as Error).message }, 'Error getting Page ID')
     return null
   }
 }
 
 export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null): Promise<FbGroupInfo[]> {
   const log = logger.child({ pageId, fn: 'scanJoinedGroups' })
+
+  if (!fbPageUrl) {
+    throw new Error('Chưa có Facebook Page URL — vào Chỉnh sửa fanpage và nhập URL trước khi quét nhóm.')
+  }
 
   const storageState = await loadSession(pageId)
   if (!storageState) throw new Error('No session found — login first')
@@ -80,86 +152,73 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
       timezoneId: 'Asia/Ho_Chi_Minh',
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     })
-
     const pw = await context.newPage()
 
     // Check session valid
     await pw.goto('https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout: 20_000 })
-    if (pw.url().includes('/login')) {
-      throw new Error('Session expired — cần đăng nhập lại')
+    if (pw.url().includes('/login')) throw new Error('Session expired — cần đăng nhập lại')
+
+    log.info({ fbPageUrl }, 'Getting Page numeric ID')
+    const numericId = await getPageNumericId(pw, fbPageUrl, log)
+
+    if (!numericId) {
+      throw new Error(
+        `Không tìm được Page numeric ID từ URL: ${fbPageUrl}. ` +
+        'Thử dùng URL dạng: https://www.facebook.com/profile.php?id=XXXXXXXX'
+      )
     }
 
-    let actParam = ''
+    log.info({ numericId }, 'Switching to Page context')
+    const actParam = `&act=${numericId}`
 
-    // Lấy Page numeric ID nếu có fb_page_url
-    if (fbPageUrl) {
-      log.info({ fbPageUrl }, 'Getting Page numeric ID')
-      const numericId = await getPageNumericId(pw, fbPageUrl)
-      if (numericId) {
-        log.info({ numericId }, 'Found Page numeric ID → will scan as Page')
-        actParam = `&act=${numericId}`
-      } else {
-        throw new Error('Không tìm được Page numeric ID từ URL: ' + fbPageUrl + '. Hãy kiểm tra lại Facebook Page URL trong mục Chỉnh sửa.')
-      }
-    } else {
-      throw new Error('Chưa có Facebook Page URL — vào Chỉnh sửa fanpage và nhập URL trước khi quét nhóm.')
-    }
-
-    // Navigate to groups với context của Page (nếu có act param)
+    // Navigate to groups with Page context
     const groupsUrl = `https://www.facebook.com/groups/?category=joined${actParam}`
     log.info({ groupsUrl }, 'Navigating to groups page')
     await pw.goto(groupsUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
-    await pw.waitForTimeout(2500)
+    await pw.waitForTimeout(3000)
 
-    // Scroll để load thêm nhóm
+    // Scroll to load more
     for (let i = 0; i < 6; i++) {
       await pw.evaluate(() => window.scrollBy(0, 800))
       await pw.waitForTimeout(700)
-    }
-
-    // Click "Xem tất cả" nếu có
-    const seeAll = pw.locator('a:has-text("Xem tất cả"), span:has-text("See all")').first()
-    if (await seeAll.count() > 0) {
-      await seeAll.click().catch(() => {})
-      await pw.waitForTimeout(1500)
     }
 
     // Extract group links
     const groups = await pw.evaluate((): FbGroupInfo[] => {
       const results: FbGroupInfo[] = []
       const seen = new Set<string>()
-      const links = Array.from(document.querySelectorAll('a[href*="/groups/"]'))
+      const SKIP = new Set(['feed', 'create', 'discover', 'joined', 'manage', 'you_admin', 'invites'])
 
-      for (const a of links) {
+      for (const a of Array.from(document.querySelectorAll('a[href*="/groups/"]'))) {
         const href = (a as HTMLAnchorElement).href
         const match = href.match(/facebook\.com\/groups\/([^/?#]+)/)
         if (!match) continue
-        const groupSlug = match[1]
-        if (['feed', 'create', 'discover', 'joined', 'manage'].includes(groupSlug)) continue
-        if (seen.has(groupSlug)) continue
-        seen.add(groupSlug)
+        const slug = match[1]
+        if (SKIP.has(slug) || seen.has(slug)) continue
+        seen.add(slug)
 
-        const name = a.getAttribute('aria-label') || a.textContent?.trim() || groupSlug
+        const name = a.getAttribute('aria-label') || a.textContent?.trim() || slug
         if (!name || name.length < 2) continue
 
         const parent = a.closest('[role="listitem"]') ?? a.closest('li') ?? a.parentElement
         const memberText = Array.from(parent?.querySelectorAll('span') ?? [])
           .map(s => s.textContent?.trim())
-          .find(t => t && (t.includes('thành viên') || t.includes('member') || t.includes('·'))) ?? null
+          .find(t => t && (t.includes('thành viên') || t.includes('member'))) ?? null
 
         results.push({
           name: name.slice(0, 100),
-          url: `https://www.facebook.com/groups/${groupSlug}`,
+          url: `https://www.facebook.com/groups/${slug}`,
           memberCount: memberText?.slice(0, 60) ?? null,
         })
       }
       return results.slice(0, 150)
     })
 
-    log.info({ count: groups.length, usingPageContext: !!actParam }, 'Groups scanned')
+    log.info({ count: groups.length, numericId }, 'Groups scanned as Page')
     await context.close()
     return groups
+
   } finally {
-    await browser.close().catch(() => {})
+    await browser?.close().catch(() => {})
   }
 }
