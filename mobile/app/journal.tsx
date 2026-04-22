@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 
 const MOODS = [
   { emoji: '😊', label: 'Tốt',      score: 5, color: '#10B981' },
-  { emoji: '🙂', label: 'Khá',      score: 4, color: '#5B4BC4' },
+  { emoji: '🙂', label: 'Khá',      score: 4, color: '#C86B2A' },
   { emoji: '😐', label: 'Bình',     score: 3, color: '#F59E0B' },
   { emoji: '😔', label: 'Kém',      score: 2, color: '#F97316' },
   { emoji: '😣', label: 'Tệ',       score: 1, color: '#EF4444' },
@@ -115,10 +115,10 @@ export default function JournalScreen() {
           <View style={{ flex: 1 }}>
             <Text style={styles.summaryTitle}>Tuần này</Text>
             <Text style={styles.summaryVal}>
-              Tâm trạng TB: <Text style={{ color: '#FBBC00', fontWeight: '800' }}>{avgMood}</Text>/5
+              Tâm trạng TB: <Text style={{ color: '#00B896', fontWeight: '800' }}>{avgMood}</Text>/5
             </Text>
             <Text style={styles.summaryVal}>
-              Đã ghi: <Text style={{ color: '#FBBC00', fontWeight: '800' }}>{Math.min(entries.length, 7)}</Text> lần
+              Đã ghi: <Text style={{ color: '#00B896', fontWeight: '800' }}>{Math.min(entries.length, 7)}</Text> lần
             </Text>
           </View>
         </View>
@@ -128,9 +128,9 @@ export default function JournalScreen() {
           style={styles.promptCard}
           onPress={() => { Haptics.selectionAsync(); setComposing(true); }}
           activeOpacity={0.8}>
-          <BookOpen size={16} color="#C7BFFF" />
+          <BookOpen size={16} color="#F4A261" />
           <Text style={styles.promptText}>"{prompt}"</Text>
-          <ChevronRight size={16} color="#484551" />
+          <ChevronRight size={16} color="#3D5445" />
         </TouchableOpacity>
 
         {/* Entry list */}
@@ -175,7 +175,7 @@ export default function JournalScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Thêm nhật ký</Text>
               <TouchableOpacity onPress={() => setComposing(false)}>
-                <X size={24} color="#484551" />
+                <X size={24} color="#3D5445" />
               </TouchableOpacity>
             </View>
 
@@ -196,12 +196,12 @@ export default function JournalScreen() {
               </View>
 
               {/* Tinnitus level */}
-              <Text style={styles.modalLabel}>Mức ù tai (1–10): <Text style={{ color: '#FBBC00', fontWeight: '800' }}>{tinnitus}</Text></Text>
+              <Text style={styles.modalLabel}>Mức ù tai (1–10): <Text style={{ color: '#00B896', fontWeight: '800' }}>{tinnitus}</Text></Text>
               <View style={styles.sliderRow}>
                 {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                   <TouchableOpacity
                     key={n}
-                    style={[styles.sliderDot, tinnitus >= n && { backgroundColor: '#5B4BC4' }]}
+                    style={[styles.sliderDot, tinnitus >= n && { backgroundColor: '#C86B2A' }]}
                     onPress={() => { setTinnitus(n); Haptics.selectionAsync(); }}
                   />
                 ))}
@@ -215,7 +215,7 @@ export default function JournalScreen() {
                 multiline
                 numberOfLines={5}
                 placeholder="Viết gì đó về ngày hôm nay..."
-                placeholderTextColor="#484551"
+                placeholderTextColor="#3D5445"
                 value={text}
                 onChangeText={setText}
                 textAlignVertical="top"
@@ -237,77 +237,77 @@ export default function JournalScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#151120' },
+  container: { flex: 1, backgroundColor: '#0D1410' },
   scroll: { paddingHorizontal: 20, paddingBottom: 40 },
 
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingTop: 20, marginBottom: 20 },
-  title: { fontSize: 28, fontWeight: '900', color: '#E7DFF5', letterSpacing: -0.5 },
-  subtitle: { fontSize: 13, color: '#938F9C', marginTop: 2 },
+  title: { fontSize: 28, fontWeight: '900', color: '#E8F0EB', letterSpacing: -0.5 },
+  subtitle: { fontSize: 13, color: '#7A9686', marginTop: 2 },
   addBtn: {
     width: 44, height: 44, borderRadius: 14,
-    backgroundColor: '#4533AD', alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 8,
+    backgroundColor: '#7A3B1E', alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#7A3B1E', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 8,
   },
 
   summaryCard: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
-    backgroundColor: '#1D1928', borderRadius: 20, borderWidth: 1, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 20, borderWidth: 1, borderColor: '#1F2E25',
     padding: 16, marginBottom: 14,
   },
-  summaryTitle: { fontSize: 11, color: '#4533AD', fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 },
-  summaryVal: { fontSize: 13, color: '#484551', lineHeight: 20 },
+  summaryTitle: { fontSize: 11, color: '#7A3B1E', fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 },
+  summaryVal: { fontSize: 13, color: '#3D5445', lineHeight: 20 },
 
   promptCard: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: '#1D1928', borderRadius: 14, borderWidth: 1, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 14, borderWidth: 1, borderColor: '#1F2E25',
     padding: 14, marginBottom: 20,
   },
-  promptText: { flex: 1, fontSize: 13, color: '#938F9C', fontStyle: 'italic', lineHeight: 18 },
+  promptText: { flex: 1, fontSize: 13, color: '#7A9686', fontStyle: 'italic', lineHeight: 18 },
 
-  sectionLabel: { fontSize: 11, color: '#484551', fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 },
+  sectionLabel: { fontSize: 11, color: '#3D5445', fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 },
 
   emptyState: { alignItems: 'center', paddingVertical: 60 },
   emptyIcon: { fontSize: 48, marginBottom: 16 },
-  emptyText: { fontSize: 15, color: '#484551', textAlign: 'center', lineHeight: 22 },
+  emptyText: { fontSize: 15, color: '#3D5445', textAlign: 'center', lineHeight: 22 },
 
   entryCard: {
-    backgroundColor: '#1D1928', borderRadius: 16, borderWidth: 1, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 16, borderWidth: 1, borderColor: '#1F2E25',
     padding: 14, marginBottom: 10, flexDirection: 'row', alignItems: 'flex-start', gap: 12,
   },
   entryLeft: { alignItems: 'center', gap: 4 },
   moodDot: { width: 40, height: 40, borderRadius: 12, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   moodLabel: { fontSize: 10, fontWeight: '700' },
-  entryDate: { fontSize: 9, color: '#484551' },
-  entryText: { flex: 1, fontSize: 13, color: '#938F9C', lineHeight: 20, paddingTop: 2 },
+  entryDate: { fontSize: 9, color: '#3D5445' },
+  entryText: { flex: 1, fontSize: 13, color: '#7A9686', lineHeight: 20, paddingTop: 2 },
 
   // Modal
-  modalContainer: { flex: 1, backgroundColor: '#151120' },
+  modalContainer: { flex: 1, backgroundColor: '#0D1410' },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#2C2837',
+    paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#1F2E25',
   },
-  modalTitle: { fontSize: 18, fontWeight: '800', color: '#E7DFF5' },
+  modalTitle: { fontSize: 18, fontWeight: '800', color: '#E8F0EB' },
   modalScroll: { padding: 20, paddingBottom: 40 },
-  modalLabel: { fontSize: 13, fontWeight: '700', color: '#938F9C', marginBottom: 12 },
-  modalPromptHint: { fontSize: 12, color: '#484551', fontStyle: 'italic', marginBottom: 10, lineHeight: 18 },
+  modalLabel: { fontSize: 13, fontWeight: '700', color: '#7A9686', marginBottom: 12 },
+  modalPromptHint: { fontSize: 12, color: '#3D5445', fontStyle: 'italic', marginBottom: 10, lineHeight: 18 },
 
   moodRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
   moodOption: {
     flex: 1, alignItems: 'center', gap: 4, paddingVertical: 10,
-    borderRadius: 12, borderWidth: 1.5, borderColor: '#2C2837', backgroundColor: '#1D1928',
+    borderRadius: 12, borderWidth: 1.5, borderColor: '#1F2E25', backgroundColor: '#141E18',
   },
-  moodOptionLabel: { fontSize: 10, fontWeight: '600', color: '#938F9C' },
+  moodOptionLabel: { fontSize: 10, fontWeight: '600', color: '#7A9686' },
 
   sliderRow: { flexDirection: 'row', gap: 6, marginBottom: 24 },
-  sliderDot: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#2C2837' },
+  sliderDot: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#1F2E25' },
 
   textArea: {
-    backgroundColor: '#1D1928', borderRadius: 14, borderWidth: 1, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 14, borderWidth: 1, borderColor: '#1F2E25',
     padding: 14, fontSize: 14, color: '#E2E8F0', minHeight: 120, marginBottom: 20,
   },
   saveBtn: {
-    backgroundColor: '#4533AD', borderRadius: 100, paddingVertical: 16, alignItems: 'center',
-    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 8,
+    backgroundColor: '#7A3B1E', borderRadius: 100, paddingVertical: 16, alignItems: 'center',
+    shadowColor: '#7A3B1E', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 8,
   },
   saveBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

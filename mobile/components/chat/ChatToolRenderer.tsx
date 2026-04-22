@@ -168,28 +168,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   cardGreen: {
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderColor: '#10B981',
   },
   cardOrange: {
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderColor: '#F59E0B',
   },
   cardPurple: {
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderColor: '#8B5CF6',
   },
   cardTeal: {
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderColor: '#14B8A6',
   },
   cardRose: {
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderColor: '#F43F5E',
   },
   cardIndigo: {
-    backgroundColor: '#1D1928',
-    borderColor: '#5B4BC4',
+    backgroundColor: '#141E18',
+    borderColor: '#C86B2A',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -203,11 +203,11 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
   },
   cardDesc: {
     fontSize: 11,
-    color: '#484551',
+    color: '#3D5445',
     marginBottom: 10,
   },
   cardButton: {
@@ -220,18 +220,18 @@ const styles = StyleSheet.create({
   cardButtonText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#C9C4D3',
+    color: '#BDD0C3',
   },
   cardDefault: {
-    backgroundColor: '#2C2837',
+    backgroundColor: '#1F2E25',
     borderWidth: 1,
-    borderColor: '#484551',
+    borderColor: '#3D5445',
     borderRadius: 12,
     padding: 10,
     marginTop: 8,
   },
   cardDefaultText: {
     fontSize: 11,
-    color: '#484551',
+    color: '#3D5445',
   },
 });

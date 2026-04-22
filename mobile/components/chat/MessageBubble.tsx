@@ -162,18 +162,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   bubbleAssistant: {
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderWidth: 1,
-    borderColor: '#2C2837',
+    borderColor: '#1F2E25',
     borderBottomLeftRadius: 4,
   },
   bubbleUser: {
-    backgroundColor: '#4533AD',
+    backgroundColor: '#7A3B1E',
     borderBottomRightRadius: 4,
   },
   bubbleText: {
     fontSize: 14,
-    color: '#C9C4D3',
+    color: '#BDD0C3',
     lineHeight: 20,
   },
   bubbleTextUser: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   typingDot: {
     fontSize: 14,
-    color: '#938F9C',
+    color: '#7A9686',
   },
   typingDot2: {
     opacity: 0.7,
@@ -203,12 +203,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#484551',
-    backgroundColor: '#1D1928',
+    borderColor: '#3D5445',
+    backgroundColor: '#141E18',
   },
   optionText: {
     fontSize: 11,
-    color: '#938F9C',
+    color: '#7A9686',
     fontWeight: '500',
   },
 });

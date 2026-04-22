@@ -5,11 +5,9 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Send, LayoutGrid, Sparkles } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { TinniOrb } from '@/components/TinniOrb';
 import { ChatMessage } from '@/types/chat';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { SuggestionsFAB } from '@/components/chat/SuggestionsFAB';
@@ -17,6 +15,7 @@ import { SuggestionsBottomSheet } from '@/components/chat/SuggestionsBottomSheet
 import { useUserStore } from '@/store/use-user-store';
 import { useLangStore } from '@/store/use-lang-store';
 import { V } from '@/constants/theme';
+import { LotusOrb, FloatingLeavesBackground } from '@/components/botanical';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'https://tinnimate.vuinghe.com';
 
@@ -40,7 +39,7 @@ function OrbAvatar({ isTyping }: { isTyping: boolean }) {
 
   return (
     <Animated.View style={{ transform: [{ scale: pulse }] }}>
-      <TinniOrb mode={isTyping ? 'chat' : 'idle'} size={36} />
+      <LotusOrb size={36} progress={isTyping ? 0.6 : 0} animate={isTyping} />
     </Animated.View>
   );
 }
@@ -259,42 +258,38 @@ export default function ChatScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      {/* ── Gradient Header ── */}
-      <LinearGradient
-        colors={['#3D2B85', '#5B4BC4', V.bg]}
-        locations={[0, 0.5, 1]}
-        style={styles.headerGradient}
-      >
-        <SafeAreaView edges={['top']} style={styles.safeHeader}>
-          <View style={styles.header}>
-            <OrbAvatar isTyping={isLoading} />
-            <View style={styles.headerInfo}>
-              <View style={styles.headerNameRow}>
-                <Text style={styles.headerName}>Tinni</Text>
-                <View style={styles.aiBadge}>
-                  <Sparkles size={8} color={V.primary} />
-                  <Text style={styles.aiBadgeText}>AI</Text>
-                </View>
-              </View>
-              <Text style={styles.headerStatus}>
-                {isLoading
-                  ? lang === 'vi' ? '💬 đang suy nghĩ...' : '💬 thinking...'
-                  : lang === 'vi' ? '🟢 sẵn sàng' : '🟢 ready'}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => router.replace('/(tabs)')}
-              style={styles.homeBtn}
-              activeOpacity={0.7}
-            >
-              <LayoutGrid size={18} color={V.secondary} />
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </LinearGradient>
+    <View style={s.container}>
+      <FloatingLeavesBackground count={3} />
 
-      {/* ── Messages ── */}
+      {/* Header */}
+      <SafeAreaView edges={['top']} style={s.safeHeader}>
+        <View style={s.header}>
+          <OrbAvatar isTyping={isLoading} />
+          <View style={s.headerInfo}>
+            <View style={s.headerNameRow}>
+              <Text style={s.headerName}>Tinni</Text>
+              <View style={s.aiBadge}>
+                <Sparkles size={8} color={V.sage} />
+                <Text style={s.aiBadgeText}>AI</Text>
+              </View>
+            </View>
+            <Text style={s.headerStatus}>
+              {isLoading
+                ? lang === 'vi' ? '💬 đang suy nghĩ...' : '💬 thinking...'
+                : lang === 'vi' ? '🌿 sẵn sàng' : '🌿 ready'}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => router.replace('/(tabs)')}
+            style={s.homeBtn}
+            activeOpacity={0.7}
+          >
+            <LayoutGrid size={18} color={V.textSecondary} />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+
+      {/* Messages */}
       <FlatList
         ref={flatRef}
         data={messages}
@@ -310,28 +305,24 @@ export default function ChatScreen() {
             onToolResult={handleToolResult}
           />
         )}
-        contentContainerStyle={styles.messageList}
+        contentContainerStyle={s.messageList}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}
       />
 
-      {/* ── Input Bar ── */}
+      {/* Input Bar */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-        style={[styles.inputContainer, { paddingBottom: insets.bottom || (Platform.OS === 'ios' ? 34 : 12) }]}
+        style={[s.inputContainer, { paddingBottom: insets.bottom || (Platform.OS === 'ios' ? 34 : 12) }]}
       >
-        <View style={styles.inputBar}>
-          <View style={styles.inputWrapper}>
+        <View style={s.inputBar}>
+          <View style={s.inputWrapper}>
             <TextInput
-              style={styles.input}
+              style={s.input}
               value={input}
               onChangeText={setInput}
-              placeholder={
-                lang === 'vi'
-                  ? 'Hỏi Tinni bất cứ điều gì...'
-                  : 'Ask Tinni anything...'
-              }
+              placeholder={lang === 'vi' ? 'Hỏi Tinni bất cứ điều gì...' : 'Ask Tinni anything...'}
               placeholderTextColor={V.textDim}
               multiline
               maxLength={500}
@@ -340,24 +331,12 @@ export default function ChatScreen() {
             />
           </View>
           <TouchableOpacity
-            style={[
-              styles.sendBtn,
-              (!input.trim() || isLoading) && styles.sendBtnDisabled,
-            ]}
+            style={[s.sendBtn, input.trim() && !isLoading ? s.sendBtnActive : s.sendBtnDisabled]}
             onPress={() => sendMessage(input)}
             disabled={!input.trim() || isLoading}
             activeOpacity={0.8}
           >
-            {input.trim() ? (
-              <LinearGradient
-                colors={[V.primary, '#FFA726']}
-                style={styles.sendBtnGradient}
-              >
-                <Send size={16} color={V.primaryDark} />
-              </LinearGradient>
-            ) : (
-              <Send size={16} color={V.textDim} />
-            )}
+            <Send size={16} color={input.trim() && !isLoading ? V.bg : V.textDim} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -378,104 +357,26 @@ export default function ChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: V.bg },
+const s = StyleSheet.create({
+  container:      { flex: 1, backgroundColor: V.bg },
 
-  // ── Gradient Header ──
-  headerGradient: {
-    paddingBottom: 8,
-  },
-  safeHeader: {},
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  headerInfo: { flex: 1 },
-  headerNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerName: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  aiBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: 'rgba(251,188,0,0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  aiBadgeText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: V.primary,
-    letterSpacing: 0.5,
-  },
-  headerStatus: { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
-  homeBtn: {
-    width: 40, height: 40, borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center', justifyContent: 'center',
-  },
+  safeHeader:     { backgroundColor: V.surfaceHigh, borderBottomWidth: 1, borderBottomColor: V.borderCard },
+  header:         { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 12 },
+  headerInfo:     { flex: 1 },
+  headerNameRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerName:     { fontSize: 18, fontWeight: '700', color: V.cream },
+  aiBadge:        { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: `${V.sage}20`, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8, borderWidth: 1, borderColor: `${V.sage}40` },
+  aiBadgeText:    { fontSize: 9, fontWeight: '800', color: V.sage, letterSpacing: 0.5 },
+  headerStatus:   { fontSize: 11, color: V.textMuted, marginTop: 2 },
+  homeBtn:        { width: 40, height: 40, borderRadius: 14, backgroundColor: V.surface, borderWidth: 1, borderColor: V.borderCard, alignItems: 'center', justifyContent: 'center' },
 
-  // ── Messages ──
-  messageList: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-    flexGrow: 1,
-  },
+  messageList:    { paddingHorizontal: 16, paddingVertical: 12, gap: 12, flexGrow: 1 },
 
-  // ── Input ──
-  inputContainer: {
-    backgroundColor: V.bg,
-  },
-  inputBar: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderTopWidth: 1,
-    borderTopColor: V.surface,
-    backgroundColor: V.bg,
-  },
-  inputWrapper: {
-    flex: 1,
-    backgroundColor: V.surface,
-    borderWidth: 1,
-    borderColor: V.outlineVariant + '30',
-    borderRadius: 24,
-    overflow: 'hidden',
-  },
-  input: {
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    color: V.textPrimary,
-    fontSize: 14,
-    maxHeight: 100,
-  },
-  sendBtn: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: V.surface,
-  },
-  sendBtnGradient: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sendBtnDisabled: { backgroundColor: V.surface },
+  inputContainer: { backgroundColor: V.bg },
+  inputBar:       { flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12, borderTopWidth: 1, borderTopColor: V.borderCard, backgroundColor: V.bg },
+  inputWrapper:   { flex: 1, backgroundColor: V.surface, borderWidth: 1, borderColor: V.borderCard, borderRadius: 24, overflow: 'hidden' },
+  input:          { paddingHorizontal: 18, paddingVertical: 12, color: V.cream, fontSize: 14, maxHeight: 100 },
+  sendBtn:        { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
+  sendBtnActive:  { backgroundColor: V.sage, shadowColor: V.sage, shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 },
+  sendBtnDisabled:{ backgroundColor: V.surface },
 });

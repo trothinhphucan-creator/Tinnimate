@@ -17,7 +17,7 @@ const MODULES = [
     week: 1, emoji: '📖',
     title: 'Hiểu Về Ù Tai & Giấc Ngủ',
     desc: 'Tìm hiểu vòng xoáy ù tai-mất ngủ và thiết lập baseline.',
-    color: '#5B4BC4',
+    color: '#C86B2A',
     exercises: [
       { label: 'Vòng Xoáy Ù Tai-Mất Ngủ', type: 'read'     as const, done: false },
       { label: 'Thiết Lập Nhật Ký Ngủ',   type: 'practice'  as const, done: false },
@@ -39,7 +39,7 @@ const MODULES = [
     week: 3, emoji: '🧠',
     title: 'Giảm Lo Âu Nhận Thức',
     desc: 'Nhận diện và thay thế các suy nghĩ tiêu cực về giấc ngủ.',
-    color: '#A855F7',
+    color: '#00B896',
     exercises: [
       { label: 'Nhận Diện Suy Nghĩ Tự Động', type: 'read'     as const, done: false },
       { label: 'Ghi Chép Suy Nghĩ 3 Cột',    type: 'practice' as const, done: false },
@@ -60,7 +60,7 @@ const MODULES = [
 ];
 
 const TYPE_CONFIG = {
-  read:     { label: 'Đọc',     color: '#5B4BC4', bg: '#6366F118' },
+  read:     { label: 'Đọc',     color: '#C86B2A', bg: '#00A89618' },
   practice: { label: 'Thực hành', color: '#10B981', bg: '#10B98118' },
   quiz:     { label: 'Kiểm tra', color: '#F59E0B', bg: '#F59E0B18' },
 };
@@ -79,7 +79,7 @@ export default function CBTIScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <ChevronLeft size={24} color="#938F9C" />
+          <ChevronLeft size={24} color="#7A9686" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>CBT-i Liệu Pháp</Text>
         <View style={{ width: 40 }} />
@@ -130,8 +130,8 @@ export default function CBTIScreen() {
                   <Text style={styles.modDesc}>{mod.desc}</Text>
                 </View>
                 {locked
-                  ? <Lock size={18} color="#2C2837" />
-                  : <ChevronRight size={18} color="#484551" style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }} />
+                  ? <Lock size={18} color="#1F2E25" />
+                  : <ChevronRight size={18} color="#3D5445" style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }} />
                 }
               </TouchableOpacity>
 
@@ -174,53 +174,53 @@ export default function CBTIScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#151120' },
+  container: { flex: 1, backgroundColor: '#0D1410' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#E7DFF5' },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: '#E8F0EB' },
 
   scroll: { paddingHorizontal: 20, paddingBottom: 40 },
 
   hero: { alignItems: 'center', marginBottom: 24 },
-  heroTitle: { fontSize: 22, fontWeight: '900', color: '#E7DFF5', textAlign: 'center', marginTop: 14, letterSpacing: -0.5, lineHeight: 28 },
-  heroSub: { fontSize: 12, color: '#938F9C', marginTop: 6, textAlign: 'center' },
+  heroTitle: { fontSize: 22, fontWeight: '900', color: '#E8F0EB', textAlign: 'center', marginTop: 14, letterSpacing: -0.5, lineHeight: 28 },
+  heroSub: { fontSize: 12, color: '#7A9686', marginTop: 6, textAlign: 'center' },
 
   progressCard: {
-    backgroundColor: '#1D1928', borderRadius: 16, borderWidth: 1, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 16, borderWidth: 1, borderColor: '#1F2E25',
     padding: 14, marginBottom: 20,
   },
   progressHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  progressLabel: { fontSize: 12, color: '#484551', fontWeight: '600' },
-  progressPct: { fontSize: 12, color: '#4533AD', fontWeight: '700' },
-  progressTrack: { height: 6, backgroundColor: '#2C2837', borderRadius: 3 },
-  progressFill: { height: 6, backgroundColor: '#4533AD', borderRadius: 3 },
+  progressLabel: { fontSize: 12, color: '#3D5445', fontWeight: '600' },
+  progressPct: { fontSize: 12, color: '#7A3B1E', fontWeight: '700' },
+  progressTrack: { height: 6, backgroundColor: '#1F2E25', borderRadius: 3 },
+  progressFill: { height: 6, backgroundColor: '#7A3B1E', borderRadius: 3 },
 
   moduleCard: {
-    backgroundColor: '#1D1928', borderRadius: 18, borderWidth: 1.5, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 18, borderWidth: 1.5, borderColor: '#1F2E25',
     marginBottom: 12, overflow: 'hidden',
   },
   moduleHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 },
   weekBadge: { width: 52, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  weekNum: { fontSize: 10, color: '#938F9C', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
-  modTitle: { fontSize: 14, fontWeight: '800', color: '#E7DFF5', marginTop: 1 },
-  modDesc: { fontSize: 12, color: '#938F9C', marginTop: 2, lineHeight: 16 },
+  weekNum: { fontSize: 10, color: '#7A9686', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
+  modTitle: { fontSize: 14, fontWeight: '800', color: '#E8F0EB', marginTop: 1 },
+  modDesc: { fontSize: 12, color: '#7A9686', marginTop: 2, lineHeight: 16 },
 
-  exerciseList: { borderTopWidth: 1, borderTopColor: '#2C2837', paddingHorizontal: 16, paddingBottom: 8 },
+  exerciseList: { borderTopWidth: 1, borderTopColor: '#1F2E25', paddingHorizontal: 16, paddingBottom: 8 },
   exerciseRow: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#1D1928',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#141E18',
   },
   exTypeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   exTypeLabel: { fontSize: 10, fontWeight: '700' },
-  exLabel: { flex: 1, fontSize: 13, color: '#C9C4D3' },
-  exCircle: { width: 18, height: 18, borderRadius: 9, borderWidth: 1.5, borderColor: '#484551' },
+  exLabel: { flex: 1, fontSize: 13, color: '#BDD0C3' },
+  exCircle: { width: 18, height: 18, borderRadius: 9, borderWidth: 1.5, borderColor: '#3D5445' },
 
   loginHint: {
     backgroundColor: '#4F46E510', borderRadius: 14, borderWidth: 1, borderColor: '#4F46E530',
     paddingVertical: 14, alignItems: 'center', marginTop: 4,
   },
-  loginHintText: { fontSize: 13, color: '#C7BFFF', fontWeight: '600' },
+  loginHintText: { fontSize: 13, color: '#F4A261', fontWeight: '600' },
 });

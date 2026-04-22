@@ -7,7 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Check, Zap, Brain, Headphones, BarChart3, Shield } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import * as WebBrowser from 'expo-web-browser';
 import { TinniOrb } from '@/components/TinniOrb';
+import { V } from '@/constants/theme';
+
+const CHECKOUT_BASE_URL = 'https://tinnimate.vuinghe.com/pricing';
 
 const { width } = Dimensions.get('window');
 
@@ -18,7 +22,7 @@ const PLANS = [
     name: 'Miễn phí',
     price: '0₫',
     period: '',
-    color: '#484551',
+    color: '#3D5445',
     highlight: false,
     features: [
       '3 âm thanh trị liệu',
@@ -37,7 +41,7 @@ const PLANS = [
     name: 'Pro',
     price: '99.000₫',
     period: '/tháng',
-    color: '#5B4BC4',
+    color: '#C86B2A',
     highlight: true,
     badge: '⭐ Phổ biến nhất',
     features: [
@@ -55,7 +59,7 @@ const PLANS = [
     name: 'Pro Năm',
     price: '799.000₫',
     period: '/năm',
-    color: '#A855F7',
+    color: '#00B896',
     highlight: false,
     badge: '🔥 Tiết kiệm 33%',
     features: [
@@ -122,7 +126,7 @@ function PlanCard({
         ))}
         {plan.locked.map(f => (
           <View key={f} style={styles.featureRow}>
-            <Shield size={13} color="#2C2837" />
+            <Shield size={13} color="#1F2E25" />
             <Text style={[styles.featureText, styles.featureLocked]}>{f}</Text>
           </View>
         ))}
@@ -148,11 +152,17 @@ export default function PaywallScreen() {
     }
     setLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // TODO: integrate with Stripe/MoMo via web app
-    // For now: open webapp payment page
-    const plan = PLANS.find(p => p.id === selected);
-    router.push(`https://tinnimate.vuinghe.com/pricing?plan=${selected}` as any);
-    setLoading(false);
+    try {
+      // TODO(sprint-3): replace with RevenueCat IAP for store compliance
+      await WebBrowser.openBrowserAsync(
+        `${CHECKOUT_BASE_URL}?plan=${encodeURIComponent(selected)}`,
+        { controlsColor: V.secondary, toolbarColor: V.surface },
+      );
+    } catch (err) {
+      console.warn('[Paywall] openBrowserAsync failed:', err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const plan = PLANS.find(p => p.id === selected)!;
@@ -162,7 +172,7 @@ export default function PaywallScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#938F9C" />
+          <ChevronLeft size={24} color="#7A9686" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nâng cấp tài khoản</Text>
         <View style={{ width: 40 }} />
@@ -182,7 +192,7 @@ export default function PaywallScreen() {
           {BENEFITS.map(({ icon: Icon, text }) => (
             <View key={text} style={styles.benefit}>
               <View style={styles.benefitIcon}>
-                <Icon size={18} color="#5B4BC4" />
+                <Icon size={18} color="#C86B2A" />
               </View>
               <Text style={styles.benefitText}>{text}</Text>
             </View>
@@ -222,44 +232,44 @@ export default function PaywallScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#151120' },
+  container: { flex: 1, backgroundColor: '#0D1410' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#E7DFF5' },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: '#E8F0EB' },
 
   scroll: { paddingHorizontal: 20, paddingBottom: 40 },
 
   hero: { alignItems: 'center', marginBottom: 24 },
   heroTitle: {
-    fontSize: 26, fontWeight: '900', color: '#E7DFF5',
+    fontSize: 26, fontWeight: '900', color: '#E8F0EB',
     textAlign: 'center', marginTop: 16, letterSpacing: -0.5, lineHeight: 32,
   },
-  heroSub: { fontSize: 13, color: '#938F9C', marginTop: 6, textAlign: 'center' },
+  heroSub: { fontSize: 13, color: '#7A9686', marginTop: 6, textAlign: 'center' },
 
   benefitsRow: { gap: 10, marginBottom: 28 },
   benefit: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   benefitIcon: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: '#6366F118', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#00A89618', alignItems: 'center', justifyContent: 'center',
   },
-  benefitText: { fontSize: 14, color: '#C9C4D3', flex: 1, lineHeight: 20 },
+  benefitText: { fontSize: 14, color: '#BDD0C3', flex: 1, lineHeight: 20 },
 
   sectionLabel: {
-    fontSize: 11, color: '#484551', fontWeight: '700',
+    fontSize: 11, color: '#3D5445', fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12,
   },
   plansList: { gap: 12, marginBottom: 24 },
 
   planCard: {
-    backgroundColor: '#1D1928', borderRadius: 18,
-    borderWidth: 1.5, borderColor: '#2C2837', padding: 16,
+    backgroundColor: '#141E18', borderRadius: 18,
+    borderWidth: 1.5, borderColor: '#1F2E25', padding: 16,
   },
   planCardHighlight: {
-    borderColor: '#5B4BC4',
-    shadowColor: '#5B4BC4', shadowOffset: { width: 0, height: 0 },
+    borderColor: '#C86B2A',
+    shadowColor: '#C86B2A', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25, shadowRadius: 12, elevation: 6,
   },
   planBadge: {
@@ -271,19 +281,19 @@ const styles = StyleSheet.create({
   planHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
   radio: {
     width: 22, height: 22, borderRadius: 11, borderWidth: 2,
-    borderColor: '#484551', alignItems: 'center', justifyContent: 'center',
+    borderColor: '#3D5445', alignItems: 'center', justifyContent: 'center',
   },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#fff' },
 
-  planName: { fontSize: 15, fontWeight: '700', color: '#E7DFF5' },
+  planName: { fontSize: 15, fontWeight: '700', color: '#E8F0EB' },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 2, marginTop: 2 },
   planPrice: { fontSize: 20, fontWeight: '900' },
-  planPeriod: { fontSize: 12, color: '#484551' },
+  planPeriod: { fontSize: 12, color: '#3D5445' },
 
   featureList: { gap: 7 },
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  featureText: { fontSize: 13, color: '#938F9C', flex: 1 },
-  featureLocked: { color: '#2C2837' },
+  featureText: { fontSize: 13, color: '#7A9686', flex: 1 },
+  featureLocked: { color: '#1F2E25' },
 
   ctaBtn: {
     borderRadius: 100, paddingVertical: 17,
@@ -292,5 +302,5 @@ const styles = StyleSheet.create({
   },
   ctaText: { fontSize: 16, fontWeight: '800', color: '#fff', letterSpacing: 0.3 },
 
-  legalNote: { textAlign: 'center', fontSize: 11, color: '#2C2837', lineHeight: 16 },
+  legalNote: { textAlign: 'center', fontSize: 11, color: '#1F2E25', lineHeight: 16 },
 });

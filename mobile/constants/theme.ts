@@ -1,84 +1,100 @@
 /**
- * Violet Serenity Design System — TinniMate
- * Deep violet/indigo wellness theme with amber accents
+ * TinniMate — Botanical Healing Garden Design System
+ * Warm dark mode, watercolor botanical palette
+ * Fonts: Fraunces (serif display) · Nunito (body) · Caveat (handwriting)
  */
 
 import { Platform } from 'react-native';
 
 // ───────────────────────────────────────────────
-// Violet Serenity — Core Design Tokens
+// Botanical — Core Design Tokens
 // ───────────────────────────────────────────────
 export const V = {
   // ── Backgrounds / Surfaces ──
-  bg:              '#151120',   // Main app background
-  bgDim:           '#100C1A',   // Deepest layer (tab bar, modals)
-  surface:         '#1D1928',   // Cards, secondary containers
-  surfaceHigh:     '#2C2837',   // Elevated cards, interactive elements
-  surfaceHighest:  '#373243',   // Highest elevation
-  surfaceBright:   '#3B3747',   // Bright surface accent
+  bg:              '#1A1F1C',   // deepest — page bg
+  bgDim:           '#141918',   // even deeper
+  surface:         '#242B27',   // cards, panels
+  surfaceHigh:     '#2F3832',   // elevated surface
+  surfaceHighest:  '#3A453E',   // highest elevation / inset chip
+  surfaceBright:   '#3D4840',
 
-  // ── Text ──
-  textPrimary:     '#E7DFF5',   // Headings, main text
-  textSecondary:   '#C9C4D3',   // Body, descriptions
-  textMuted:       '#938F9C',   // Captions, timestamps
-  textDim:         '#484551',   // Disabled, placeholders
+  // ── Text (warm cream scale) ──
+  textPrimary:     '#F5EDE0',   // cream — headings, main text
+  textSecondary:   '#CBBFAE',   // muted cream — body
+  textMuted:       '#8A8478',   // dim — captions
+  textDim:         '#5C5A52',   // disabled, placeholders
 
-  // ── Primary — Amber Beacon ──
-  primary:             '#FBBC00',   // CTA buttons
-  primaryDark:         '#402D00',   // CTA text
-  primaryContainer:    '#4E3800',   // Primary container tint
-  primaryFixed:        '#FFDFA0',   // Light amber
+  // ── Botanical Accent Colors ──
+  sage:            '#A8C5A0',   // leaf green — primary accent
+  sageDeep:        '#6B8F71',   // moss — secondary green
+  sageDark:        '#3E5B46',
+  lavender:        '#C4B5E0',   // petal purple — tertiary
+  lavenderD:       '#9A8BC0',
+  petal:           '#E8B4B8',   // soft pink bloom
+  terracotta:      '#D4A574',   // warm earth — active/CTA
+  terracottaD:     '#B07E4E',
+  cream:           '#F5EDE0',   // parchment text
+  sky:             '#B8D4E3',   // pale sky blue
+  honey:           '#E8C97A',   // golden center
 
-  // ── Secondary — Lavender ──
-  secondary:           '#C7BFFF',   // Active states, links
-  secondaryContainer:  '#4533AD',   // Active chip/tab bg
-  secondaryDim:        '#5B4BC4',   // Mid purple
-  secondaryFixed:      '#E4DFFF',   // Very light lavender
-
-  // ── Tertiary — Warm Peach ──
-  tertiary:            '#FFB77F',   // Warm highlight accents
-  tertiaryContainer:   '#5E2F00',
+  // ── V.* aliases for backward compat (screens use these) ──
+  primary:             '#A8C5A0',   // sage — was teal
+  primaryDark:         '#1A1F1C',
+  primaryContainer:    '#253029',
+  primaryFixed:        '#C8E6C0',
+  secondary:           '#D4A574',   // terracotta — was amber
+  secondaryContainer:  '#4E3220',
+  secondaryDim:        '#B07E4E',
+  secondaryFixed:      '#F5D8B8',
+  tertiary:            '#C4B5E0',   // lavender
+  tertiaryContainer:   '#2D2A3E',
 
   // ── Borders ──
-  outline:             '#938F9C',   // Visible borders
-  outlineVariant:      '#484551',   // Subtle borders
-  borderCard:          '#373243',   // Card borders
+  outline:             '#6B8F71',
+  outlineVariant:      '#3E5B46',
+  borderCard:          '#2F3832',
 
   // ── Tab Bar ──
-  tabActive:     '#C7BFFF',
-  tabInactive:   '#484551',
-  tabBg:         'rgba(16,12,26,0.95)',
-  tabBgSolid:    '#100C1A',
-  tabBorder:     '#1D1928',
+  tabActive:     '#A8C5A0',     // sage
+  tabInactive:   '#5C5A52',
+  tabBg:         'rgba(26,31,28,0.95)',
+  tabBgSolid:    '#1A1F1C',
+  tabBorder:     '#242B27',
 
   // ── Status ──
   error:      '#FFB4AB',
-  errorBg:    '#93000A',
-  success:    '#94D3C1',
-  successBg:  '#065043',
-  warning:    '#FBBC00',
+  errorBg:    '#5C1F1A',
+  success:    '#A8C5A0',
+  successBg:  '#1F3024',
+  warning:    '#E8C97A',
 
-  // ── Glassmorphism ──
-  glass:     'rgba(55,50,67,0.60)',  // 60% surfaceHighest
-  glassDark: 'rgba(29,25,40,0.90)',  // 90% surface
+  // ── Glass ──
+  glass:     'rgba(47,56,50,0.60)',
+  glassDark: 'rgba(26,31,28,0.92)',
+
+  // ── Gradients (as string pairs for LinearGradient) ──
+  gradMoss:   ['#2F3832', '#1E2521'] as const,
+  gradDawn:   ['#2D3A30', '#3A2E34', '#2A3038'] as const,
+  gradSage:   ['#A8C5A0', '#6B8F71'] as const,
+  gradTerra:  ['#E8C97A', '#D4A574', '#B07E4E'] as const,
+  gradLaven:  ['#C4B5E0', '#9A8BC0'] as const,
+  gradPetal:  ['#E8B4B8', '#C48AA0'] as const,
+  gradNight:  ['#1B1F28', '#252139', '#1A1F2E'] as const,
 } as const;
 
-// ───────────────────────────────────────────────
-// Legacy Colors export (backwards compat)
-// ───────────────────────────────────────────────
 export const Colors = {
   light: {
     text: V.textPrimary,
-    background: '#F6F6F8',
-    tint: V.secondaryContainer,
+    background: '#F0EDE8',
+    tint: V.sageDeep,
     icon: V.textMuted,
     tabIconDefault: V.tabInactive,
-    tabIconSelected: V.secondaryContainer,
+    tabIconSelected: V.sageDeep,
   },
   dark: {
     text: V.textPrimary,
     background: V.bg,
-    tint: V.secondary,
+    tint: V.sage,
     icon: V.textMuted,
     tabIconDefault: V.tabInactive,
     tabIconSelected: V.tabActive,
@@ -87,21 +103,21 @@ export const Colors = {
 
 export const Fonts = Platform.select({
   ios: {
-    sans: 'system-ui',
-    serif: 'ui-serif',
-    rounded: 'ui-rounded',
-    mono: 'ui-monospace',
+    display:  'Georgia',          // Fraunces fallback — serif display
+    body:     'system-ui',        // Nunito fallback
+    hand:     'Georgia',          // Caveat fallback — italic Georgia
+    mono:     'ui-monospace',
+  },
+  android: {
+    display:  'serif',
+    body:     'normal',
+    hand:     'serif',
+    mono:     'monospace',
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+    display:  "Georgia, 'Times New Roman', serif",
+    body:     "Nunito, system-ui, -apple-system, sans-serif",
+    hand:     "Caveat, cursive",
+    mono:     "monospace",
   },
 });

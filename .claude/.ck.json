@@ -57,24 +57,17 @@
   },
   "assertions": [],
   "kits": {
-    "ClaudeKit Marketing": {
+    "ClaudeKit Dev": {
       "installedSettings": {
         "hooks": [
           "node $HOME/.claude/hooks/session-init.cjs",
           "node $HOME/.claude/hooks/subagent-init.cjs",
-          "node $HOME/.claude/hooks/brand-guidelines-reminder.cjs",
-          "node $HOME/.claude/hooks/campaign-tracking.cjs",
-          "node $HOME/.claude/hooks/approval-workflow.cjs",
           "node $HOME/.claude/hooks/dev-rules-reminder.cjs",
           "node $HOME/.claude/hooks/usage-context-awareness.cjs",
           "node $HOME/.claude/hooks/descriptive-name.cjs",
           "node $HOME/.claude/hooks/scout-block.cjs",
           "node $HOME/.claude/hooks/privacy-block.cjs",
-          "node $HOME/.claude/hooks/post-edit-simplify-reminder.cjs",
-          "node $HOME/.claude/hooks/write-compact-marker.cjs",
-          "node $HOME/.claude/hooks/session-end.cjs",
-          "node $HOME/.claude/hooks/task-completed-handler.cjs",
-          "node $HOME/.claude/hooks/teammate-idle-handler.cjs"
+          "node $HOME/.claude/hooks/post-edit-simplify-reminder.cjs"
         ],
         "mcpServers": []
       }

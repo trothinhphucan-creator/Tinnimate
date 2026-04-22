@@ -10,8 +10,8 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useSessionTracker } from '@/hooks/useSessionTracker';
 import { V } from '@/constants/theme';
 
-/** Violet Serenity — Custom dark theme */
-const VioletDarkTheme = {
+/** Mộc Tâm — Warm Earthy Dark theme */
+const MocTamDarkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
@@ -106,7 +106,7 @@ export default function RootLayout() {
   if (!isInitialized) return null;
 
   return (
-    <ThemeProvider value={VioletDarkTheme}>
+    <ThemeProvider value={MocTamDarkTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />

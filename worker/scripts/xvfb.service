@@ -1,0 +1,17 @@
+[Unit]
+Description=Xvfb virtual display for TinniMate FB Worker (headful login)
+After=network.target
+Before=pm2-haichu.service
+
+[Service]
+Type=forking
+User=haichu
+ExecStart=/usr/bin/Xvfb :99 -screen 0 1280x720x24 -ac +extension GLX +render -noreset
+ExecStop=/bin/kill -TERM $MAINPID
+PIDFile=/tmp/xvfb-99.pid
+Restart=on-failure
+RestartSec=5
+Environment=DISPLAY=:99
+
+[Install]
+WantedBy=multi-user.target

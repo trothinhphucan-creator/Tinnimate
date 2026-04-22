@@ -253,7 +253,7 @@ export default function ZentonesScreen() {
           <View style={styles.heroWrap}>
             {/* Background gradient layers */}
             <LinearGradient
-              colors={['#2A1F6E', '#1E1640', '#151120']}
+              colors={['#2A1F6E', '#1E1640', '#0D1410']}
               locations={[0, 0.55, 1]}
               style={StyleSheet.absoluteFill}
             />

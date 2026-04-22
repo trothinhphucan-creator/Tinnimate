@@ -83,7 +83,7 @@ export function SuggestionsFAB({ onPress, visible = true }: Props) {
         onPress={handlePress}
         activeOpacity={0.85}
       >
-        <Sparkles size={24} color="#1D1928" fill="#1D1928" />
+        <Sparkles size={24} color="#141E18" fill="#141E18" />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -101,17 +101,17 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#C7BFFF',
+    backgroundColor: '#F4A261',
     opacity: 0.3,
   },
   button: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#C7BFFF',
+    backgroundColor: '#F4A261',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#C7BFFF',
+    shadowColor: '#F4A261',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 12,

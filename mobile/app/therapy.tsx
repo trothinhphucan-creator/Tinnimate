@@ -1,58 +1,48 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet, TouchableOpacity, Text, View,
-  Dimensions, ScrollView, Animated, Easing,
+  ScrollView, Animated, Easing,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import {
-  Shuffle, SkipBack, Play, Pause, SkipForward, Repeat,
-  ChevronLeft,
-} from 'lucide-react-native';
+import { Shuffle, SkipBack, Play, Pause, SkipForward, Repeat, ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { TinniOrb } from '@/components/TinniOrb';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useLangStore } from '@/store/use-lang-store';
-
-const { width, height } = Dimensions.get('window');
+import { V } from '@/constants/theme';
+import { LotusOrb, FloatingLeavesBackground, Vine } from '@/components/botanical';
 
 const TRACKS = [
-  { id: 'rain',     name: 'Mưa',   nameEn: 'Rain',   fullName: 'Tiếng Mưa',   fullNameEn: 'Rain Sounds',   emoji: '🌧️', color: '#06B6D4', free: true,  file: require('@/assets/audio/rain.mp3')     },
-  { id: 'ocean',    name: 'Sóng',  nameEn: 'Ocean',  fullName: 'Sóng Biển',   fullNameEn: 'Ocean Waves',   emoji: '🌊', color: '#0EA5E9', free: true,  file: require('@/assets/audio/ocean.mp3')    },
-  { id: 'white',    name: 'White', nameEn: 'White',  fullName: 'Ồn Trắng',    fullNameEn: 'White Noise',   emoji: '⬜', color: '#938F9C', free: true,  file: require('@/assets/audio/white.mp3')    },
-  { id: 'pink',     name: 'Pink',  nameEn: 'Pink',   fullName: 'Ồn Hồng',     fullNameEn: 'Pink Noise',    emoji: '🌸', color: '#EC4899', free: true,  file: require('@/assets/audio/pink.mp3')     },
-  { id: 'brown',    name: 'Brown', nameEn: 'Brown',  fullName: 'Ồn Nâu',      fullNameEn: 'Brown Noise',   emoji: '🟤', color: '#92400E', free: true,  file: require('@/assets/audio/brown.mp3')    },
-  { id: 'forest',   name: 'Rừng',  nameEn: 'Forest', fullName: 'Rừng Đêm',    fullNameEn: 'Forest Night',  emoji: '🌲', color: '#16A34A', free: false, file: require('@/assets/audio/forest.mp3')   },
-  { id: 'campfire', name: 'Lửa',   nameEn: 'Fire',   fullName: 'Lửa Trại',    fullNameEn: 'Campfire',      emoji: '🔥', color: '#F97316', free: false, file: require('@/assets/audio/campfire.mp3') },
-  { id: 'birds',    name: 'Chim',  nameEn: 'Birds',  fullName: 'Tiếng Chim',  fullNameEn: 'Bird Songs',    emoji: '🐦', color: '#84CC16', free: false, file: require('@/assets/audio/birds.mp3')    },
-  { id: 'zen',      name: 'Zen',   nameEn: 'Zen',    fullName: 'Zen Bells',   fullNameEn: 'Zen Bells',     emoji: '🔔', color: '#A855F7', free: false, file: require('@/assets/audio/zen.mp3')      },
-  { id: '528hz',    name: '528Hz', nameEn: '528Hz',  fullName: 'Tone 528Hz',  fullNameEn: 'Tone 528Hz',    emoji: '✨', color: '#5B4BC4', free: false, file: require('@/assets/audio/528hz.mp3')    },
+  { id: 'rain',     name: 'Mưa',   nameEn: 'Rain',   fullName: 'Tiếng Mưa',  fullNameEn: 'Rain Sounds',  emoji: '🌧️', free: true,  file: require('@/assets/audio/rain.mp3')     },
+  { id: 'ocean',    name: 'Sóng',  nameEn: 'Ocean',  fullName: 'Sóng Biển',  fullNameEn: 'Ocean Waves',  emoji: '🌊', free: true,  file: require('@/assets/audio/ocean.mp3')    },
+  { id: 'white',    name: 'White', nameEn: 'White',  fullName: 'Ồn Trắng',   fullNameEn: 'White Noise',  emoji: '⬜', free: true,  file: require('@/assets/audio/white.mp3')    },
+  { id: 'pink',     name: 'Pink',  nameEn: 'Pink',   fullName: 'Ồn Hồng',    fullNameEn: 'Pink Noise',   emoji: '🌸', free: true,  file: require('@/assets/audio/pink.mp3')     },
+  { id: 'brown',    name: 'Brown', nameEn: 'Brown',  fullName: 'Ồn Nâu',     fullNameEn: 'Brown Noise',  emoji: '🟤', free: true,  file: require('@/assets/audio/brown.mp3')    },
+  { id: 'forest',   name: 'Rừng',  nameEn: 'Forest', fullName: 'Rừng Đêm',   fullNameEn: 'Forest Night', emoji: '🌲', free: false, file: require('@/assets/audio/forest.mp3')   },
+  { id: 'campfire', name: 'Lửa',   nameEn: 'Fire',   fullName: 'Lửa Trại',   fullNameEn: 'Campfire',     emoji: '🔥', free: false, file: require('@/assets/audio/campfire.mp3') },
+  { id: 'birds',    name: 'Chim',  nameEn: 'Birds',  fullName: 'Tiếng Chim', fullNameEn: 'Bird Songs',   emoji: '🐦', free: false, file: require('@/assets/audio/birds.mp3')    },
+  { id: 'zen',      name: 'Zen',   nameEn: 'Zen',    fullName: 'Zen Bells',  fullNameEn: 'Zen Bells',    emoji: '🔔', free: false, file: require('@/assets/audio/zen.mp3')      },
+  { id: '528hz',    name: '528Hz', nameEn: '528Hz',  fullName: 'Tone 528Hz', fullNameEn: 'Tone 528Hz',   emoji: '✨', free: false, file: require('@/assets/audio/528hz.mp3')    },
 ];
 
-// Radial bar waveform (circular, animated when playing)
-const BAR_COUNT = 48;
-const BAR_RADIUS = 118;
-const MAX_BAR_H = 22;
-const BAR_W = 2.5;
+// Radial bar waveform — kept from previous implementation
+const BAR_COUNT = 48, BAR_RADIUS = 118, MAX_BAR_H = 22, BAR_W = 2.5;
 
-function RadialBarWaveform({ isPlaying, color }: { isPlaying: boolean; color: string }) {
+function RadialBarWaveform({ isPlaying }: { isPlaying: boolean }) {
   const barAnims = useRef<Animated.Value[]>(
     Array.from({ length: BAR_COUNT }, () => new Animated.Value(2))
   ).current;
-
   useEffect(() => {
     const loops: Animated.CompositeAnimation[] = [];
     if (isPlaying) {
       barAnims.forEach((anim, i) => {
         const dur = 280 + (i % 7) * 50;
-        const delay = (i / BAR_COUNT) * 600;
         const loop = Animated.loop(Animated.sequence([
-          Animated.delay(delay % 600),
+          Animated.delay((i / BAR_COUNT) * 600 % 600),
           Animated.timing(anim, { toValue: 4 + Math.random() * MAX_BAR_H, duration: dur, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
           Animated.timing(anim, { toValue: 2 + Math.random() * 4, duration: dur, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
         ]));
-        loop.start();
-        loops.push(loop);
+        loop.start(); loops.push(loop);
       });
     } else {
       barAnims.forEach(a => Animated.timing(a, { toValue: 2, duration: 800, useNativeDriver: false }).start());
@@ -61,25 +51,20 @@ function RadialBarWaveform({ isPlaying, color }: { isPlaying: boolean; color: st
   }, [isPlaying]);
 
   const sz = (BAR_RADIUS + MAX_BAR_H + 4) * 2;
-  const c = sz / 2;
-
+  const center = sz / 2;
   return (
     <View style={{ width: sz, height: sz }} pointerEvents="none">
       {barAnims.map((anim, i) => {
         const angle = (i / BAR_COUNT) * 2 * Math.PI - Math.PI / 2;
-        const cx = c + Math.cos(angle) * BAR_RADIUS;
-        const cy = c + Math.sin(angle) * BAR_RADIUS;
-        const rotateDeg = (angle * 180) / Math.PI + 90;
         return (
           <Animated.View key={i} style={{
             position: 'absolute', width: BAR_W,
-            left: cx - BAR_W / 2, top: cy - MAX_BAR_H / 2,
+            left: center + Math.cos(angle) * BAR_RADIUS - BAR_W / 2,
+            top: center + Math.sin(angle) * BAR_RADIUS - MAX_BAR_H / 2,
             height: anim, borderRadius: BAR_W / 2,
-            backgroundColor: color,
-            opacity: isPlaying
-              ? anim.interpolate({ inputRange: [2, MAX_BAR_H], outputRange: [0.2, 0.85] })
-              : 0.1,
-            transform: [{ rotate: `${rotateDeg}deg` }],
+            backgroundColor: V.sage,
+            opacity: isPlaying ? anim.interpolate({ inputRange: [2, MAX_BAR_H], outputRange: [0.15, 0.6] }) : 0.08,
+            transform: [{ rotate: `${(angle * 180) / Math.PI + 90}deg` }],
           }} />
         );
       })}
@@ -90,7 +75,9 @@ function RadialBarWaveform({ isPlaying, color }: { isPlaying: boolean; color: st
 export default function TherapyScreen() {
   const router = useRouter();
   const { lang } = useLangStore();
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  const { track: trackParam } = useLocalSearchParams<{ track?: string }>();
+  const initialIdx = Math.max(0, TRACKS.findIndex(t => t.id === trackParam));
+  const [selectedIdx, setSelectedIdx] = useState(initialIdx);
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [isRepeat, setIsRepeat] = useState(true);
@@ -100,7 +87,6 @@ export default function TherapyScreen() {
 
   const track = TRACKS[selectedIdx];
   const player = useAudioPlayer(track.file);
-  const ORB_SIZE = 200;
 
   useEffect(() => {
     setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true, interruptionMode: 'mixWithOthers' });
@@ -108,248 +94,123 @@ export default function TherapyScreen() {
 
   useEffect(() => {
     if (timerRef.current) clearInterval(timerRef.current);
-    if (isPlaying) {
-      timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
-    }
+    if (isPlaying) timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [isPlaying]);
 
-  // Progress bar animation (loops for ambient tracks)
   useEffect(() => {
     if (isPlaying) {
-      Animated.loop(
-        Animated.timing(progressAnim, {
-          toValue: 1, duration: 60000, easing: Easing.linear, useNativeDriver: false,
-        })
-      ).start();
-    } else {
-      progressAnim.stopAnimation();
-    }
+      Animated.loop(Animated.timing(progressAnim, { toValue: 1, duration: 60000, easing: Easing.linear, useNativeDriver: false })).start();
+    } else { progressAnim.stopAnimation(); }
   }, [isPlaying]);
 
   function playTrack(idx: number) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const t = TRACKS[idx];
-    setSelectedIdx(idx);
-    setElapsed(0);
-    player.replace(t.file);
-    player.loop = true;
-    player.play();
-    setIsPlaying(true);
-    progressAnim.setValue(0);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setSelectedIdx(idx); setElapsed(0);
+    player.replace(t.file); player.loop = true; player.play();
+    setIsPlaying(true); progressAnim.setValue(0);
   }
 
   function togglePlay() {
-    if (isPlaying) {
-      player.pause();
-      setIsPlaying(false);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else {
-      player.loop = true;
-      player.play();
-      setIsPlaying(true);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
+    if (isPlaying) { player.pause(); setIsPlaying(false); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }
+    else { player.loop = true; player.play(); setIsPlaying(true); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); }
   }
 
-  function prevTrack() {
-    Haptics.selectionAsync();
-    const idx = (selectedIdx - 1 + TRACKS.length) % TRACKS.length;
-    playTrack(idx);
-  }
-
-  function nextTrack() {
-    Haptics.selectionAsync();
-    const idx = isShuffle
-      ? Math.floor(Math.random() * TRACKS.length)
-      : (selectedIdx + 1) % TRACKS.length;
-    playTrack(idx);
-  }
-
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    return `${m.toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
-  };
-
-  const progressWidth = progressAnim.interpolate({
-    inputRange: [0, 1], outputRange: ['0%', '100%'],
-  });
-
+  const fmtTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
+  const progressW = progressAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
   const displayName = lang === 'vi' ? track.fullName : track.fullNameEn;
-  const subtitle = lang === 'vi' ? 'Âm thanh trị liệu' : 'Sound Therapy';
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Top Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#E7DFF5" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{lang === 'vi' ? 'Âm thanh trị liệu' : 'Sound Therapy'}</Text>
-        <View style={{ width: 40 }} />
+    <View style={{ flex: 1, backgroundColor: V.bg }}>
+      <FloatingLeavesBackground count={6} />
+      <View style={{ position: 'absolute', top: -20, left: -20 }}>
+        <Vine width={160} opacity={0.14} />
       </View>
 
-      {/* Orb Stage */}
-      <View style={styles.stage}>
-        {/* Waveform behind orb */}
-        <View style={[StyleSheet.absoluteFill, styles.waveContainer]} pointerEvents="none">
-          <RadialBarWaveform isPlaying={isPlaying} color={track.color} />
+      <SafeAreaView style={{ flex: 1, alignItems: 'center' }}>
+        {/* Header */}
+        <View style={s.header}>
+          <TouchableOpacity onPress={() => router.back()} style={s.iconBtn}>
+            <ChevronLeft size={22} color={V.cream} />
+          </TouchableOpacity>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={s.headerHand}>đang phát</Text>
+            <Text style={s.headerTitle}>{displayName}</Text>
+          </View>
+          <View style={{ width: 40 }} />
         </View>
-        {/* Aurora Orb */}
-        <TinniOrb mode={isPlaying ? 'playing' : 'idle'} size={ORB_SIZE} />
-      </View>
 
-      {/* Track Info */}
-      <View style={styles.trackInfo}>
-        <Text style={styles.trackName}>{displayName}</Text>
-        <Text style={styles.trackSubtitle}>{track.emoji} {subtitle}</Text>
-      </View>
-
-      {/* Progress Bar */}
-      <View style={styles.progressContainer}>
-        <Text style={styles.progressTime}>{formatTime(elapsed)}</Text>
-        <View style={styles.progressBar}>
-          <Animated.View
-            style={[
-              styles.progressFill,
-              { width: progressWidth, backgroundColor: track.color },
-            ]}
-          />
-          {/* Knob */}
-          <Animated.View style={[styles.progressKnob, { left: progressWidth, backgroundColor: track.color }]} />
+        {/* Lotus visualizer */}
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ position: 'absolute' }}>
+            <RadialBarWaveform isPlaying={isPlaying} />
+          </View>
+          <LotusOrb size={200} progress={elapsed % 60 === 0 ? 0.72 : (elapsed % 60) / 60} animate={isPlaying} />
         </View>
-        <Text style={styles.progressTime}>∞</Text>
-      </View>
 
-      {/* Controls Row */}
-      <View style={styles.controls}>
-        {/* Shuffle */}
-        <TouchableOpacity
-          onPress={() => { Haptics.selectionAsync(); setIsShuffle(v => !v); }}
-          style={styles.ctrlSmall}
-        >
-          <Shuffle size={20} color={isShuffle ? track.color : '#484551'} />
-        </TouchableOpacity>
+        {/* Track info */}
+        <Text style={s.trackName}>{displayName}</Text>
+        <Text style={s.trackSub}>{track.emoji} {lang === 'vi' ? 'Âm thanh trị liệu' : 'Sound Therapy'}</Text>
 
-        {/* Prev */}
-        <TouchableOpacity onPress={prevTrack} style={styles.ctrlMed}>
-          <SkipBack fill="#C9C4D3" color="#C9C4D3" size={26} />
-        </TouchableOpacity>
+        {/* Progress */}
+        <View style={s.progressRow}>
+          <Text style={s.time}>{fmtTime(elapsed)}</Text>
+          <View style={s.progressBar}>
+            <Animated.View style={[s.progressFill, { width: progressW }]} />
+          </View>
+          <Text style={s.time}>∞</Text>
+        </View>
 
-        {/* Play/Pause main button */}
-        <TouchableOpacity onPress={togglePlay} style={[styles.playBtn, { backgroundColor: isPlaying ? '#4533AD' : '#E2E8F0' }]}>
-          {isPlaying
-            ? <Pause fill="#fff" color="#fff" size={28} />
-            : <Play fill="#151120" color="#151120" size={28} style={{ marginLeft: 3 }} />
-          }
-        </TouchableOpacity>
+        {/* Controls */}
+        <View style={s.controls}>
+          <TouchableOpacity style={s.iconBtn} onPress={() => { Haptics.selectionAsync(); setIsShuffle(v => !v); }}>
+            <Shuffle size={20} color={isShuffle ? V.sage : V.textDim} />
+          </TouchableOpacity>
+          <TouchableOpacity style={s.iconBtn} onPress={() => playTrack((selectedIdx - 1 + TRACKS.length) % TRACKS.length)}>
+            <SkipBack fill={V.textSecondary} color={V.textSecondary} size={26} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={togglePlay} style={[s.playBtn, isPlaying && { backgroundColor: V.surfaceHighest }]}>
+            {isPlaying ? <Pause fill={V.cream} color={V.cream} size={28} /> : <Play fill={V.bg} color={V.bg} size={28} style={{ marginLeft: 3 }} />}
+          </TouchableOpacity>
+          <TouchableOpacity style={s.iconBtn} onPress={() => playTrack(isShuffle ? Math.floor(Math.random() * TRACKS.length) : (selectedIdx + 1) % TRACKS.length)}>
+            <SkipForward fill={V.textSecondary} color={V.textSecondary} size={26} />
+          </TouchableOpacity>
+          <TouchableOpacity style={s.iconBtn} onPress={() => { Haptics.selectionAsync(); setIsRepeat(v => !v); }}>
+            <Repeat size={20} color={isRepeat ? V.sage : V.textDim} />
+          </TouchableOpacity>
+        </View>
 
-        {/* Next */}
-        <TouchableOpacity onPress={nextTrack} style={styles.ctrlMed}>
-          <SkipForward fill="#C9C4D3" color="#C9C4D3" size={26} />
-        </TouchableOpacity>
-
-        {/* Repeat */}
-        <TouchableOpacity
-          onPress={() => { Haptics.selectionAsync(); setIsRepeat(v => !v); }}
-          style={styles.ctrlSmall}
-        >
-          <Repeat size={20} color={isRepeat ? track.color : '#484551'} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Track Chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsRow}
-        style={styles.chips}
-      >
-        {TRACKS.map((t, i) => {
-          const active = i === selectedIdx;
-          const chipName = lang === 'vi' ? t.name : t.nameEn;
-          return (
-            <TouchableOpacity
-              key={t.id}
-              style={[
-                styles.chip,
-                active && { backgroundColor: '#2C2837', borderColor: t.color + '60' },
-              ]}
-              onPress={() => playTrack(i)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.chipEmoji}>{t.emoji}</Text>
-              <Text style={[styles.chipText, active && { color: '#E7DFF5' }]}>{chipName}</Text>
+        {/* Track chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }} contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}>
+          {TRACKS.map((t, i) => (
+            <TouchableOpacity key={t.id} onPress={() => playTrack(i)}
+              style={[s.chip, i === selectedIdx && { backgroundColor: V.primaryContainer, borderColor: V.sage + '60' }]}>
+              <Text style={{ fontSize: 16 }}>{t.emoji}</Text>
+              <Text style={[s.chipText, i === selectedIdx && { color: V.cream }]}>
+                {lang === 'vi' ? t.name : t.nameEn}
+              </Text>
             </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-    </SafeAreaView>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#151120', alignItems: 'center' },
-
-  header: {
-    width: '100%', flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 8,
-  },
-  backBtn: {
-    width: 40, height: 40, alignItems: 'center', justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 16, fontWeight: '600', color: '#E7DFF5', letterSpacing: 0.2,
-  },
-
-  stage: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxHeight: height * 0.38,
-  },
-  waveContainer: { alignItems: 'center', justifyContent: 'center' },
-
-  trackInfo: { alignItems: 'center', marginTop: 16, marginBottom: 12 },
-  trackName: { fontSize: 20, fontWeight: '700', color: '#E7DFF5', letterSpacing: 0.2 },
-  trackSubtitle: { fontSize: 13, color: '#938F9C', marginTop: 3 },
-
-  progressContainer: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingHorizontal: 24, width: '100%', marginBottom: 24,
-  },
-  progressTime: { fontSize: 11, color: '#938F9C', width: 36 },
-  progressBar: {
-    flex: 1, height: 4, backgroundColor: '#2C2837', borderRadius: 2,
-    overflow: 'visible', position: 'relative',
-  },
-  progressFill: { height: 4, borderRadius: 2 },
-  progressKnob: {
-    position: 'absolute', top: -4, width: 12, height: 12,
-    borderRadius: 6, marginLeft: -6,
-  },
-
-  controls: {
-    flexDirection: 'row', alignItems: 'center',
-    gap: 20, marginBottom: 16,
-  },
-  ctrlSmall: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
-  ctrlMed: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  playBtn: {
-    width: 68, height: 68, borderRadius: 34,
-    alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5, shadowRadius: 16, elevation: 10,
-  },
-
-  chips: { flexGrow: 0, marginBottom: 8 },
-  chipsRow: { paddingHorizontal: 20, gap: 8, paddingBottom: 8 },
-  chip: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 100,
-    borderWidth: 1, borderColor: '#2C2837', backgroundColor: 'transparent',
-  },
-  chipEmoji: { fontSize: 13 },
-  chipText: { fontSize: 13, color: '#484551', fontWeight: '600' },
+const s = StyleSheet.create({
+  header:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 4, paddingBottom: 8 },
+  headerHand:  { fontSize: 14, fontWeight: '600', color: V.sage },
+  headerTitle: { fontSize: 15, fontWeight: '500', color: V.cream },
+  trackName:   { fontSize: 26, fontWeight: '500', color: V.cream, letterSpacing: -0.4, marginBottom: 4 },
+  trackSub:    { fontSize: 16, fontWeight: '600', color: V.textSecondary, marginBottom: 16 },
+  progressRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 24, width: '100%', marginBottom: 28 },
+  time:        { fontSize: 11, color: V.textMuted, fontWeight: '600', width: 40 },
+  progressBar: { flex: 1, height: 4, backgroundColor: V.surfaceHighest, borderRadius: 2, overflow: 'hidden' },
+  progressFill:{ height: 4, backgroundColor: V.sage, borderRadius: 2 },
+  controls:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingHorizontal: 24, marginBottom: 28, gap: 4 },
+  iconBtn:     { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: V.surface },
+  playBtn:     { width: 72, height: 72, borderRadius: 36, backgroundColor: V.sage, alignItems: 'center', justifyContent: 'center', shadowColor: V.sage, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 10 },
+  chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 999, backgroundColor: V.surface, borderWidth: 1, borderColor: V.borderCard },
+  chipText:    { fontSize: 13, fontWeight: '600', color: V.textMuted },
 });

@@ -21,6 +21,7 @@ import { markPageStatus } from './browser/facebook-session-manager.js'
 import { geminiUsage } from './ai/gemini-client.js'
 import { startPeriodicMonitor } from './monitoring/alert-webhook.js'
 import { postFbCommentForReply } from './browser/post-fb-comment.js'
+import { scanJoinedGroups } from './browser/scan-joined-groups.js'
 
 async function main() {
   logger.info(
@@ -200,6 +201,19 @@ async function main() {
     try {
       const result = await postFbCommentForReply(replyId)
       res.json(result)
+    } catch (err) {
+      res.status(502).json({ error: (err as Error).message })
+    }
+  })
+
+  // ── Scan joined groups ────────────────────────────────────────────────────
+  // GET /worker/groups/scan?pageId=<id>
+  app.get('/worker/groups/scan', async (req: Request, res: Response) => {
+    const pageId = req.query['pageId'] as string | undefined
+    if (!pageId) { res.status(400).json({ error: 'pageId required' }); return }
+    try {
+      const groups = await scanJoinedGroups(pageId)
+      res.json({ groups })
     } catch (err) {
       res.status(502).json({ error: (err as Error).message })
     }

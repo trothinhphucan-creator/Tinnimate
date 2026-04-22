@@ -124,7 +124,7 @@ export function SuggestionsBottomSheet({
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Sparkles size={20} color="#C7BFFF" />
+              <Sparkles size={20} color="#F4A261" />
               <Text style={styles.headerTitle}>
                 {lang === 'vi' ? 'Gợi ý cho bạn' : 'Suggestions for you'}
               </Text>
@@ -134,7 +134,7 @@ export function SuggestionsBottomSheet({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               activeOpacity={0.7}
             >
-              <X size={20} color="#938F9C" />
+              <X size={20} color="#7A9686" />
             </TouchableOpacity>
           </View>
 
@@ -145,7 +145,7 @@ export function SuggestionsBottomSheet({
           >
             <View style={styles.grid}>
               {suggestions.map((suggestion, index) => {
-                const color = CATEGORY_COLORS[suggestion.category] || '#484551';
+                const color = CATEGORY_COLORS[suggestion.category] || '#3D5445';
                 return (
                   <TouchableOpacity
                     key={index}
@@ -178,13 +178,13 @@ const styles = StyleSheet.create({
   },
   sheet: {
     height: SHEET_HEIGHT,
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: '#2C2837',
+    borderColor: '#1F2E25',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.3,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   handleBar: {
     width: 40,
     height: 4,
-    backgroundColor: '#484551',
+    backgroundColor: '#3D5445',
     borderRadius: 2,
     alignSelf: 'center',
     marginTop: 10,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#2C2837',
+    borderBottomColor: '#1F2E25',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
   },
   scrollView: {
     flex: 1,
@@ -230,9 +230,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 16,
     borderRadius: 16,
-    backgroundColor: '#1D1928',
+    backgroundColor: '#141E18',
     borderWidth: 2,
-    borderColor: '#484551',
+    borderColor: '#3D5445',
   },
   suggestionText: {
     fontSize: 15,

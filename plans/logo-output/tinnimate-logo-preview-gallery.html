@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tinnimate Logo Preview Gallery</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #080812;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 40px 32px;
+  }
+  h1 {
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #a78bfa;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 48px;
+  }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7c3aed;
+    margin-bottom: 16px;
+    padding-left: 2px;
+  }
+  .card {
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .card-dark {
+    background: #0D0D1A;
+    border: 1px solid rgba(124,58,237,0.2);
+  }
+  .card-light {
+    background: #f8f9fb;
+    border: 1px solid #e2e8f0;
+  }
+  .card-mid {
+    background: #1a1135;
+    border: 1px solid rgba(236,72,153,0.15);
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .logo-row img, .logo-row object {
+    display: block;
+  }
+  .logo-row svg { display: block; }
+  .size-label {
+    font-size: 11px;
+    color: #475569;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+  .logo-item { display: flex; flex-direction: column; align-items: flex-start; }
+
+  /* Icon-only extraction */
+  .icon-only {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    background: #13101F;
+    border: 1px solid rgba(124,58,237,0.4);
+    padding: 12px;
+  }
+  .icon-only-light {
+    background: #F5F3FF;
+    border: 1px solid rgba(124,58,237,0.25);
+  }
+
+  /* Color swatches */
+  .swatches { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .swatch {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: flex-end; padding-bottom: 4px;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .swatch span {
+    font-size: 9px; color: rgba(255,255,255,0.7); letter-spacing: 0.5px;
+  }
+
+  /* Spec table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  td, th {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  th { color: #a78bfa; font-weight: 600; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+  td:first-child { color: #94a3b8; }
+  td:last-child { color: #e2e8f0; font-family: monospace; font-size: 12px; }
+
+  .divider { height: 1px; background: rgba(124,58,237,0.1); margin: 32px 0; }
+</style>
+</head>
+<body>
+
+<h1>Tinnimate — Logo Identity</h1>
+<p class="subtitle">Neon/Glow · Purple/Pink/Amber · Entertainment &amp; Social</p>
+
+<!-- DARK BACKGROUND -->
+<p class="section-label">Dark Background</p>
+<div class="card card-dark">
+  <div class="logo-row">
+    <div class="logo-item">
+      <img src="tinnimate-logo.svg" width="480" height="160" alt="Tinnimate Logo Dark">
+      <span class="size-label">Full Lockup — 480×160</span>
+    </div>
+  </div>
+  <div class="logo-row">
+    <div class="logo-item">
+      <img src="tinnimate-logo.svg" width="320" height="107" alt="Tinnimate Logo Dark Medium">
+      <span class="size-label">Medium — 320×107</span>
+    </div>
+    <div class="logo-item">
+      <img src="tinnimate-logo.svg" width="200" height="67" alt="Tinnimate Logo Dark Small">
+      <span class="size-label">Small — 200×67</span>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHT BACKGROUND -->
+<p class="section-label">White Background</p>
+<div class="card card-light">
+  <div class="logo-row">
+    <div class="logo-item">
+      <img src="tinnimate-logo-white-background.svg" width="480" height="160" alt="Tinnimate Logo White">
+      <span class="size-label" style="color:#94a3b8">Full Lockup — 480×160</span>
+    </div>
+  </div>
+  <div class="logo-row">
+    <div class="logo-item">
+      <img src="tinnimate-logo-white-background.svg" width="320" height="107" alt="Tinnimate Logo White Medium">
+      <span class="size-label" style="color:#94a3b8">Medium — 320×107</span>
+    </div>
+    <div class="logo-item">
+      <img src="tinnimate-logo-white-background.svg" width="200" height="67" alt="Tinnimate Logo White Small">
+      <span class="size-label" style="color:#94a3b8">Small — 200×67</span>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND COLORS -->
+<div class="divider"></div>
+<p class="section-label">Brand Color Palette</p>
+<div class="card card-dark">
+  <div class="swatches">
+    <div class="logo-item">
+      <div class="swatch" style="background:#7C3AED"><span>#7C3AED</span></div>
+      <span class="size-label">Primary Purple</span>
+    </div>
+    <div class="logo-item">
+      <div class="swatch" style="background:#EC4899"><span>#EC4899</span></div>
+      <span class="size-label">Secondary Pink</span>
+    </div>
+    <div class="logo-item">
+      <div class="swatch" style="background:#F59E0B"><span>#F59E0B</span></div>
+      <span class="size-label">Accent Amber</span>
+    </div>
+    <div class="logo-item">
+      <div class="swatch" style="background:#0D0D1A; border:1px solid #333"><span style="color:#555">#0D0D1A</span></div>
+      <span class="size-label">Background</span>
+    </div>
+    <div class="logo-item">
+      <div class="swatch" style="background:#C084FC"><span>#C084FC</span></div>
+      <span class="size-label">Light Purple</span>
+    </div>
+    <div class="logo-item">
+      <div class="swatch" style="background:#F472B6"><span>#F472B6</span></div>
+      <span class="size-label">Light Pink</span>
+    </div>
+  </div>
+</div>
+
+<!-- SPEC TABLE -->
+<div class="divider"></div>
+<p class="section-label">Design Specifications</p>
+<div class="card card-dark">
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Brand Name</td><td>TINNIMATE</td></tr>
+    <tr><td>Style</td><td>Neon / Glow — Entertainment &amp; Social</td></tr>
+    <tr><td>Icon</td><td>Abstract T-mark with sound wave arcs</td></tr>
+    <tr><td>Primary Font</td><td>Trebuchet MS / Segoe UI (Bold 800)</td></tr>
+    <tr><td>Letter Spacing</td><td>2px wordmark · 4px tagline</td></tr>
+    <tr><td>Primary Color</td><td>#7C3AED (Purple)</td></tr>
+    <tr><td>Secondary Color</td><td>#EC4899 (Pink)</td></tr>
+    <tr><td>Accent Color</td><td>#F59E0B (Amber)</td></tr>
+    <tr><td>Dark Background</td><td>#0D0D1A</td></tr>
+    <tr><td>Tagline</td><td>CONNECT · ENTERTAIN · ANIMATE</td></tr>
+    <tr><td>Format</td><td>SVG (scalable vector)</td></tr>
+  </table>
+</div>
+
+</body>
+</html>

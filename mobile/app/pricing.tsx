@@ -51,7 +51,7 @@ const PLANS: Plan[] = [
       'Theo dõi tiến độ cơ bản',
     ],
     highlighted: false,
-    color: '#938F9C',
+    color: '#7A9686',
   },
   {
     tier: 'premium',
@@ -166,7 +166,7 @@ export default function PricingScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#E7DFF5" />
+          <ChevronLeft size={24} color="#E8F0EB" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
           {lang === 'vi' ? 'Bảng giá' : 'Pricing'}
@@ -271,7 +271,7 @@ export default function PricingScreen() {
                 style={[
                   styles.upgradeBtn,
                   isCurrent && styles.upgradeBtnDisabled,
-                  { backgroundColor: isCurrent ? '#484551' : plan.color },
+                  { backgroundColor: isCurrent ? '#3D5445' : plan.color },
                 ]}
                 onPress={() => !isCurrent && handleUpgrade(plan.tier)}
                 disabled={isCurrent}
@@ -306,7 +306,7 @@ export default function PricingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#151120',
+    backgroundColor: '#0D1410',
   },
   scrollView: {
     flex: 1,
@@ -334,14 +334,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
     letterSpacing: 0.2,
   },
 
   // Toggle
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: '#2C2837',
+    backgroundColor: '#1F2E25',
     borderRadius: 12,
     padding: 4,
     marginHorizontal: 20,
@@ -357,12 +357,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   toggleBtnActive: {
-    backgroundColor: '#4533AD',
+    backgroundColor: '#7A3B1E',
   },
   toggleText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#484551',
+    color: '#3D5445',
   },
   toggleTextActive: {
     color: '#FFFFFF',
@@ -381,10 +381,10 @@ const styles = StyleSheet.create({
 
   // Plan Card
   planCard: {
-    backgroundColor: '#2C2837',
+    backgroundColor: '#1F2E25',
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: '#484551',
+    borderColor: '#3D5445',
     padding: 20,
     marginBottom: 16,
     position: 'relative',
@@ -439,13 +439,13 @@ const styles = StyleSheet.create({
   planName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
     marginBottom: 8,
   },
   planPrice: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#938F9C',
+    color: '#7A9686',
   },
 
   featuresList: {
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   featureText: {
     flex: 1,
     fontSize: 14,
-    color: '#C9C4D3',
+    color: '#BDD0C3',
     lineHeight: 20,
   },
 
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   },
   disclaimerText: {
     fontSize: 12,
-    color: '#484551',
+    color: '#3D5445',
     lineHeight: 20,
     textAlign: 'center',
   },

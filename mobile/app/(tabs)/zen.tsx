@@ -1,135 +1,79 @@
-import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { LinearGradient } from 'expo-linear-gradient'
-import { useRouter } from 'expo-router'
-import { Compass, ChevronRight } from 'lucide-react-native'
-import * as Haptics from 'expo-haptics'
-import { V } from '@/constants/theme'
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ChevronRight } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { V } from '@/constants/theme';
+import {
+  FloatingLeavesBackground, BotanicalCard, Vine,
+  BreathingFlower, Fern, Bamboo, Moonflower, Wildflower, Sakura,
+} from '@/components/botanical';
 
-const TOOLS = [
-  { id: 'breathing', emoji: '🌬️', title: 'Bài tập thở', desc: 'Kỹ thuật 4-7-8, box breathing', gradient: ['#164E63', '#06B6D4'] as const, route: '/breathing' },
-  { id: 'notch', emoji: '🎯', title: 'Notch Therapy', desc: 'Trị liệu theo tần số ù tai', gradient: ['#3D2B85', '#7C3AED'] as const, route: '/notch-therapy' },
-  { id: 'zentones', emoji: '🎵', title: 'Zentones', desc: 'Giai điệu fractal trị liệu ù tai', gradient: ['#3D2B85', '#5B4BC4'] as const, route: '/zentones' },
-  { id: 'sleep', emoji: '🌙', title: 'Chế độ ngủ', desc: 'Hẹn giờ, fade-out, màn hình tối', gradient: ['#1a0e3e', '#5B4BC4'] as const, route: '/sleep' },
-  { id: 'cbti', emoji: '🧠', title: 'CBT-i', desc: '4 tuần trị liệu nhận thức hành vi', gradient: ['#0C4A6E', '#0EA5E9'] as const, route: '/cbti' },
-  { id: 'journal', emoji: '📔', title: 'Nhật ký', desc: 'Theo dõi triệu chứng hàng ngày', gradient: ['#4E3800', '#F59E0B'] as const, route: '/journal' },
-]
+type CardTint = 'petal' | 'sage' | 'sky' | 'terra' | 'default';
+
+const TOOLS: { name: string; sub: string; ill: React.ReactNode; tint: CardTint; route: string }[] = [
+  { name: 'Hơi thở',       sub: 'An thần · 4·7·8',         ill: <BreathingFlower size={70} animate={false} />, tint: 'petal', route: '/breathing'      },
+  { name: 'Notch trị liệu',sub: 'Tần số cá nhân hóa',       ill: <Fern size={60} />,                            tint: 'sage',  route: '/notch-therapy'   },
+  { name: 'Zentones',       sub: 'Âm bội thiên nhiên',       ill: <Bamboo size={62} />,                          tint: 'sky',   route: '/zentones'        },
+  { name: 'Giấc ngủ',       sub: 'Ru đêm 30 phút',          ill: <Moonflower size={70} />,                      tint: 'petal', route: '/sleep'           },
+  { name: 'CBT-i',          sub: 'Liệu trình 4 tuần',        ill: <Wildflower size={62} />,                      tint: 'terra', route: '/cbti'            },
+  { name: 'Nhật ký',        sub: 'Tâm tình mỗi ngày',        ill: <Sakura size={62} />,                          tint: 'petal', route: '/journal'         },
+];
 
 export default function ZenScreen() {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <View style={styles.compassBg}>
-            <Compass size={18} color={V.secondary} />
-          </View>
-          <View>
-            <Text style={styles.title}>Khám phá</Text>
-            <Text style={styles.subtitle}>Công cụ trị liệu ù tai</Text>
-          </View>
-        </View>
+    <View style={{ flex: 1, backgroundColor: V.bg }}>
+      <FloatingLeavesBackground count={4} />
+      <View style={{ position: 'absolute', top: 80, right: -20 }}>
+        <Vine width={120} opacity={0.14} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
-        {TOOLS.map((tool) => (
-          <TouchableOpacity
-            key={tool.id}
-            style={styles.card}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-              router.push(tool.route as any)
-            }}
-            activeOpacity={0.85}
-          >
-            <LinearGradient
-              colors={[...tool.gradient]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.cardGradient}
-            >
-              {/* Decorative */}
-              <View style={styles.decoCircle} />
-              <View style={styles.decoCircle2} />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
+        <SafeAreaView edges={['top']} style={{ paddingHorizontal: 20, paddingTop: 8 }}>
 
-              <View style={styles.cardContent}>
-                <View style={styles.emojiCircle}>
-                  <Text style={styles.emojiText}>{tool.emoji}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.cardTitle}>{tool.title}</Text>
-                  <Text style={styles.cardDesc}>{tool.desc}</Text>
-                </View>
-                <View style={styles.arrowBg}>
-                  <ChevronRight size={16} color="rgba(255,255,255,0.7)" />
-                </View>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
+          <Text style={s.eyebrow}>khu vườn riêng</Text>
+          <Text style={s.title}>Sáu lối <Text style={{ fontStyle: 'italic' }}>chữa lành</Text></Text>
+          <Text style={s.subtitle}>Chọn một lối đi hôm nay. Mỗi công cụ là một góc nhỏ cho bạn nghỉ ngơi.</Text>
+
+          <View style={{ gap: 12, marginTop: 20 }}>
+            {TOOLS.map(tool => (
+              <TouchableOpacity
+                key={tool.name}
+                activeOpacity={0.8}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push(tool.route as any); }}
+              >
+                <BotanicalCard tint={tool.tint} style={{ padding: 0 }}>
+                  <View style={s.toolRow}>
+                    <View style={s.toolIllust}>{tool.ill}</View>
+                    <View style={{ flex: 1, marginLeft: 4 }}>
+                      <Text style={s.toolName}>{tool.name}</Text>
+                      <Text style={s.toolSub}>{tool.sub}</Text>
+                    </View>
+                    <View style={s.chevronBtn}>
+                      <ChevronRight size={14} color={V.textMuted} />
+                    </View>
+                  </View>
+                </BotanicalCard>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+        </SafeAreaView>
       </ScrollView>
-    </SafeAreaView>
-  )
+    </View>
+  );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: V.bg },
-
-  // Header
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16,
-  },
-  headerLeft: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-  },
-  compassBg: {
-    width: 40, height: 40, borderRadius: 14,
-    backgroundColor: V.surface,
-    borderWidth: 1, borderColor: V.outlineVariant + '30',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  title: { fontSize: 22, fontWeight: '700', color: V.textPrimary },
-  subtitle: { fontSize: 12, color: V.textMuted, marginTop: 1 },
-
-  // Grid
-  grid: { paddingHorizontal: 16, paddingBottom: 120, gap: 12 },
-
-  // Card
-  card: {
-    borderRadius: 20, overflow: 'hidden',
-  },
-  cardGradient: {
-    padding: 18, borderRadius: 20,
-    overflow: 'hidden', position: 'relative',
-  },
-  decoCircle: {
-    position: 'absolute', right: -20, top: -20,
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-  },
-  decoCircle2: {
-    position: 'absolute', left: 50, bottom: -15,
-    width: 50, height: 50, borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-  },
-  cardContent: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-  },
-  emojiCircle: {
-    width: 48, height: 48, borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  emojiText: { fontSize: 22 },
-  cardTitle: { fontSize: 16, fontWeight: '700', color: '#fff', marginBottom: 3 },
-  cardDesc: { fontSize: 12, color: 'rgba(255,255,255,0.6)' },
-  arrowBg: {
-    width: 32, height: 32, borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-})
+const s = StyleSheet.create({
+  eyebrow:    { fontSize: 20, fontWeight: '600', color: V.sage },
+  title:      { fontSize: 28, fontWeight: '500', color: V.cream, letterSpacing: -0.5, lineHeight: 34, marginTop: 2 },
+  subtitle:   { fontSize: 14, color: V.textMuted, fontWeight: '500', marginTop: 6, maxWidth: 300, lineHeight: 20 },
+  toolRow:    { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 4, minHeight: 92 },
+  toolIllust: { width: 80, height: 80, alignItems: 'center', justifyContent: 'center' },
+  toolName:   { fontSize: 20, fontWeight: '500', color: V.cream, letterSpacing: -0.3 },
+  toolSub:    { fontSize: 13, color: V.textSecondary, fontWeight: '500', marginTop: 2 },
+  chevronBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(245,237,224,0.08)', alignItems: 'center', justifyContent: 'center' },
+});

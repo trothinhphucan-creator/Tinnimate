@@ -3,7 +3,7 @@
     "schema_version": "1.1.0",
     "awf_version": "4.0.2",
     "created_at": "2026-04-15T01:35:00Z",
-    "updated_at": "2026-04-17T10:33:00+07:00"
+    "updated_at": "2026-04-20T19:06:00+07:00"
   },
   "project": {
     "name": "TinniMate",
@@ -34,7 +34,10 @@
       "audio": "expo-av",
       "auth": "Supabase Auth (@supabase/supabase-js)",
       "state": "Zustand — SINGLE STORE: @/store/use-user-store (legacy userStore.ts DEPRECATED)",
-      "deep_link": "tinnimate:// scheme + @capacitor/browser"
+      "deep_link": "tinnimate:// scheme + @capacitor/browser",
+      "expo_server": "npx expo start --tunnel từ mobile/ (không phải root)",
+      "ngrok_version": "v3.37.6 (manually replaced @expo/ngrok-bin binary v2 → v3)",
+      "ngrok_config": "~/.config/ngrok/ngrok.yml — version:3, agent.authtoken"
     },
     "video": {
       "framework": "Remotion",
@@ -145,6 +148,33 @@
     { "path": "/api/stripe/webhook", "method": "POST", "auth": "Stripe signature", "explained": "Webhook Stripe — có idempotency guard via stripe_events table" },
     { "path": "/api/admin/users", "method": "GET", "auth": "admin only", "explained": "Danh sách users (CRM)" }
   ],
+  "mobile_roadmap": {
+    "current_phase": "Phase 1 Complete — Phase 2 Starting",
+    "phase_1_done": [
+      "7 screens implemented (Dashboard, Therapy, Pricing, Hearing Test, Progress, Profile, Chat)",
+      "Feature parity với web app",
+      "Bilingual (VI/EN) support",
+      "Zustand stores (use-user-store, use-lang-store)",
+      "Expo SDK 54, React Native 0.81.5"
+    ],
+    "phase_2_todo": [
+      "Supabase Auth trong mobile (session persist AsyncStorage)",
+      "Data sync: daily_checkins, assessments, profiles tables",
+      "Payment: MoMo/VNPay (VN Android) + Stripe (iOS/global)",
+      "Connect paywall.tsx → real subscription update"
+    ],
+    "phase_3_todo": [
+      "Push Notifications (expo-notifications → push_tokens table)",
+      "Real charts (victory-native) trong progress.tsx",
+      "Offline mode",
+      "Onboarding flow connect (_layout.tsx first launch)"
+    ],
+    "phase_4_todo": [
+      "EAS Build setup (eas.json)",
+      "App Store submission (Android APK/AAB + iOS IPA)",
+      "App signing"
+    ]
+  },
   "known_issues": [
     {
       "issue": "sitemap.xml → HTTP 404",
@@ -176,7 +206,11 @@
       "assessments table: dùng 'score' và 'interpretation', KHÔNG phải total_score/severity",
       "Next.js route groups (app) KHÔNG xuất hiện trong URL — middleware matcher phải dùng tên thật",
       ".single() → .maybeSingle() nếu query có thể trả về 0 rows",
-      "Docker Dockerfile copy .next từ local — phải npm run build TRƯỚC rồi mới docker compose build"
+      "Docker Dockerfile copy .next từ local — phải npm run build TRƯỚC rồi mới docker compose build",
+      "Ngrok v2.3.41 (bundled trong @expo/ngrok-bin) đã bị ngrok.com block — ERR_NGROK_121. Phải copy binary ngrok v3 vào node_modules/@expo/ngrok-bin-linux-x64/ngrok thủ công",
+      "npm install trong mobile/ sẽ restore ngrok binary v2 cũ — cần re-apply ngrok v3 binary sau mỗi npm install",
+      "Expo start phải chạy từ mobile/ subdirectory, KHÔNG phải tinnimate/ root (thiếu package.json)",
+      "Ngrok v3 config format: version:3 + agent.authtoken (không phải root authtoken như v2)"
     ]
   }
 }

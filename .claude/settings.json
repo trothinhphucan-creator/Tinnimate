@@ -26,37 +26,6 @@
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-init.cjs"
           }
         ]
-      },
-      {
-        "matcher": "content-creator|copywriter|social-media-manager|email-wizard|sale-enabler",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/brand-guidelines-reminder.cjs"
-          }
-        ]
-      },
-      {
-        "matcher": "campaign-manager|campaign-debugger|social-media-manager|email-wizard|content-creator|analytics-analyst",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/campaign-tracking.cjs"
-          }
-        ]
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/approval-workflow.cjs"
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-init.cjs"
-          }
-        ]
       }
     ],
     "UserPromptSubmit": [
@@ -105,48 +74,6 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-edit-simplify-reminder.cjs"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "matcher": "manual|auto",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/write-compact-marker.cjs"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "matcher": "clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-end.cjs"
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/task-completed-handler.cjs"
-          }
-        ]
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/teammate-idle-handler.cjs"
           }
         ]
       }

@@ -17,11 +17,11 @@ interface TinniOrbProps {
 }
 
 const MODE_GLOW: Record<OrbMode, string> = {
-  idle:      '#4533AD',
-  playing:   '#8B5CF6',
-  breathing: '#3B82F6',
-  sleep:     '#1E1B4B',
-  chat:      '#0EA5E9',
+  idle:      '#C86B2A',   // amber warm glow
+  playing:   '#00B896',   // teal active glow
+  breathing: '#8FB996',   // sage calm glow
+  sleep:     '#003D31',   // deep teal sleep glow
+  chat:      '#0EA5E9',   // sky blue chat glow
 };
 
 const MODE_SPEED: Record<OrbMode, { blobA: number; blobB: number; scale: number; glow: number; rgb: number }> = {
@@ -42,11 +42,11 @@ const MODE_SCALE: Record<OrbMode, [number, number]> = {
 
 // Aurora color sets for non-playing modes
 const MODE_COLORS: Record<OrbMode, [string, string, string, string]> = {
-  idle:      ['#312E81', '#4533AD', '#06B6D4', '#7C3AED'],
-  playing:   ['#FF006E', '#8338EC', '#3A86FF', '#FF006E'], // overridden by RGB
-  breathing: ['#1D4ED8', '#4533AD', '#7C3AED', '#EC4899'],
-  sleep:     ['#0A0F1E', '#1D1928', '#1E1B4B', '#312E81'],
-  chat:      ['#0284C7', '#4533AD', '#7C3AED', '#06B6D4'],
+  idle:      ['#003D31', '#C86B2A', '#00B896', '#F4A261'],
+  playing:   ['#FF6B35', '#00B896', '#F4A261', '#FF6B35'], // overridden by RGB
+  breathing: ['#0EA5E9', '#8FB996', '#00B896', '#8FB996'],
+  sleep:     ['#090E0B', '#141E18', '#0D1E18', '#003D31'],
+  chat:      ['#0284C7', '#00B896', '#F4A261', '#06B6D4'],
 };
 
 export function TinniOrb({ mode = 'idle', size = 200 }: TinniOrbProps) {
@@ -163,7 +163,7 @@ export function TinniOrb({ mode = 'idle', size = 200 }: TinniOrbProps) {
           transform: [{ rotate: rotADeg }],
         }]}>
           <LinearGradient
-            colors={mode === 'playing' ? ['#FF006E', '#8338EC', '#3A86FF', '#FF006E'] : [colors[0], colors[1], colors[3], colors[0]]}
+            colors={mode === 'playing' ? ['#FF6B35', '#00B896', '#F4A261', '#FF6B35'] : [colors[0], colors[1], colors[3], colors[0]]}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
@@ -175,37 +175,37 @@ export function TinniOrb({ mode = 'idle', size = 200 }: TinniOrbProps) {
           transform: [{ rotate: rotBDeg }], opacity: 0.65,
         }]}>
           <LinearGradient
-            colors={mode === 'playing' ? ['#3A86FF', '#06D6A0', '#FFB700', '#3A86FF'] : [colors[2], colors[3], colors[1], colors[2]]}
+            colors={mode === 'playing' ? ['#0EA5E9', '#06D6A0', '#F4A261', '#0EA5E9'] : [colors[2], colors[3], colors[1], colors[2]]}
             start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
         </Animated.View>
 
-        {/* RGB Layer A — hot pink / violet (playing only) */}
+        {/* RGB Layer A — coral / teal (playing only) */}
         {mode === 'playing' && (
           <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: size / 2, opacity: rgbA }]}>
             <LinearGradient
-              colors={['#FF006E', '#8338EC', 'transparent']}
+              colors={['#FF6B35', '#00B896', 'transparent']}
               start={{ x: 0.2, y: 0 }} end={{ x: 0.8, y: 1 }}
               style={[StyleSheet.absoluteFill, { borderRadius: size / 2 }]}
             />
           </Animated.View>
         )}
-        {/* RGB Layer B — blue / cyan */}
+        {/* RGB Layer B — sky / jade */}
         {mode === 'playing' && (
           <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: size / 2, opacity: rgbB }]}>
             <LinearGradient
-              colors={['#3A86FF', '#06D6A0', 'transparent']}
+              colors={['#0EA5E9', '#06D6A0', 'transparent']}
               start={{ x: 0.8, y: 0.1 }} end={{ x: 0.2, y: 0.9 }}
               style={[StyleSheet.absoluteFill, { borderRadius: size / 2 }]}
             />
           </Animated.View>
         )}
-        {/* RGB Layer C — gold / orange */}
+        {/* RGB Layer C — amber / warm gold */}
         {mode === 'playing' && (
           <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: size / 2, opacity: rgbC }]}>
             <LinearGradient
-              colors={['#FFB700', '#FF4D6D', 'transparent']}
+              colors={['#F4A261', '#FFB700', 'transparent']}
               start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }}
               style={[StyleSheet.absoluteFill, { borderRadius: size / 2 }]}
             />

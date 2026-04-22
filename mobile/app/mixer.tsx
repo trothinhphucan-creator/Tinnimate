@@ -16,7 +16,7 @@ const { width } = Dimensions.get('window');
 const SLIDER_WIDTH = width - 140;
 
 const ALL_SOUNDS = [
-  { id: 'white',    emoji: '〰️', name: 'Ồn trắng',   color: '#938F9C', gradient: ['#2C2837', '#484551'] as const, file: require('@/assets/audio/white.mp3') },
+  { id: 'white',    emoji: '〰️', name: 'Ồn trắng',   color: '#7A9686', gradient: ['#1F2E25', '#3D5445'] as const, file: require('@/assets/audio/white.mp3') },
   { id: 'pink',     emoji: '🌸', name: 'Ồn hồng',    color: '#EC4899', gradient: ['#831843', '#EC4899'] as const, file: require('@/assets/audio/pink.mp3') },
   { id: 'brown',    emoji: '🟤', name: 'Ồn nâu',     color: '#92400E', gradient: ['#451A03', '#92400E'] as const, file: require('@/assets/audio/brown.mp3') },
   { id: 'rain',     emoji: '🌧️', name: 'Tiếng mưa',  color: '#06B6D4', gradient: ['#164E63', '#06B6D4'] as const, file: require('@/assets/audio/rain.mp3') },
@@ -24,8 +24,8 @@ const ALL_SOUNDS = [
   { id: 'forest',   emoji: '🌲', name: 'Rừng đêm',   color: '#16A34A', gradient: ['#14532D', '#16A34A'] as const, file: require('@/assets/audio/forest.mp3') },
   { id: 'campfire', emoji: '🔥', name: 'Lửa trại',   color: '#F97316', gradient: ['#7C2D12', '#F97316'] as const, file: require('@/assets/audio/campfire.mp3') },
   { id: 'birds',    emoji: '🐦', name: 'Tiếng chim', color: '#84CC16', gradient: ['#365314', '#84CC16'] as const, file: require('@/assets/audio/birds.mp3') },
-  { id: 'zen',      emoji: '🔔', name: 'Zen bells',  color: '#A855F7', gradient: ['#3D2B85', '#A855F7'] as const, file: require('@/assets/audio/zen.mp3') },
-  { id: '528hz',    emoji: '✨', name: 'Tone 528Hz', color: V.secondary, gradient: ['#3D2B85', '#5B4BC4'] as const, file: require('@/assets/audio/528hz.mp3') },
+  { id: 'zen',      emoji: '🔔', name: 'Zen bells',  color: '#00B896', gradient: ['#003D31', '#00B896'] as const, file: require('@/assets/audio/zen.mp3') },
+  { id: '528hz',    emoji: '✨', name: 'Tone 528Hz', color: V.secondary, gradient: ['#003D31', '#C86B2A'] as const, file: require('@/assets/audio/528hz.mp3') },
 ];
 
 interface Layer { id: string; volume: number }
@@ -149,7 +149,7 @@ export default function MixerScreen() {
 
         {/* ── Gradient Header ── */}
         <LinearGradient
-          colors={['#3D2B85', '#5B4BC4', V.bg]}
+          colors={['#003D31', '#C86B2A', V.bg]}
           locations={[0, 0.5, 1]}
           style={styles.heroGradient}
         >

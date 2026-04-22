@@ -9,6 +9,19 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { TinniOrb } from '@/components/TinniOrb';
 
+// Lazy import — react-native-audio-api requires a dev build (not Expo Go)
+let AudioContext: any = null;
+try {
+  AudioContext = require('react-native-audio-api').AudioContext;
+} catch {}
+
+type AudioContextType = any;
+type OscillatorNode = any;
+type GainNode = any;
+
+const TONE_VOLUME = 0.15;
+const FADE_MS = 80;
+
 const { width } = Dimensions.get('window');
 
 // ── Tone presets ──
@@ -90,6 +103,58 @@ export default function ZentitoneScreen() {
   const [activePreset, setActivePreset] = useState('match');
   const router = useRouter();
 
+  const ctxRef = useRef<AudioContextType | null>(null);
+  const oscRef = useRef<OscillatorNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
+
+  function stopTone() {
+    const ctx = ctxRef.current;
+    const gain = gainRef.current;
+    const osc = oscRef.current;
+    if (ctx && gain && osc) {
+      const now = ctx.currentTime;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.linearRampToValueAtTime(0, now + FADE_MS / 1000);
+      try { osc.stop(now + FADE_MS / 1000); } catch {}
+    }
+    setTimeout(() => {
+      try { ctxRef.current?.close(); } catch {}
+      ctxRef.current = null;
+      oscRef.current = null;
+      gainRef.current = null;
+    }, FADE_MS + 20);
+  }
+
+  function startTone(hz: number) {
+    stopTone();
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(hz, ctx.currentTime);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(TONE_VOLUME, ctx.currentTime + FADE_MS / 1000);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime);
+    ctxRef.current = ctx;
+    oscRef.current = osc;
+    gainRef.current = gain;
+  }
+
+  // Live frequency update while playing
+  useEffect(() => {
+    if (!isPlaying) return;
+    const ctx = ctxRef.current;
+    const osc = oscRef.current;
+    if (ctx && osc) {
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    }
+  }, [freq, isPlaying]);
+
+  useEffect(() => () => stopTone(), []);
+
   function handlePreset(preset: typeof PRESETS[0]) {
     setActivePreset(preset.id);
     setFreq(preset.freq);
@@ -97,17 +162,42 @@ export default function ZentitoneScreen() {
   }
 
   function togglePlay() {
-    setIsPlaying(p => !p);
     Haptics.notificationAsync(
       isPlaying ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success
     );
+    if (isPlaying) {
+      stopTone();
+      setIsPlaying(false);
+    } else {
+      startTone(freq);
+      setIsPlaying(true);
+    }
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      {!AudioContext ? (
+        <>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+              <ChevronLeft size={24} color="#7A9686" />
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.title}>Zentitone</Text>
+            </View>
+            <View style={{ width: 40 }} />
+          </View>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 40, marginBottom: 16 }}>🔧</Text>
+            <Text style={{ fontSize: 16, color: '#F4A261', textAlign: 'center', lineHeight: 24 }}>
+              Tính năng này yêu cầu Development Build.{"\n"}Không hỗ trợ trên Expo Go.
+            </Text>
+          </View>
+        </>
+      ) : (<>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#938F9C" />
+          <ChevronLeft size={24} color="#7A9686" />
         </TouchableOpacity>
         <View>
           <Text style={styles.title}>Zentitone</Text>
@@ -154,19 +244,20 @@ export default function ZentitoneScreen() {
           {isPlaying ? '⏸  Dừng tone' : '▶  Phát tone'}
         </Text>
       </TouchableOpacity>
+      </>)}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#151120', paddingHorizontal: 24 },
+  container: { flex: 1, backgroundColor: '#0D1410', paddingHorizontal: 24 },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingTop: 8, paddingBottom: 12,
   },
   backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: 20, fontWeight: '800', color: '#E7DFF5', textAlign: 'center' },
-  titleSub: { fontSize: 11, color: '#938F9C', textAlign: 'center' },
+  title: { fontSize: 20, fontWeight: '800', color: '#E8F0EB', textAlign: 'center' },
+  titleSub: { fontSize: 11, color: '#7A9686', textAlign: 'center' },
 
   center: {
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
@@ -175,55 +266,55 @@ const styles = StyleSheet.create({
   freqOverlay: {
     position: 'absolute', alignItems: 'center',
   },
-  freqHz: { fontSize: 34, fontWeight: '900', color: '#E7DFF5' },
-  freqUnit: { fontSize: 12, color: '#484551', marginTop: -4 },
+  freqHz: { fontSize: 34, fontWeight: '900', color: '#E8F0EB' },
+  freqUnit: { fontSize: 12, color: '#3D5445', marginTop: -4 },
 
   section: { marginBottom: 20 },
   sectionLabel: {
-    fontSize: 11, color: '#484551', fontWeight: '700',
+    fontSize: 11, color: '#3D5445', fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10,
   },
 
   sliderWrap: { gap: 6 },
   sliderTrack: { height: 40, justifyContent: 'center' },
   sliderFill: {
-    height: 6, backgroundColor: '#2C2837', borderRadius: 3,
+    height: 6, backgroundColor: '#1F2E25', borderRadius: 3,
     overflow: 'hidden',
   },
   sliderFillInner: {
-    height: '100%', backgroundColor: '#5B4BC4', borderRadius: 3,
+    height: '100%', backgroundColor: '#C86B2A', borderRadius: 3,
   },
   sliderThumb: {
     position: 'absolute', width: 24, height: 24, borderRadius: 12,
-    backgroundColor: '#C7BFFF',
-    shadowColor: '#5B4BC4', shadowOffset: { width: 0, height: 0 },
+    backgroundColor: '#F4A261',
+    shadowColor: '#C86B2A', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6, shadowRadius: 8, elevation: 6,
     top: 8,
   },
   sliderLabels: { flexDirection: 'row', justifyContent: 'space-between' },
-  sliderLabelText: { fontSize: 10, color: '#484551' },
+  sliderLabelText: { fontSize: 10, color: '#3D5445' },
   freqCurrent: {
-    fontSize: 13, color: '#C7BFFF', fontWeight: '700',
+    fontSize: 13, color: '#F4A261', fontWeight: '700',
     textAlign: 'center', marginTop: 4,
   },
 
   presetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   presetCard: {
     width: (width - 48 - 8) / 2,
-    backgroundColor: '#1D1928', borderRadius: 14,
-    borderWidth: 1, borderColor: '#2C2837',
+    backgroundColor: '#141E18', borderRadius: 14,
+    borderWidth: 1, borderColor: '#1F2E25',
     padding: 12,
   },
-  presetCardActive: { borderColor: '#5B4BC4', backgroundColor: '#6366F118' },
-  presetLabel: { fontSize: 13, fontWeight: '700', color: '#C9C4D3', marginBottom: 2 },
-  presetDesc: { fontSize: 10, color: '#938F9C' },
+  presetCardActive: { borderColor: '#C86B2A', backgroundColor: '#00A89618' },
+  presetLabel: { fontSize: 13, fontWeight: '700', color: '#BDD0C3', marginBottom: 2 },
+  presetDesc: { fontSize: 10, color: '#7A9686' },
 
   playBtn: {
-    backgroundColor: '#4533AD', borderRadius: 100, paddingVertical: 16,
+    backgroundColor: '#7A3B1E', borderRadius: 100, paddingVertical: 16,
     alignItems: 'center', marginBottom: 24,
-    shadowColor: '#4533AD', shadowOffset: { width: 0, height: 0 },
+    shadowColor: '#7A3B1E', shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5, shadowRadius: 14, elevation: 8,
   },
-  playBtnActive: { backgroundColor: '#7C3AED', shadowColor: '#7C3AED' },
+  playBtnActive: { backgroundColor: '#009678', shadowColor: '#009678' },
   playBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
 });

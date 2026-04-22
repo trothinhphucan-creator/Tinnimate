@@ -7,8 +7,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Volume2, VolumeX, PlayCircle, StopCircle } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { Audio } from 'expo-av';
 import { useLangStore } from '@/store/use-lang-store';
+
+// Lazy import — react-native-audio-api requires a dev build (not Expo Go)
+let AudioContext: any = null;
+try {
+  AudioContext = require('react-native-audio-api').AudioContext;
+} catch {}
+
+type AudioContextType = any;
+type OscillatorNode = any;
+type GainNode = any;
 
 const { width } = Dimensions.get('window');
 
@@ -38,16 +47,11 @@ export default function HearingTestScreen() {
     }))
   );
 
-  const soundRef = useRef<Audio.Sound | null>(null);
-  const audioContextRef = useRef<any>(null);
-  const oscillatorRef = useRef<any>(null);
-  const gainNodeRef = useRef<any>(null);
+  const audioContextRef = useRef<AudioContextType | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
   useEffect(() => {
-    Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-    });
-
     return () => {
       stopTone();
     };
@@ -57,32 +61,17 @@ export default function HearingTestScreen() {
     try {
       stopTone();
 
-      // Use Web Audio API approach (works in Expo)
-      // @ts-ignore
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) {
-        Alert.alert(
-          lang === 'vi' ? 'Lỗi' : 'Error',
-          lang === 'vi'
-            ? 'Thiết bị không hỗ trợ audio'
-            : 'Audio not supported on this device'
-        );
-        return;
-      }
-
       const audioContext = new AudioContext();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
       oscillator.type = 'sine';
       oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-
       gainNode.gain.setValueAtTime(vol, audioContext.currentTime);
 
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-
-      oscillator.start();
+      oscillator.start(audioContext.currentTime);
 
       audioContextRef.current = audioContext;
       oscillatorRef.current = oscillator;
@@ -106,12 +95,12 @@ export default function HearingTestScreen() {
       try {
         oscillatorRef.current.stop();
       } catch (e) {
-        // Oscillator may already be stopped
+        // oscillator may already be stopped
       }
       oscillatorRef.current = null;
     }
     if (audioContextRef.current) {
-      audioContextRef.current.close();
+      audioContextRef.current.close().catch(() => {});
       audioContextRef.current = null;
     }
     gainNodeRef.current = null;
@@ -212,12 +201,37 @@ export default function HearingTestScreen() {
     return '#EF4444';
   };
 
+  // Fallback if native module not available (Expo Go)
+  if (!AudioContext) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <ChevronLeft size={24} color="#E8F0EB" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>
+            {lang === 'vi' ? 'Kiểm tra thính lực' : 'Hearing Test'}
+          </Text>
+          <View style={{ width: 40 }} />
+        </View>
+        <View style={styles.introContainer}>
+          <Text style={styles.introTitle}>🔧</Text>
+          <Text style={[styles.introDesc, { fontSize: 16, color: '#F4A261' }]}>
+            {lang === 'vi'
+              ? 'Tính năng này yêu cầu Development Build.\nKhông hỗ trợ trên Expo Go.'
+              : 'This feature requires a Development Build.\nNot supported on Expo Go.'}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (!hasStarted) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color="#E7DFF5" />
+            <ChevronLeft size={24} color="#E8F0EB" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
             {lang === 'vi' ? 'Kiểm tra thính lực' : 'Hearing Test'}
@@ -264,7 +278,7 @@ export default function HearingTestScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <ChevronLeft size={24} color="#E7DFF5" />
+            <ChevronLeft size={24} color="#E8F0EB" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
             {lang === 'vi' ? 'Kết quả' : 'Results'}
@@ -325,7 +339,7 @@ export default function HearingTestScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#E7DFF5" />
+          <ChevronLeft size={24} color="#E8F0EB" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
           {lang === 'vi' ? 'Kiểm tra thính lực' : 'Hearing Test'}
@@ -421,7 +435,7 @@ export default function HearingTestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#151120',
+    backgroundColor: '#0D1410',
   },
 
   header: {
@@ -441,7 +455,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
     letterSpacing: 0.2,
   },
 
@@ -454,19 +468,19 @@ const styles = StyleSheet.create({
   introTitle: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
     textAlign: 'center',
     marginBottom: 16,
   },
   introDesc: {
     fontSize: 15,
-    color: '#938F9C',
+    color: '#7A9686',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 32,
   },
   instructions: {
-    backgroundColor: '#2C2837',
+    backgroundColor: '#1F2E25',
     borderRadius: 16,
     padding: 20,
     marginBottom: 32,
@@ -474,16 +488,16 @@ const styles = StyleSheet.create({
   instructionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
     marginBottom: 12,
   },
   instructionText: {
     fontSize: 14,
-    color: '#C9C4D3',
+    color: '#BDD0C3',
     lineHeight: 22,
   },
   startBtn: {
-    backgroundColor: '#4533AD',
+    backgroundColor: '#7A3B1E',
     paddingVertical: 16,
     borderRadius: 16,
     flexDirection: 'row',
@@ -508,7 +522,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#938F9C',
+    color: '#7A9686',
     textAlign: 'center',
     marginBottom: 12,
   },
@@ -521,10 +535,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#484551',
+    backgroundColor: '#3D5445',
   },
   progressDotActive: {
-    backgroundColor: '#4533AD',
+    backgroundColor: '#7A3B1E',
   },
 
   freqDisplay: {
@@ -533,13 +547,13 @@ const styles = StyleSheet.create({
   },
   freqLabel: {
     fontSize: 14,
-    color: '#938F9C',
+    color: '#7A9686',
     marginBottom: 8,
   },
   freqValue: {
     fontSize: 48,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
   },
 
   volumeDisplay: {
@@ -548,37 +562,37 @@ const styles = StyleSheet.create({
   },
   volumeLabel: {
     fontSize: 14,
-    color: '#938F9C',
+    color: '#7A9686',
     marginBottom: 8,
   },
   volumeValue: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#C7BFFF',
+    color: '#F4A261',
     marginBottom: 12,
   },
   volumeBar: {
     width: '100%',
     height: 8,
-    backgroundColor: '#2C2837',
+    backgroundColor: '#1F2E25',
     borderRadius: 4,
     overflow: 'hidden',
   },
   volumeFill: {
     height: '100%',
-    backgroundColor: '#C7BFFF',
+    backgroundColor: '#F4A261',
   },
 
   playButton: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#4533AD',
+    backgroundColor: '#7A3B1E',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
     marginBottom: 32,
-    shadowColor: '#4533AD',
+    shadowColor: '#7A3B1E',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -603,7 +617,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   responseBtnNo: {
-    backgroundColor: '#484551',
+    backgroundColor: '#3D5445',
   },
   responseBtnYes: {
     backgroundColor: '#10B981',
@@ -624,7 +638,7 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -633,7 +647,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   resultCard: {
-    backgroundColor: '#2C2837',
+    backgroundColor: '#1F2E25',
     borderRadius: 16,
     padding: 20,
     flexDirection: 'row',
@@ -643,7 +657,7 @@ const styles = StyleSheet.create({
   resultFreq: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#E7DFF5',
+    color: '#E8F0EB',
   },
   resultStatus: {
     fontSize: 15,
@@ -651,7 +665,7 @@ const styles = StyleSheet.create({
   },
   resultVolume: {
     fontSize: 13,
-    color: '#938F9C',
+    color: '#7A9686',
   },
 
   disclaimer: {
@@ -668,7 +682,7 @@ const styles = StyleSheet.create({
   },
 
   restartBtn: {
-    backgroundColor: '#4533AD',
+    backgroundColor: '#7A3B1E',
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: 'center',

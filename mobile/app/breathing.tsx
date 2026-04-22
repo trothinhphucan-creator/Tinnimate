@@ -1,241 +1,152 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  StyleSheet, Text, View, TouchableOpacity,
-  Dimensions, Animated, Easing,
-} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-
-const { width } = Dimensions.get('window');
-
-const PHASES_4478 = [
-  { label: 'HÍT VÀO', secs: 4, color: '#06B6D4', scale: 1.0 },
-  { label: 'GIỮ HƠI', secs: 7, color: '#C7BFFF', scale: 1.0 },
-  { label: 'THỞ RA',  secs: 8, color: '#10B981', scale: 0.55 },
-];
+import { V } from '@/constants/theme';
+import { BreathingFlower, FloatingLeavesBackground } from '@/components/botanical';
 
 const EXERCISES = [
-  { id: '4-7-8', name: '4-7-8',   desc: 'Giúp ngủ ngon',
-    phases: PHASES_4478 },
-  { id: '4-4-6-2', name: '4-4-6-2', desc: 'Giảm lo âu',
+  {
+    id: '4-7-8', name: '4·7·8', desc: 'An thần',
     phases: [
-      { label: 'HÍT VÀO', secs: 4, color: '#06B6D4', scale: 1.0 },
-      { label: 'GIỮ HƠI', secs: 4, color: '#C7BFFF', scale: 1.0 },
-      { label: 'THỞ RA',  secs: 6, color: '#10B981', scale: 0.55 },
-      { label: 'NGHỈ',    secs: 2, color: '#3B82F6', scale: 0.55 },
-    ] },
-  { id: 'box', name: 'Box',    desc: 'Cân bằng tâm trí',
+      { label: 'hít vào…', secs: 4,  isInhale: true  },
+      { label: 'giữ…',     secs: 7,  isInhale: true  },
+      { label: 'thở ra…',  secs: 8,  isInhale: false },
+    ],
+  },
+  {
+    id: 'box', name: 'Box', desc: 'Cân bằng',
     phases: [
-      { label: 'HÍT VÀO', secs: 4, color: '#06B6D4', scale: 1.0 },
-      { label: 'GIỮ HƠI', secs: 4, color: '#C7BFFF', scale: 1.0 },
-      { label: 'THỞ RA',  secs: 4, color: '#10B981', scale: 0.55 },
-      { label: 'NGHỈ',    secs: 4, color: '#3B82F6', scale: 0.55 },
-    ] },
+      { label: 'hít vào…', secs: 4, isInhale: true  },
+      { label: 'giữ…',     secs: 4, isInhale: true  },
+      { label: 'thở ra…',  secs: 4, isInhale: false },
+      { label: 'nghỉ…',    secs: 4, isInhale: false },
+    ],
+  },
+  {
+    id: '4-4-6', name: '4·4·6', desc: 'Dịu ù',
+    phases: [
+      { label: 'hít vào…', secs: 4, isInhale: true  },
+      { label: 'giữ…',     secs: 4, isInhale: true  },
+      { label: 'thở ra…',  secs: 6, isInhale: false },
+    ],
+  },
 ];
 
 export default function BreathingScreen() {
-  const [exerciseId, setExerciseId] = useState('4-7-8');
-  const [isRunning, setIsRunning]   = useState(false);
-  const [phaseIdx, setPhaseIdx]     = useState(0);
-  const [countdown, setCountdown]   = useState(4);
-  const [round, setRound]           = useState(1);
-  const circleAnim = useRef(new Animated.Value(0.6)).current;
-  const glowAnim   = useRef(new Animated.Value(0.3)).current;
-  const phaseRef   = useRef(0);
-  const roundRef   = useRef(1);
-  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
-  const router     = useRouter();
+  const router    = useRouter();
+  const [exId,    setExId]    = useState('4-7-8');
+  const [running, setRunning] = useState(false);
+  const [phaseIdx, setPIdx]   = useState(0);
+  const [countdown, setCdown] = useState(4);
+  const [round,   setRound]   = useState(1);
+  const phaseRef  = useRef(0);
+  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const ex     = EXERCISES.find(e => e.id === exerciseId) ?? EXERCISES[0];
-  const phase  = ex.phases[phaseIdx];
+  const ex    = EXERCISES.find(e => e.id === exId) ?? EXERCISES[0];
+  const phase = ex.phases[phaseIdx];
 
   useEffect(() => {
-    if (!isRunning) {
+    if (!running) {
       if (timerRef.current) clearInterval(timerRef.current);
-      Animated.timing(circleAnim, { toValue: 0.6, duration: 800, useNativeDriver: true }).start();
-      Animated.timing(glowAnim, { toValue: 0.2, duration: 800, useNativeDriver: true }).start();
+      setPIdx(0); setCdown(ex.phases[0].secs);
       return;
     }
 
-    const currentPhases = ex.phases;
-    let currentPhase  = phaseRef.current;
-    let remainingSecs = currentPhases[currentPhase].secs;
+    phaseRef.current = 0;
+    let cur = 0;
+    let rem = ex.phases[0].secs;
+    setPIdx(0); setCdown(rem);
 
-    setPhaseIdx(currentPhase);
-    setCountdown(remainingSecs);
-
-    // Animate circle for current phase
-    const targetScale = currentPhases[currentPhase].scale;
-    Animated.timing(circleAnim, {
-      toValue: targetScale,
-      duration: (currentPhases[currentPhase].secs - 0.5) * 1000,
-      easing: Easing.inOut(Easing.quad),
-      useNativeDriver: true,
-    }).start();
-    Animated.timing(glowAnim, {
-      toValue: targetScale > 0.8 ? 0.6 : 0.2,
-      duration: (currentPhases[currentPhase].secs - 0.5) * 1000,
-      useNativeDriver: true,
-    }).start();
-
-    timerRef.current = setInterval(() => {
-      remainingSecs -= 1;
-      setCountdown(remainingSecs);
-      if (remainingSecs <= 0) {
-        clearInterval(timerRef.current!);
-        currentPhase = (currentPhase + 1) % currentPhases.length;
-        phaseRef.current = currentPhase;
-        setPhaseIdx(currentPhase);
-        remainingSecs = currentPhases[currentPhase].secs;
-        setCountdown(remainingSecs);
+    const tick = () => {
+      rem -= 1;
+      setCdown(rem);
+      if (rem <= 0) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        // Re-animate for new phase
-        const newScale = currentPhases[currentPhase].scale;
-        Animated.timing(circleAnim, {
-          toValue: newScale,
-          duration: (currentPhases[currentPhase].secs - 0.5) * 1000,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }).start();
-        Animated.timing(glowAnim, {
-          toValue: newScale > 0.8 ? 0.6 : 0.2,
-          duration: (currentPhases[currentPhase].secs - 0.5) * 1000,
-          useNativeDriver: true,
-        }).start();
-        timerRef.current = setInterval(() => {  /* recursion handled outside */ }, 1000);
+        cur = (cur + 1) % ex.phases.length;
+        if (cur === 0) setRound(r => r + 1);
+        phaseRef.current = cur;
+        rem = ex.phases[cur].secs;
+        setPIdx(cur); setCdown(rem);
       }
-    }, 1000);
+    };
 
+    timerRef.current = setInterval(tick, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [isRunning, exerciseId]);
+  }, [running, exId]);
 
-  const CIRCLE_MAX = width * 0.72;
+  const inhaleSecs = ex.phases[0].secs;
+  const exhaleSecs = ex.phases[ex.phases.length - 1].secs;
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#938F9C" />
-        </TouchableOpacity>
-        <Text style={styles.title}>🌬️ Bài tập thở</Text>
-        <View style={{ width: 40 }} />
-      </View>
+    <View style={{ flex: 1, backgroundColor: '#2A332D' }}>
+      <FloatingLeavesBackground count={5} />
 
-      {/* Exercise picker */}
-      <View style={styles.picker}>
-        {EXERCISES.map(e => (
-          <TouchableOpacity
-            key={e.id}
-            style={[styles.exChip, exerciseId === e.id && styles.exChipActive]}
-            onPress={() => {
-              setExerciseId(e.id); setIsRunning(false);
-              phaseRef.current = 0; setPhaseIdx(0); setRound(1); roundRef.current = 1;
-              Haptics.selectionAsync();
-            }}>
-            <Text style={[styles.exChipName, exerciseId === e.id && { color: '#C7BFFF' }]}>{e.name}</Text>
-            <Text style={styles.exChipDesc}>{e.desc}</Text>
+      <SafeAreaView style={{ flex: 1, alignItems: 'center', paddingHorizontal: 24 }}>
+        {/* Header */}
+        <View style={s.header}>
+          <TouchableOpacity onPress={() => router.back()} style={s.iconBtn}>
+            <ChevronLeft size={22} color={V.cream} />
           </TouchableOpacity>
-        ))}
-      </View>
+          <Text style={s.title}>Hơi thở</Text>
+          <View style={{ width: 40 }} />
+        </View>
 
-      {/* Breathing circle */}
-      <View style={styles.circleContainer}>
-        {/* Outer glow */}
-        <Animated.View style={[styles.circleGlow, {
-          width: CIRCLE_MAX + 80, height: CIRCLE_MAX + 80,
-          borderRadius: (CIRCLE_MAX + 80) / 2,
-          backgroundColor: phase.color,
-          opacity: glowAnim,
-          transform: [{ scale: circleAnim }],
-        }]} />
-        {/* Main ring */}
-        <Animated.View style={[styles.circleRing, {
-          width: CIRCLE_MAX, height: CIRCLE_MAX, borderRadius: CIRCLE_MAX / 2,
-          borderColor: phase.color,
-          transform: [{ scale: circleAnim }],
-        }]}>
-          <View style={[styles.circleInner, { backgroundColor: phase.color + '15' }]}>
-            <Text style={[styles.phaseLabel, { color: phase.color }]}>{phase.label}</Text>
-            <Text style={styles.phaseSeconds}>{countdown}</Text>
-          </View>
-        </Animated.View>
-      </View>
+        {/* Exercise picker */}
+        <View style={s.picker}>
+          {EXERCISES.map(e => (
+            <TouchableOpacity key={e.id}
+              style={[s.chip, exId === e.id && s.chipActive]}
+              onPress={() => { setExId(e.id); setRunning(false); setRound(1); Haptics.selectionAsync(); }}>
+              <Text style={[s.chipName, exId === e.id && { color: V.sage }]}>{e.name}</Text>
+              <Text style={s.chipDesc}>{e.desc}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* Phase indicators */}
-      <View style={styles.phaseIndicators}>
-        {ex.phases.filter(p => p.secs > 0).map((p, i) => (
-          <View key={i} style={styles.phaseIndicator}>
-            <View style={[styles.phaseDot, ex.phases.indexOf(p) === phaseIdx && { backgroundColor: phase.color, width: 16 }]} />
-            <Text style={[styles.phaseIndLabel, ex.phases.indexOf(p) === phaseIdx && { color: '#E7DFF5' }]}>
-              {p.label.charAt(0) + p.label.slice(1).toLowerCase()} ({p.secs}s)
-            </Text>
-          </View>
-        ))}
-      </View>
+        {/* Breathing flower */}
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={s.phaseLabel}>{phase.label}</Text>
+          <BreathingFlower
+            size={280}
+            animate={running}
+            inhaleDuration={inhaleSecs * 1000}
+            exhaleDuration={exhaleSecs * 1000}
+          />
+          <Text style={s.countdown}>{countdown}</Text>
+          <Text style={s.roundText}>chu kỳ {round} / 8</Text>
+        </View>
 
-      {/* Round counter */}
-      <Text style={styles.roundText}>Vòng {round} / 4</Text>
+        {/* Start / Stop */}
+        <TouchableOpacity
+          style={[s.startBtn, running && { backgroundColor: V.surfaceHigh, borderColor: V.outline }]}
+          onPress={() => { setRunning(r => !r); Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); }}
+          activeOpacity={0.85}
+        >
+          <Text style={[s.startText, running && { color: V.textSecondary }]}>
+            {running ? 'Dừng lại' : '▶  Bắt đầu'}
+          </Text>
+        </TouchableOpacity>
 
-      {/* Start/Stop */}
-      <TouchableOpacity
-        style={[styles.startBtn, isRunning
-          ? { backgroundColor: '#2C2837', borderColor: '#484551' }
-          : { backgroundColor: phase.color + 'CC', borderColor: phase.color }
-        ]}
-        onPress={() => { setIsRunning(!isRunning); Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); }}
-        activeOpacity={0.85}>
-        <Text style={styles.startBtnText}>
-          {isRunning ? 'Dừng' : '▶  Bắt đầu'}
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#151120', alignItems: 'center', paddingHorizontal: 20 },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingTop: 8, paddingBottom: 12, width: '100%',
-  },
-  backBtn: { width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: 18, fontWeight: '700', color: '#E7DFF5' },
-
-  picker: { flexDirection: 'row', gap: 8, marginBottom: 16, width: '100%' },
-  exChip: {
-    flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6,
-    borderRadius: 14, borderWidth: 1, borderColor: '#2C2837', backgroundColor: '#1D1928',
-  },
-  exChipActive: { borderColor: '#4533AD', backgroundColor: '#4F46E518' },
-  exChipName: { fontSize: 14, fontWeight: '700', color: '#938F9C', marginBottom: 2 },
-  exChipDesc: { fontSize: 10, color: '#484551', textAlign: 'center' },
-
-  circleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  circleGlow: { position: 'absolute' },
-  circleRing: {
-    borderWidth: 2.5, alignItems: 'center', justifyContent: 'center',
-  },
-  circleInner: {
-    width: '76%', aspectRatio: 1, borderRadius: 999,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  phaseLabel: { fontSize: 18, fontWeight: '800', letterSpacing: 1.5, marginBottom: 8 },
-  phaseSeconds: { fontSize: 64, fontWeight: '900', color: '#E7DFF5', lineHeight: 70 },
-
-  phaseIndicators: { flexDirection: 'row', gap: 16, marginBottom: 8, alignItems: 'center' },
-  phaseIndicator: { alignItems: 'center', gap: 4 },
-  phaseDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2C2837' },
-  phaseIndLabel: { fontSize: 10, color: '#484551', fontWeight: '600' },
-
-  roundText: { fontSize: 13, color: '#484551', marginBottom: 24 },
-
-  startBtn: {
-    width: '100%', paddingVertical: 17, borderRadius: 100,
-    borderWidth: 1.5, alignItems: 'center', marginBottom: 32,
-    shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.4, shadowRadius: 16, elevation: 10,
-  },
-  startBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+const s = StyleSheet.create({
+  header:     { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4, paddingBottom: 12 },
+  iconBtn:    { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(245,237,224,0.08)', alignItems: 'center', justifyContent: 'center' },
+  title:      { fontSize: 17, fontWeight: '500', color: V.cream },
+  picker:     { flexDirection: 'row', gap: 8, width: '100%', marginBottom: 8 },
+  chip:       { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 14, backgroundColor: 'rgba(245,237,224,0.06)', borderWidth: 1, borderColor: 'rgba(245,237,224,0.08)' },
+  chipActive: { backgroundColor: V.primaryContainer, borderColor: V.sage + '40' },
+  chipName:   { fontSize: 16, fontWeight: '700', color: V.textSecondary },
+  chipDesc:   { fontSize: 11, color: V.textMuted, fontWeight: '600', marginTop: 1 },
+  phaseLabel: { fontSize: 22, fontWeight: '600', color: V.petal, marginBottom: 8 },
+  countdown:  { fontSize: 52, fontWeight: '300', color: V.cream, letterSpacing: -1, marginTop: -8 },
+  roundText:  { fontSize: 13, color: V.textMuted, fontWeight: '500', marginTop: 4 },
+  startBtn:   { width: '100%', paddingVertical: 18, borderRadius: 999, backgroundColor: V.sage, alignItems: 'center', marginBottom: 24, borderWidth: 1, borderColor: V.sage },
+  startText:  { fontSize: 16, fontWeight: '700', color: V.bg, letterSpacing: 0.3 },
 });

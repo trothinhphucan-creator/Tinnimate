@@ -81,4 +81,9 @@ export const workerClient = {
       method: 'POST',
       body: JSON.stringify({ replyId }),
     }),
+
+  scanGroups: (pageId: string) =>
+    workerFetch<{
+      groups: Array<{ name: string; url: string; memberCount: string | null }>
+    }>(`/worker/groups/scan?pageId=${encodeURIComponent(pageId)}`),
 }
