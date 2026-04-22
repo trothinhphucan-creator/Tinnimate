@@ -11,8 +11,11 @@
 import { env } from '../config/environment-schema.js'
 import { logger } from '../lib/pino-structured-logger.js'
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? ''
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID ?? ''
+const TELEGRAM_BOT_TOKEN = env.ALERT_TELEGRAM_BOT_TOKEN ?? ''
+const TELEGRAM_CHAT_ID = env.ALERT_TELEGRAM_CHAT_ID ?? ''
+
+// Dedup: track last alert time per pageId — suppress repeated LOGGED_OUT alerts within 1h
+const _loggedOutAlertedAt = new Map<string, number>()
 
 async function sendTelegram(message: string): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
@@ -41,6 +44,14 @@ async function sendTelegram(message: string): Promise<void> {
 }
 
 export async function alertPageLoggedOut(pageLabel: string, pageId: string): Promise<void> {
+  const COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
+  const lastAlerted = _loggedOutAlertedAt.get(pageId) ?? 0
+  if (Date.now() - lastAlerted < COOLDOWN_MS) {
+    logger.debug({ pageId }, 'LOGGED_OUT alert suppressed (cooldown)')
+    return
+  }
+  _loggedOutAlertedAt.set(pageId, Date.now())
+
   const msg = [
     `🔴 *TinniMate Worker Alert*`,
     ``,

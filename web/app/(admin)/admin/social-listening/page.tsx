@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { Radio, ListChecks, Rss, AlertTriangle, TrendingUp, CheckCircle2, Clock, Activity, MessageCircle } from 'lucide-react'
+import { Radio, ListChecks, Rss, AlertTriangle, TrendingUp, CheckCircle2, Clock, Activity, MessageCircle, SlidersHorizontal } from 'lucide-react'
 
 export const metadata = { title: 'Social Listening — TinniMate Admin' }
 
@@ -111,13 +111,14 @@ export default async function SocialListeningDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-6 gap-4 mb-8">
         {[
-          { href: '/admin/social-listening/queue',    label: 'Review Queue',    icon: ListChecks,     desc: 'Duyệt & đăng draft reply' },
-          { href: '/admin/social-listening/comments',  label: 'Comment Inbox',   icon: MessageCircle,  desc: 'Reply comments cần thông tin' },
-          { href: '/admin/social-listening/sources',   label: 'Manage Sources',  icon: Rss,            desc: 'Thêm nhóm, page, keyword' },
-          { href: '/admin/social-listening/pages',     label: 'Fanpages',        icon: Radio,          desc: 'Đăng nhập & quản lý page' },
-          { href: '/admin/social-listening/status',    label: 'Scrape Status',   icon: Activity,       desc: 'Trạng thái scrape real-time' },
+          { href: '/admin/social-listening/queue',    label: 'Review Queue',    icon: ListChecks,        desc: 'Duyệt & đăng draft reply' },
+          { href: '/admin/social-listening/comments',  label: 'Comment Inbox',   icon: MessageCircle,     desc: 'Reply comments cần thông tin' },
+          { href: '/admin/social-listening/sources',   label: 'Manage Sources',  icon: Rss,               desc: 'Thêm nhóm, page, keyword' },
+          { href: '/admin/social-listening/pages',     label: 'Fanpages',        icon: Radio,             desc: 'Đăng nhập & quản lý page' },
+          { href: '/admin/social-listening/status',    label: 'Scrape Status',   icon: Activity,          desc: 'Trạng thái scrape real-time' },
+          { href: '/admin/social-listening/settings',  label: 'AI Settings',     icon: SlidersHorizontal, desc: 'System prompt, model, temp' },
         ].map(({ href, label, icon: Icon, desc }) => (
           <Link key={href} href={href}
             className="flex items-start gap-4 p-5 rounded-xl border border-slate-800 bg-slate-900 hover:border-blue-500/50 hover:bg-slate-800 transition-all group">

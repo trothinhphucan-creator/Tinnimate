@@ -3,7 +3,7 @@
     "schema_version": "1.1.0",
     "awf_version": "4.0.2",
     "created_at": "2026-04-15T01:35:00Z",
-    "updated_at": "2026-04-20T19:06:00+07:00"
+    "updated_at": "2026-04-22T17:53:00+07:00"
   },
   "project": {
     "name": "TinniMate",
@@ -69,7 +69,12 @@
       { "name": "stripe_events", "key_cols": ["id (PK = event.id)", "type", "processed_at"], "note": "Idempotency guard — added Sprint 4" },
       { "name": "push_tokens", "key_cols": ["user_id", "token", "platform", "device_name"] },
       { "name": "mobile_sessions", "key_cols": ["id", "user_id", "platform", "screens", "duration_secs"] },
-      { "name": "journal_entries", "key_cols": ["id", "user_id", "mood", "text", "tinnitus_level", "created_at"] }
+      { "name": "fb_pages", "key_cols": ["id", "label", "fb_page_id", "status", "session_path", "last_active_at"], "note": "Fanpage accounts — Playwright session cookie stored" },
+      { "name": "fb_target_sources", "key_cols": ["id", "label", "type (GROUP|PAGE|KEYWORD_SEARCH)", "fb_url", "page_id", "keywords"], "note": "Sources to scrape. page_id FK added migration 000003" },
+      { "name": "fb_posts", "key_cols": ["id", "source_id", "fb_post_id", "content", "status", "relevance_score", "fb_post_url", "scraped_at"] },
+      { "name": "fb_comments", "key_cols": ["id", "post_id", "fb_comment_id", "author_name", "content", "needs_reply", "intent", "urgency", "status"], "note": "ADDED 2026-04-22. Scraped comments; LLM-classified. status: NEW|CLASSIFIED|REPLY_DRAFTED|REPLIED|SKIPPED" },
+      { "name": "fb_replies", "key_cols": ["id", "post_id", "comment_id", "draft_text", "status", "page_id", "classification", "mcp_sources"], "note": "comment_id FK added 2026-04-22: NULL=post reply, NOT NULL=comment reply" },
+      { "name": "fb_scrape_jobs", "key_cols": ["id", "source_id", "page_id", "status", "posts_found", "posts_new", "error", "started_at", "finished_at"], "note": "Realtime enabled" }
     ],
     "critical_gotcha": "assessments table uses 'score' and 'interpretation' — NOT 'total_score' or 'severity'. API supports both for backward compat."
   },
@@ -134,11 +139,40 @@
       "todo": "sitemap.xml 404 — Next.js 16 deprecated middleware.ts→proxy.ts, may affect dynamic routes"
     },
     {
-      "name": "Admin CRM",
+      "name": "Social Listening — Comment Reply Pipeline",
       "status": "implemented",
-      "description": "Admin panel: users, mobile analytics, session tracker",
-      "web_path": "/admin/*",
-      "guard": "is_admin === true in profiles"
+      "description": "Scrape Facebook groups → extract posts → scrape comments → LLM classify (needs_reply) → generate draft → admin review → Playwright post reply as Fanpage",
+      "pipeline": "fb_target_sources → scrape-consumer (BullMQ fb-scrape) → fb_posts + fb_comments → classify-comment-job (BullMQ fb-comment-classify, 3x) → fb_replies(comment_id) → admin Comment Inbox → post-fb-comment.ts",
+      "key_files": [
+        "worker/src/scraper/scrape-joined-groups.ts — scan groups page is logged in as Fanpage",
+        "worker/src/scraper/scrape-group-posts.ts — scroll group feed, keyword match",
+        "worker/src/scraper/scrape-post-comments.ts — scroll post, extract comments by permalink URL",
+        "worker/src/ai/classify-comment-intent.ts — Gemini Flash: needs_reply/intent/urgency/suggested_angle",
+        "worker/src/pipeline/classify-comment-job.ts — BullMQ consumer: classify + draft + upsert fb_replies",
+        "worker/src/db/fb-comments-upsert.ts — upsert helper + enqueue classify jobs",
+        "worker/src/browser/post-fb-comment.ts — Playwright post reply (detects comment_id → click Reply button)",
+        "web/app/(admin)/admin/social-listening/comments/page.tsx — Comment Inbox UI",
+        "web/app/(admin)/admin/social-listening/status/page.tsx — Realtime scrape status"
+      ],
+      "supabase_realtime_tables": ["fb_scrape_jobs", "fb_comments"],
+      "worker_queues": ["fb-scrape (concurrency 1)", "fb-analyze (concurrency 3)", "fb-comment-classify (concurrency 3)"],
+      "group_scan_url": "https://www.facebook.com/groups/joins/?nav_source=tab — Fanpage-joined groups",
+      "critical_gotchas": [
+        "Scan groups: must switch FB context to Fanpage before navigating — uses 'Chuyển ngay' button flow",
+        "Comment scraping: extract fb_comment_id from permalink URL (a[href*='/comment/']) NOT from DOM attributes",
+        "fb_replies.comment_id NULL = reply to post, NOT NULL = reply-to-comment",
+        "Post reply to comment: clickReplyButtonOnComment() clicks 'Trả lời' then types in the reply textarea",
+        "FB DOM selectors fragile — all selectors use heuristic chain with fallback"
+      ],
+      "admin_pages": [
+        "/admin/social-listening — dashboard (5 quick-action cards)",
+        "/admin/social-listening/sources — manage scrape sources (groups/pages/keywords)",
+        "/admin/social-listening/comments — Comment Inbox: LLM-filtered comments needing reply",
+        "/admin/social-listening/queue — Review Queue: post-level reply drafts",
+        "/admin/social-listening/status — Realtime scrape job status",
+        "/admin/social-listening/pages — Fanpage login & management",
+        "/admin/social-listening/history — Reply history"
+      ]
     }
   ],
   "api_endpoints": [
@@ -146,7 +180,13 @@
     { "path": "/api/chat/suggestions", "method": "GET", "auth": "session", "explained": "Gợi ý chủ đề dựa trên assessment + checkin hôm nay (UTC+7)" },
     { "path": "/api/save-assessment", "method": "POST", "auth": "session", "explained": "Lưu kết quả bài test (THI/TFI/PHQ-9/GAD-7/ISI). Field: score, interpretation" },
     { "path": "/api/stripe/webhook", "method": "POST", "auth": "Stripe signature", "explained": "Webhook Stripe — có idempotency guard via stripe_events table" },
-    { "path": "/api/admin/users", "method": "GET", "auth": "admin only", "explained": "Danh sách users (CRM)" }
+    { "path": "/api/admin/users", "method": "GET", "auth": "admin only", "explained": "Danh sách users (CRM)" },
+    { "path": "/api/social-listening/sources", "method": "GET|POST", "auth": "admin", "explained": "List/create scrape sources" },
+    { "path": "/api/social-listening/sources/[id]/scrape", "method": "POST", "auth": "admin", "explained": "Trigger scrape job cho 1 source ngay lập tức" },
+    { "path": "/api/social-listening/replies/[id]/approve", "method": "POST", "auth": "admin", "explained": "Approve & post reply (Playwright) cho fb_replies (post hoặc comment)" },
+    { "path": "/api/social-listening/replies/[id]/reject", "method": "POST", "auth": "admin", "explained": "Reject reply draft" },
+    { "path": "/api/social-listening/pages", "method": "GET|POST", "auth": "admin", "explained": "Manage Fanpages" },
+    { "path": "/api/worker/*", "method": "POST", "auth": "WORKER_API_KEY header", "explained": "Worker → Web bridge: scan-groups, login, status etc." }
   ],
   "mobile_roadmap": {
     "current_phase": "Phase 1 Complete — Phase 2 Starting",
@@ -210,7 +250,11 @@
       "Ngrok v2.3.41 (bundled trong @expo/ngrok-bin) đã bị ngrok.com block — ERR_NGROK_121. Phải copy binary ngrok v3 vào node_modules/@expo/ngrok-bin-linux-x64/ngrok thủ công",
       "npm install trong mobile/ sẽ restore ngrok binary v2 cũ — cần re-apply ngrok v3 binary sau mỗi npm install",
       "Expo start phải chạy từ mobile/ subdirectory, KHÔNG phải tinnimate/ root (thiếu package.json)",
-      "Ngrok v3 config format: version:3 + agent.authtoken (không phải root authtoken như v2)"
+      "Ngrok v3 config format: version:3 + agent.authtoken (không phải root authtoken như v2)",
+      "FB group scan: phải switch context sang Fanpage identity TRƯỚC khi navigate groups/joins — dùng 'Chuyển ngay' button",
+      "FB comment scraping: fb_comment_id extract từ href của <a> permalink (regex /comment/(\\d+)/) — không trust DOM data attrs",
+      "BullMQ: geminiUsage.track() cần 3 args (inputTokens, outputTokens, tag) — thiếu tag sẽ type error",
+      "fb_replies.comment_id = NULL có nghĩa là reply cho bài viết (post), NOT NULL là reply cho comment cụ thể"
     ]
   }
 }

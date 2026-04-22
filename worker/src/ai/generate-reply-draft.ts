@@ -10,6 +10,7 @@
 
 import { getGeminiModel, GEMINI_FLASH, geminiUsage } from './gemini-client.js'
 import { REPLY_SYSTEM_PROMPT } from '../pipeline/prompts/ai-prompts.js'
+import { getSlSettings } from '../config/sl-settings-loader.js'
 import { formatChunksForPrompt, type McpKnowledgeChunk } from '../pipeline/mcp-query-builder.js'
 import type { PostClassification } from './classify-post-relevance.js'
 import { logger } from '../lib/pino-structured-logger.js'
@@ -71,7 +72,9 @@ async function _generateOnce(
   mcpChunks: McpKnowledgeChunk[],
   hint?: string,
 ): Promise<string> {
-  const model = getGeminiModel(GEMINI_FLASH)
+  const settings = await getSlSettings()
+  const model = getGeminiModel(settings.model_id !== 'gemini-2.5-flash-preview-04-17' ? settings.model_id : GEMINI_FLASH)
+  const systemPrompt = settings.reply_system_prompt || REPLY_SYSTEM_PROMPT
 
   const userMessage = [
     `Topic: ${classification.topic} | Urgency: ${classification.urgency} | Lang: ${classification.lang}`,
@@ -87,11 +90,11 @@ async function _generateOnce(
     .join('\n')
 
   const result = await model.generateContent({
-    systemInstruction: REPLY_SYSTEM_PROMPT,
+    systemInstruction: systemPrompt,
     contents: [{ role: 'user', parts: [{ text: userMessage }] }],
     generationConfig: {
-      temperature: 0.7,  // some creativity for variety
-      maxOutputTokens: 300,
+      temperature: settings.temperature ?? 0.7,
+      maxOutputTokens: settings.max_tokens ?? 300,
       topP: 0.9,
     },
   })

@@ -7,8 +7,7 @@
  * Sau đó extract tất cả nhóm từ danh sách.
  */
 
-import { chromium } from 'playwright-extra'
-import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import { launchStealthBrowser, type LaunchOptions } from './launch-stealth-browser.js'
 import { loadSession } from './facebook-session-manager.js'
 import { logger } from '../lib/pino-structured-logger.js'
 
@@ -50,27 +49,12 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
   const storageState = await loadSession(pageId)
   if (!storageState) throw new Error('No session found — login first')
 
-  chromium.use(StealthPlugin())
-  const browser = await chromium.launch({
-    headless: false, // Show browser so user can see it working
-    executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH,
-    args: [
-      '--no-sandbox',
-      '--disable-blink-features=AutomationControlled',
-      '--window-size=1280,900',
-      '--window-position=100,100',
-    ],
+  const { browser, context } = await launchStealthBrowser({
+    headful: false,
+    storageState: storageState as NonNullable<LaunchOptions['storageState']>,
   })
 
   try {
-    const context = await browser.newContext({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      storageState: storageState as any,
-      locale: 'vi-VN',
-      timezoneId: 'Asia/Ho_Chi_Minh',
-      viewport: { width: 1280, height: 900 },
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    })
     const pw = await context.newPage()
 
     // Verify session

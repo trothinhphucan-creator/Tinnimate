@@ -9,6 +9,8 @@
  */
 
 import { getGeminiModel, geminiUsage } from './gemini-client.js'
+import { COMMENT_CLASSIFY_SYSTEM_PROMPT } from '../pipeline/prompts/ai-prompts.js'
+import { getSlSettings } from '../config/sl-settings-loader.js'
 import { logger } from '../lib/pino-structured-logger.js'
 
 export type CommentClassification = {
@@ -20,40 +22,14 @@ export type CommentClassification = {
   lang: 'vi' | 'en' | 'mixed' | 'other'
 }
 
-const COMMENT_CLASSIFY_SYSTEM = `Bạn là chuyên gia phân tích bình luận mạng xã hội về sức khỏe thính giác (ù tai, mất thính lực).
-
-Nhiệm vụ: Phân tích bình luận và xác định xem Fanpage chuyên về ù tai có cần reply không.
-
-Trả về JSON với schema:
-{
-  "needs_reply": boolean,        // true nếu comment đang hỏi / cần thông tin / tìm giải pháp
-  "intent": string,              // "seeking_info" | "asking_question" | "sharing_experience" | "complaining" | "spam" | "other"
-  "urgency": string,             // "high" | "medium" | "low"
-  "confidence": number,          // 0.0–1.0
-  "suggested_angle": string,     // 1 câu gợi ý hướng trả lời (tiếng Việt)
-  "lang": string                 // "vi" | "en" | "mixed" | "other"
-}
-
-NEEDS_REPLY = TRUE khi comment:
-- Đang hỏi về triệu chứng ù tai, nguyên nhân
-- Tìm kiếm phương pháp điều trị, sản phẩm, bác sĩ
-- Hỏi về máy trợ thính, liệu pháp âm thanh
-- Chia sẻ vấn đề và cần tư vấn
-- Hỏi giá cả, địa chỉ, thời gian khám
-
-NEEDS_REPLY = FALSE khi:
-- Chỉ chia sẻ kinh nghiệm cá nhân (không đặt câu hỏi)
-- Chúc mừng, emoji, cảm ơn chung
-- Spam, quảng cáo không liên quan
-- Chủ đề hoàn toàn không liên quan đến ù tai / thính giác
-
-Chỉ trả về JSON, không giải thích thêm.`
 
 export async function classifyCommentIntent(
   content: string,
   postContent?: string,
 ): Promise<CommentClassification> {
+  const settings = await getSlSettings()
   const model = getGeminiModel()
+  const systemPrompt = settings.comment_classify_prompt || COMMENT_CLASSIFY_SYSTEM_PROMPT
 
   const userMsg = [
     postContent ? `Bài viết gốc (context): "${postContent.slice(0, 500)}"` : '',
@@ -64,7 +40,7 @@ export async function classifyCommentIntent(
   let result
   try {
     result = await model.generateContent({
-      systemInstruction: COMMENT_CLASSIFY_SYSTEM,
+      systemInstruction: systemPrompt,
       contents: [{ role: 'user', parts: [{ text: userMsg }] }],
       generationConfig: {
         responseMimeType: 'application/json',

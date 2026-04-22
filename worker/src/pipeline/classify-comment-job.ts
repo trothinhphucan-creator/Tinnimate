@@ -158,12 +158,10 @@ async function classifyCommentJob(job: Job<CommentClassifyPayload>) {
   }
 
   // 5. Insert fb_replies with comment_id
-  const sourceId = row.fb_posts?.source_id ?? null
   const mcpSourcesForDb = mcpChunks.map(c => ({ id: c.id, score: c.score, preview: c.content.slice(0, 200) }))
   await db.from('fb_replies').insert({
     post_id: postId,
     comment_id: commentId,
-    source_id: sourceId,
     draft_text: draftText,
     status: 'DRAFT',
     classification: {

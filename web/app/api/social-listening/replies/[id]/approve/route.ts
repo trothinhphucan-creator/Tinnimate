@@ -36,17 +36,17 @@ export async function POST(
 
   try {
     await workerClient.postReply(id)
-    await db
-      .from('fb_replies')
-      .update({ status: 'POSTED', posted_at: new Date().toISOString() })
-      .eq('id', id)
+    // Worker owns the POSTED state — don't overwrite it here
     return NextResponse.json({ ok: true })
   } catch (err) {
-    // Rollback to DRAFT on worker failure
-    await db
-      .from('fb_replies')
-      .update({ status: 'DRAFT', last_error: (err as Error).message })
-      .eq('id', id)
+    // Only rollback if worker didn't already set POSTED (guards against network timeout after successful post)
+    const { data: current } = await db.from('fb_replies').select('status').eq('id', id).single()
+    if (current?.status === 'APPROVED') {
+      await db
+        .from('fb_replies')
+        .update({ status: 'DRAFT', last_error: (err as Error).message })
+        .eq('id', id)
+    }
     return NextResponse.json({ error: (err as Error).message }, { status: 502 })
   }
 }

@@ -9,9 +9,9 @@ import { logger } from '../lib/pino-structured-logger.js'
 
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
 
-/** Model IDs */
-export const GEMINI_FLASH = 'gemini-2.5-flash-preview-04-17'
-export const GEMINI_PRO   = 'gemini-2.5-pro-preview-04-17'  // fallback cho complex tasks
+/** Model IDs — read from env, fallback to stable release names */
+export const GEMINI_FLASH = env.GEMINI_MODEL_CLASSIFY ?? 'gemini-2.5-flash'
+export const GEMINI_PRO   = 'gemini-2.5-pro'
 
 /**
  * Get a model instance. Mỗi call tạo model mới (stateless).

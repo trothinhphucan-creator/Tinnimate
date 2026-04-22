@@ -227,9 +227,9 @@ async function enqueueAnalyzeForNewPosts(sourceId: string, limit: number) {
 
   for (const p of newPosts as { id: string }[]) {
     await analyzeQueue.add(
-      `analyze:${p.id}`,
+      `analyze-${p.id}`,
       { postId: p.id },
-      { jobId: `analyze:${p.id}` },
+      { jobId: `analyze-${p.id}` },  // BullMQ disallows ':' in jobId
     ).catch((err) =>
       logger.warn({ postId: p.id, err: (err as Error).message }, 'Failed to queue analyze job'),
     )

@@ -60,8 +60,8 @@ async function analyzePostJob(job: Job<AnalyzeJobPayload>) {
     image_urls: string[]; status: string; fb_post_url: string | null
   }
 
-  // Skip nếu đã analyze
-  if (postRow.status !== 'NEW') {
+  // Skip nếu đã có draft hoặc replied — chỉ process NEW và ANALYZED (classify-failed retry)
+  if (postRow.status !== 'NEW' && postRow.status !== 'ANALYZED') {
     log.debug({ status: postRow.status }, 'Post already processed — skip')
     return { skipped: true }
   }
@@ -89,8 +89,7 @@ async function analyzePostJob(job: Job<AnalyzeJobPayload>) {
     classification = await classifyPostRelevance(postRow.content, postRow.image_urls)
   } catch (err) {
     log.error({ err: (err as Error).message }, 'Classify failed')
-    await db.from('fb_posts').update({ status: 'ANALYZED' }).eq('id', postId)
-    throw err
+    throw err  // Keep status NEW so BullMQ retry picks it up
   }
 
   // Update post with classification
@@ -129,8 +128,7 @@ async function analyzePostJob(job: Job<AnalyzeJobPayload>) {
     )
   } catch (err) {
     log.error({ err: (err as Error).message }, 'Reply generation failed')
-    await db.from('fb_posts').update({ status: 'ANALYZED' }).eq('id', postId)
-    throw err
+    throw err  // Keep status ANALYZED (classify succeeded) — BullMQ retry
   }
 
   // ── Step 6: Insert draft reply ─────────────────────────────────────────────

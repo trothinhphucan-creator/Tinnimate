@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/social-listening/require-admin'
 import { NextResponse } from 'next/server'
 import { workerClient } from '@/lib/social-listening/worker-client'
 
@@ -7,6 +8,8 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   await params // consume
   const { searchParams } = new URL(req.url)
   const loginId = searchParams.get('loginId')

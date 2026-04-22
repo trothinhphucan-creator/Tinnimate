@@ -122,14 +122,16 @@ export async function extractPostsFromPage(
         if (text.length > content.length) content = text
       }
 
-      // Fallback: lấy tất cả innerText của article, bỏ những phần ngắn < 20 chars
-      if (!content) {
-        content =
+      // Fallback: if specific selectors returned nothing meaningful (< 50 chars),
+      // use article innerText — filters out lines < 20 chars to skip labels/timestamps.
+      if (content.length < 50) {
+        const fallback =
           el.innerText
             ?.split('\n')
             .filter((line) => line.trim().length > 20)
             .join('\n')
             .trim() ?? ''
+        if (fallback.length > content.length) content = fallback
       }
 
       // --- Images ---
@@ -147,7 +149,9 @@ export async function extractPostsFromPage(
 
       const timestampTitle = tsEl?.getAttribute('title') ?? tsEl?.getAttribute('aria-label') ?? null
 
-      if (linkHrefs.length > 0 || content.length > 30) {
+      // Require BOTH a post link AND meaningful content (≥30 chars) to avoid
+      // extracting author-name-only fragments that slip through DOM selectors
+      if (linkHrefs.length > 0 && content.length >= 30) {
         results.push({ linkHrefs, authorName, authorHref, content, imageSrcs, timestampTitle })
       }
     }

@@ -35,10 +35,8 @@ export async function requireAdmin(): Promise<NextResponse | null> {
       return NextResponse.json({ error: 'Unauthorized — please log in' }, { status: 401 })
     }
 
-    // Check role in user_metadata (set via Supabase Auth dashboard or admin API)
-    const role =
-      (user.user_metadata?.role as string | undefined) ??
-      (user.app_metadata?.role as string | undefined)
+    // Only trust app_metadata.role — it's server-writable only (user cannot self-assign admin)
+    const role = user.app_metadata?.role as string | undefined
 
     if (role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden — admin only' }, { status: 403 })

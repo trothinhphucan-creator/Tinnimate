@@ -46,10 +46,10 @@ async function main() {
     )
   }
 
-  // 2. Start BullMQ consumers
-  startScrapeConsumer()
-  startAnalyzeConsumer()
-  startCommentClassifyConsumer()
+  // 2. Start BullMQ consumers — capture for graceful shutdown
+  const scrapeWorker = startScrapeConsumer()
+  const analyzeWorker = startAnalyzeConsumer()
+  const commentWorker = startCommentClassifyConsumer()
 
   // 3. Start cron producer
   startScrapeProducer()
@@ -171,6 +171,46 @@ async function main() {
     }
   })
 
+  // ── Analyze: requeue stuck NEW posts ──────────────────────────────────────
+  // POST /worker/analyze/requeue-new → enqueue analyze jobs for all NEW posts
+  app.post('/worker/analyze/requeue-new', async (_req: Request, res: Response) => {
+    try {
+      const db = getSupabaseServiceClient()
+      const { getAnalyzeQueue } = await import('./queue/bullmq-config.js')
+      const queue = getAnalyzeQueue()
+
+      let queued = 0
+      let offset = 0
+      const PAGE = 200
+
+      while (true) {
+        const { data, error } = await db
+          .from('fb_posts')
+          .select('id')
+          .in('status', ['NEW', 'ANALYZED'])
+          .range(offset, offset + PAGE - 1)
+
+        if (error) throw error
+        if (!data || data.length === 0) break
+
+        const jobs = (data as Array<{ id: string }>).map(p => ({
+          name: `analyze-${p.id}`,
+          data: { postId: p.id },
+          opts: { jobId: `analyze-${p.id}` },  // dedup
+        }))
+        await queue.addBulk(jobs)
+        queued += jobs.length
+        offset += PAGE
+        if (data.length < PAGE) break
+      }
+
+      logger.info({ queued }, 'Requeued NEW posts for analyze')
+      res.json({ queued })
+    } catch (err) {
+      res.status(500).json({ error: (err as Error).message })
+    }
+  })
+
   // ── Page health check ──────────────────────────────────────────────────────
   // POST /worker/page/:id/health
   app.post('/worker/page/:id/health', async (req: Request, res: Response) => {
@@ -230,13 +270,19 @@ async function main() {
     logger.info({ port: env.WORKER_HTTP_PORT }, 'Worker HTTP server listening')
   })
 
-  // Graceful shutdown
+  // Graceful shutdown — drain in-flight BullMQ jobs before exit
   const shutdown = async (signal: string) => {
-    logger.info({ signal }, 'Graceful shutdown initiated')
+    logger.info({ signal }, 'Graceful shutdown initiated — draining workers')
+    await Promise.allSettled([
+      scrapeWorker.close(),
+      analyzeWorker.close(),
+      commentWorker.close(),
+    ])
+    logger.info('Workers drained — exiting')
     process.exit(0)
   }
-  process.on('SIGINT', () => shutdown('SIGINT'))
-  process.on('SIGTERM', () => shutdown('SIGTERM'))
+  process.on('SIGINT', () => void shutdown('SIGINT'))
+  process.on('SIGTERM', () => void shutdown('SIGTERM'))
 }
 
 main().catch((err) => {
