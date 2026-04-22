@@ -1,0 +1,45 @@
+{
+  "name": "@tinnimate/fb-social-listening-worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TinniMate Facebook social listening worker — scrape tinnitus posts, classify with Gemini, draft replies grounded in AgentSee MCP knowledge base.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "install-browsers": "playwright install chromium",
+    "install-deps": "playwright install-deps chromium",
+    "smoke:mcp": "tsx scripts/smoke-mcp-query.ts",
+    "smoke:crypto": "tsx scripts/smoke-crypto-round-trip.ts",
+    "login:helper": "tsx scripts/interactive-facebook-login-helper.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@supabase/supabase-js": "^2.46.0",
+    "bullmq": "^5.20.0",
+    "croner": "^8.1.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "ioredis": "^5.4.1",
+    "node-fetch": "^3.3.2",
+    "pino": "^9.5.0",
+    "playwright": "^1.48.2",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "qrcode": "^1.5.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.8.0",
+    "@types/qrcode": "^1.5.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
