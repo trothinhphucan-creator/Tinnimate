@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
-async function getAdminDb() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
-  )
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adminDb = () => getAdminSupabase() as any
 
 // POST /api/social-listening/replies/[id]/reject
 export async function POST(
@@ -17,7 +10,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const db = await getAdminDb()
+  const db = adminDb()
   const { error } = await db
     .from('fb_replies')
     .update({ status: 'REJECTED' })
@@ -42,7 +35,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'draft_text required' }, { status: 400 })
   }
 
-  const db = await getAdminDb()
+  const db = adminDb()
   const updates: Record<string, unknown> = {
     draft_text: draft_text.trim(),
     status: 'DRAFT', // reset to DRAFT after edit

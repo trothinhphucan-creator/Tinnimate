@@ -1,19 +1,12 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
-async function getAdminDb() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
-  )
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adminDb = () => getAdminSupabase() as any
 
 // GET /api/social-listening/sources
 export async function GET() {
-  const db = await getAdminDb()
+  const db = adminDb()
   const { data, error } = await db
     .from('fb_target_sources')
     .select('id, type, label, fb_url, keywords, enabled, last_scraped_at, page_id')
@@ -37,7 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'label and type required' }, { status: 400 })
   }
 
-  const db = await getAdminDb()
+  const db = adminDb()
   const { data, error } = await db
     .from('fb_target_sources')
     .insert({
@@ -60,7 +53,7 @@ export async function PATCH(req: Request) {
   const { id, ...updates } = (await req.json()) as { id?: string; [k: string]: unknown }
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
-  const db = await getAdminDb()
+  const db = adminDb()
   const allowed = ['label', 'fb_url', 'keywords', 'enabled', 'page_id']
   const safeUpdates = Object.fromEntries(
     Object.entries(updates).filter(([k]) => allowed.includes(k)),
@@ -77,7 +70,7 @@ export async function DELETE(req: Request) {
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
-  const db = await getAdminDb()
+  const db = adminDb()
   const { error } = await db.from('fb_target_sources').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })

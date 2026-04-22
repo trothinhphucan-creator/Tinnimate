@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
-async function getAdminDb() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
-  )
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adminDb = () => getAdminSupabase() as any
 
 // GET /api/social-listening/history?filter=ALL|POSTED|REJECTED|FAILED|CRISIS&limit=100
 // Trả lịch sử fb_replies join post + page (loại trừ status DRAFT để tách khỏi review queue).
@@ -18,7 +11,7 @@ export async function GET(req: Request) {
   const filter = searchParams.get('filter') ?? 'ALL'
   const limit = Math.min(Number(searchParams.get('limit') ?? 100), 200)
 
-  const db = await getAdminDb()
+  const db = adminDb()
 
   let query = db
     .from('fb_replies')

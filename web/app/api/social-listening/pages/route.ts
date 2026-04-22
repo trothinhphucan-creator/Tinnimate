@@ -1,21 +1,13 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
-// Helper: admin-only Supabase server client
-async function getAdminDb() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
-  )
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adminDb = () => getAdminSupabase() as any
 
 // GET /api/social-listening/pages
 export async function GET() {
   try {
-    const db = await getAdminDb()
+    const db = getAdminSupabase()
     const { data, error } = await db
       .from('fb_pages')
       .select('id, label, fb_user_id, status, last_active_at, last_error')
@@ -36,7 +28,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'label required' }, { status: 400 })
     }
 
-    const db = await getAdminDb()
+    const db = adminDb()
     const { data, error } = await db
       .from('fb_pages')
       .insert({ label: label.trim(), status: 'IDLE' })

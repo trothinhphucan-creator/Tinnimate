@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { workerClient } from '@/lib/social-listening/worker-client'
+import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
 // POST /api/social-listening/pages/[id]/login-start
 export async function POST(
@@ -8,16 +9,9 @@ export async function POST(
 ) {
   const { id } = await params
 
-  // Fetch page label from DB
-  const { createServerClient } = await import('@supabase/ssr')
-  const { cookies } = await import('next/headers')
-  const cookieStore = await cookies()
-  const db = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
-  )
-
+  // Fetch page label from DB (admin client bypasses RLS)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = getAdminSupabase() as any
   const { data: page } = await db
     .from('fb_pages')
     .select('id, label')

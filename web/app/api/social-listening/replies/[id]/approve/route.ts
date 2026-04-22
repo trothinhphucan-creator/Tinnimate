@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { workerClient } from '@/lib/social-listening/worker-client'
+import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
-async function getAdminDb() {
-  const cookieStore = await cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } },
-  )
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adminDb = () => getAdminSupabase() as any
 
 // POST /api/social-listening/replies/[id]/approve
 // Sends the reply to Facebook via worker, then marks as POSTED
@@ -19,7 +12,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const db = await getAdminDb()
+  const db = adminDb()
 
   // Optimistically mark as APPROVED
   await db.from('fb_replies').update({ status: 'APPROVED' }).eq('id', id)
