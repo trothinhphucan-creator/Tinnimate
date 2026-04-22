@@ -15,7 +15,7 @@ import { mcpGetStoreStats } from './lib/agentsee-mcp-http-client.js'
 import { startScrapeConsumer } from './queue/scrape-consumer.js'
 import { startScrapeProducer, enqueueAllSources } from './queue/scrape-producer.js'
 import { startAnalyzeConsumer } from './pipeline/analyze-post-job.js'
-import { startFacebookLogin, getLoginStatus } from './browser/facebook-login-flow.js'
+import { startFacebookLogin, getLoginStatus, getLoginScreenshot } from './browser/facebook-login-flow.js'
 import { getSupabaseServiceClient } from './db/supabase-service-role-client.js'
 import { markPageStatus } from './browser/facebook-session-manager.js'
 import { geminiUsage } from './ai/gemini-client.js'
@@ -134,10 +134,27 @@ async function main() {
     res.json({
       loginId: session.id,
       pageId: session.pageId,
+      label: session.label,
       status: session.status,
+      currentInstruction: session.currentInstruction,
+      logs: session.logs,
+      hasScreenshot: !!session.screenshotBase64,
       errorMessage: session.errorMessage ?? null,
       startedAt: session.startedAt.toISOString(),
     })
+  })
+
+  // GET /worker/login/:id/screenshot.png — raw PNG bytes (cache-busting via ?ts=)
+  app.get('/worker/login/:id/screenshot.png', (req: Request, res: Response) => {
+    const b64 = getLoginScreenshot(req.params['id'] as string)
+    if (!b64) {
+      res.status(404).send('No screenshot yet')
+      return
+    }
+    const buf = Buffer.from(b64, 'base64')
+    res.set('Content-Type', 'image/png')
+    res.set('Cache-Control', 'no-store')
+    res.send(buf)
   })
 
   // ── Scrape: manual trigger ─────────────────────────────────────────────────

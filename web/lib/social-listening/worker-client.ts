@@ -44,9 +44,26 @@ export const workerClient = {
     workerFetch<{
       loginId: string
       pageId: string
-      status: 'PENDING' | 'WAITING_2FA' | 'SUCCESS' | 'FAILED' | 'TIMEOUT'
+      label: string
+      status: 'PENDING' | 'AWAITING_USER' | 'WAITING_2FA' | 'SUCCESS' | 'FAILED' | 'TIMEOUT' | 'NEEDS_HELPER'
+      currentInstruction: string
+      logs: Array<{ ts: string; level: 'info' | 'warn' | 'error'; msg: string }>
+      hasScreenshot: boolean
       errorMessage: string | null
+      startedAt: string
     }>(`/worker/login/${loginId}/status`),
+
+  // Returns absolute URL — admin UI sẽ proxy qua /api để lấy PNG.
+  loginScreenshotUrl: (loginId: string) =>
+    `${WORKER_URL}/worker/login/${loginId}/screenshot.png`,
+
+  fetchLoginScreenshot: async (loginId: string): Promise<Buffer | null> => {
+    const res = await fetch(`${WORKER_URL}/worker/login/${loginId}/screenshot.png`, {
+      headers: { 'X-Worker-Key': WORKER_KEY },
+    })
+    if (!res.ok) return null
+    return Buffer.from(await res.arrayBuffer())
+  },
 
   triggerScrapeNow: () =>
     workerFetch<{ queued: number; skipped: number }>('/worker/scrape/run-now', { method: 'POST' }),

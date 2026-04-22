@@ -1,6 +1,7 @@
-// Server-side only — RAG vector similarity search via Supabase pgvector
+// Server-side only — RAG vector similarity search (Supabase pgvector + AgentSee MCP)
 import { KnowledgeDoc } from '@/types'
 import { createServiceClient } from '@/lib/supabase/server'
+import { searchAgentSeeKnowledge } from './rag-agentsee-mcp-client'
 
 // Embed text using Gemini embedding model (768 dimensions to match pgvector column)
 export async function embedText(text: string): Promise<number[]> {
@@ -34,41 +35,68 @@ export async function embedText(text: string): Promise<number[]> {
   }
 }
 
-// Search knowledge base using cosine similarity (threshold 0.7)
-// Returns empty array on any error — never blocks chat
-// Hard timeout: 8s total (includes embedding + DB query)
+// Search Supabase pgvector knowledge base (768d cosine similarity, threshold 0.7)
+async function searchSupabaseKnowledge(query: string, limit: number): Promise<KnowledgeDoc[]> {
+  try {
+    const embedding = await embedText(query)
+    if (!embedding.length) return []
+
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.rpc('match_knowledge', {
+      query_embedding: embedding,
+      match_threshold: 0.7,
+      match_count: limit,
+    })
+
+    if (error) {
+      console.error('[RAG/Supabase] match_knowledge error:', error.message)
+      return []
+    }
+
+    return (data ?? []) as KnowledgeDoc[]
+  } catch (err) {
+    console.error('[RAG/Supabase] error:', err instanceof Error ? err.message : err)
+    return []
+  }
+}
+
+// Merge results from multiple sources, deduplicating by title similarity.
+// AgentSee docs come first (specialist audiology KB); Supabase fills remaining slots.
+function mergeAndDedup(agentSee: KnowledgeDoc[], supabase: KnowledgeDoc[], limit: number): KnowledgeDoc[] {
+  const seen = new Set<string>()
+  const merged: KnowledgeDoc[] = []
+
+  const addDoc = (doc: KnowledgeDoc) => {
+    const key = doc.title.toLowerCase().slice(0, 40)
+    if (!seen.has(key) && merged.length < limit) {
+      seen.add(key)
+      merged.push(doc)
+    }
+  }
+
+  agentSee.forEach(addDoc)
+  supabase.forEach(addDoc)
+  return merged
+}
+
+// Search knowledge base using both Supabase pgvector AND AgentSee MCP in parallel.
+// Returns empty array on any error — never blocks chat.
+// Hard timeout: 8s total.
 export async function searchKnowledge(
   query: string,
-  limit = 3
+  limit = 6
 ): Promise<KnowledgeDoc[]> {
-  // Outer timeout to guarantee this never exceeds 8s
   const timeoutPromise = new Promise<KnowledgeDoc[]>((resolve) =>
     setTimeout(() => resolve([]), 8000)
   )
 
   const searchPromise = (async (): Promise<KnowledgeDoc[]> => {
-    try {
-      const embedding = await embedText(query)
-      // If embedding failed (empty array), skip DB query
-      if (!embedding.length) return []
-
-      const supabase = createServiceClient()
-      const { data, error } = await supabase.rpc('match_knowledge', {
-        query_embedding: embedding,
-        match_threshold: 0.7,
-        match_count: limit,
-      })
-
-      if (error) {
-        console.error('[RAG] match_knowledge error:', error.message)
-        return []
-      }
-
-      return (data ?? []) as KnowledgeDoc[]
-    } catch (err) {
-      console.error('[RAG] searchKnowledge error:', err instanceof Error ? err.message : err)
-      return []
-    }
+    // Run both sources in parallel; each handles its own errors internally
+    const [agentSeeDocs, supabaseDocs] = await Promise.all([
+      searchAgentSeeKnowledge(query, limit),
+      searchSupabaseKnowledge(query, limit),
+    ])
+    return mergeAndDedup(agentSeeDocs, supabaseDocs, limit)
   })()
 
   return Promise.race([searchPromise, timeoutPromise])

@@ -82,15 +82,23 @@ export async function streamChat(
     options?.training ? getTrainingModePrompt() : Promise.resolve(''),
   ])
 
-  // Inject RAG context for the last user message
+  // Inject RAG context for the last user message (Supabase + AgentSee MCP combined)
   const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user')
   let ragContext = ''
   if (lastUserMsg) {
-    const docs = await searchKnowledge(lastUserMsg.content)
+    const docs = await searchKnowledge(lastUserMsg.content, 6)
     if (docs.length > 0) {
+      const docBlocks = docs.map((d, i) => {
+        // AgentSee docs carry _score and _source metadata
+        const meta = (d as typeof d & { _score?: number; _source?: string })
+        const scoreLine = meta._score != null ? ` (relevance: ${(meta._score * 100).toFixed(0)}%)` : ''
+        const sourceLine = meta._source ? ` — nguồn: ${meta._source}` : ''
+        return `### [${i + 1}] ${d.title}${scoreLine}${sourceLine}\n${d.content}`
+      })
       ragContext =
-        '\n\n## Relevant Knowledge\n' +
-        docs.map((d) => `### ${d.title}\n${d.content}`).join('\n\n')
+        '\n\n## Kiến thức tham khảo (dùng để trả lời chi tiết, chính xác hơn)\n' +
+        'Khi trả lời, hãy đề cập nguồn nếu thông tin đến từ tài liệu y tế cụ thể.\n\n' +
+        docBlocks.join('\n\n')
     }
   }
 

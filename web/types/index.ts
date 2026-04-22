@@ -189,3 +189,119 @@ export interface TokenUsage {
   inputTokens: number
   outputTokens: number
 }
+
+// ── CRM / Admin extended types ──────────────────────────────
+
+export interface UserDetail {
+  id: string
+  email: string | null
+  name: string | null
+  subscription_tier: SubscriptionTier
+  is_admin: boolean
+  admin_notes?: string | null
+  stripe_customer_id?: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface TinnitusProfileRow {
+  id: string
+  user_id: string
+  type?: string
+  side?: string
+  duration?: string
+  cause?: string
+  severity?: number
+  pitch_hz?: number
+  created_at: string
+}
+
+export interface AssessmentRow {
+  id: string
+  user_id: string
+  quiz_type: string
+  score: number
+  interpretation?: string
+  ai_analysis?: string
+  created_at: string
+}
+
+export interface CheckinRow {
+  id: string
+  user_id: string
+  mood: number
+  sleep_quality: number
+  tinnitus_loudness: number
+  tinnitus_distress: number
+  notes?: string
+  created_at: string
+}
+
+export interface TherapySessionRow {
+  id: string
+  user_id: string
+  sound_type?: string
+  duration_sec?: number
+  mood_before?: number
+  mood_after?: number
+  created_at: string
+}
+
+export interface SubscriptionRow {
+  id: string
+  user_id: string
+  stripe_subscription_id?: string
+  stripe_price_id?: string
+  status: 'active' | 'canceled' | 'past_due' | 'trialing'
+  current_period_end?: string
+  created_at: string
+}
+
+export interface PaymentOrderRow {
+  id: string
+  user_id?: string
+  gateway: string
+  amount: number
+  currency: string
+  status: 'pending' | 'paid' | 'failed' | 'refunded'
+  stripe_session_id?: string
+  stripe_payment_intent?: string
+  metadata?: Record<string, unknown>
+  created_at: string
+}
+
+export interface Promotion {
+  id: string
+  code: string
+  kind: 'percent' | 'fixed' | 'trial_extend' | 'tier_grant'
+  value?: number
+  tier_grant?: SubscriptionTier
+  applies_to_tiers?: string[]
+  max_uses?: number
+  used_count: number
+  starts_at?: string
+  ends_at?: string
+  is_active: boolean
+  notes?: string
+  created_at: string
+}
+
+export interface PromotionRedemption {
+  id: string
+  promotion_id: string
+  user_id: string
+  order_id?: string
+  redeemed_at: string
+  profile?: { name?: string; email?: string }
+}
+
+export interface AdminAuditEntry {
+  id: number
+  admin_id?: string
+  action: string
+  target_type?: string
+  target_id?: string
+  diff?: { before?: unknown; after?: unknown }
+  ip?: string
+  created_at: string
+}

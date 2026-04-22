@@ -141,7 +141,7 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
           </div>
 
           {/* Headline */}
-          <h1 className="text-[clamp(38px,5vw,64px)] font-black leading-[1.08] mb-6">
+          <h1 className="text-[clamp(26px,7vw,64px)] font-black leading-[1.08] mb-6">
             <span className="bg-gradient-to-r from-white via-slate-200 to-indigo-100 bg-clip-text text-transparent block">
               {t.title1}
             </span>
@@ -163,7 +163,7 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
           </h1>
 
           {/* Body */}
-          <p className="text-base text-[#938F9C] mb-9 max-w-[440px] leading-[1.7]">
+          <p className="text-base text-[#938F9C] mb-9 max-w-full sm:max-w-[440px] leading-[1.7]">
             <span className="text-[#C7BFFF] font-medium">Tiếng ù tai</span> không phát sinh từ tai — mà từ vùng{' '}
             <span className="text-[#C7BFFF] font-medium">vỏ não thính giác bị "đói" tín hiệu</span>.
             Khi tai không nghe, não bộ tự sinh ra âm thanh giả để bù đắp. TinniMate phá vỡ vòng xoắn này.
@@ -215,11 +215,14 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
         </div>
 
         {/* ── RIGHT: 3D Brain Knowledge Graph ── */}
-        <div className="relative flex items-center justify-center h-[560px] lg:h-[600px]">
+        <div className="relative flex items-center justify-center w-full">
           <div
             ref={containerRef}
-            className="relative"
-            style={{ width: 500, height: 500 }}
+            className="relative overflow-hidden lg:overflow-visible"
+            style={{
+              width: 'min(500px, calc(100vw - 48px))',
+              height: 'min(500px, calc(100vw - 48px))',
+            }}
           >
             {/* Outer glow rings */}
             {['-20px', '-50px', '-85px'].map((inset, i) => (
@@ -516,7 +519,7 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
 
             {/* Card: Broken signal — top left */}
             <div
-              className="absolute z-40"
+              className="absolute z-40 hidden lg:block"
               style={{
                 top: '3%', left: '-10%',
                 background: 'rgba(12,10,20,0.82)',
@@ -542,7 +545,7 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
 
             {/* Card: Source — bottom right */}
             <div
-              className="absolute z-40"
+              className="absolute z-40 hidden lg:block"
               style={{
                 bottom: '3%', right: '-8%',
                 background: 'rgba(12,10,20,0.82)',
@@ -568,7 +571,7 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
 
             {/* Card: Freq — mid left */}
             <div
-              className="absolute z-40"
+              className="absolute z-40 hidden lg:block"
               style={{
                 top: '44%', left: '-12%',
                 background: 'rgba(12,10,20,0.82)',
@@ -592,7 +595,7 @@ export function BrainHero({ lang = 'vi' }: BrainHeroProps) {
 
             {/* Hz label — top right */}
             <div
-              className="absolute z-40"
+              className="absolute z-40 hidden lg:block"
               style={{ top: '8%', right: '-6%' }}
             >
               <div style={{ fontSize: 10, color: '#ff6b6b', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>

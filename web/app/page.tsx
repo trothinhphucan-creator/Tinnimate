@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useLangStore } from '@/stores/use-lang-store'
 import { BrainHero } from '@/components/landing/brain-hero'
@@ -81,6 +80,23 @@ const T = {
         { icon: '👂', title: 'Tiện ích thính giác', subtitle: 'Đo thính lực & theo dõi', desc: 'Kiểm tra sức nghe bằng Hughson-Westlake chuẩn lâm sàng tại 6 tần số.', tags: ['Audiometry', 'Hughson-Westlake', 'Progress Chart'], exclusive: false, accent: 'cyan' },
       ],
     },
+    mobileApp: {
+      badge: '📱 Khu vườn chữa lành trên tay bạn',
+      headline: 'Tinnimate —',
+      headline2: 'Botanical Healing Garden',
+      desc: 'Trải nghiệm liệu pháp âm thanh, thiền định và theo dõi ù tai trong một không gian thiên nhiên tĩnh lặng — được thiết kế để phục hồi tâm trí và cảm xúc mỗi ngày.',
+      features: [
+        { icon: '🎵', title: 'Immersive Sound Library', desc: 'Thư viện âm thanh trị liệu thiên nhiên sống động — Mưa, Sóng, Rừng, Zentones' },
+        { icon: '🤖', title: 'AI Guide Companion', desc: 'Tinni AI đồng hành 24/7, gợi ý bài tập và tư vấn ngay khi bạn cần' },
+        { icon: '🌿', title: 'Mindfulness Tool Garden', desc: 'Bài tập thở 4-7-8, CBT-i và nhật ký cảm xúc trong khu vườn thiền định' },
+      ],
+      iphoneLabel: 'TinniMate trên iPhone',
+      watchLabel: 'Companion App trên Apple Watch',
+      appStore: 'Tải trên App Store',
+      googlePlay: 'Tải trên Google Play',
+      comingSoon: 'Sắp ra mắt',
+      phoneFeatures: 'Phone app features',
+    },
     lifestyle: {
       badge: '🌱 Hành trình cải thiện',
       title1: 'Không phải chữa khỏi,',
@@ -118,6 +134,36 @@ const T = {
     },
     cta: { title: 'Sẵn sàng kiểm soát tiếng ù?', desc: 'Hàng ngàn người đã cải thiện chất lượng cuộc sống với TinniMate. Bắt đầu hành trình của bạn ngay hôm nay.', btn: 'Bắt đầu miễn phí →' },
     footer: { tagline: 'TinniMate — Đồng hành cùng bạn kiểm soát ù tai', privacy: 'Chính sách bảo mật', terms: 'Điều khoản sử dụng', contact: 'Liên hệ' },
+    botanicalApp: {
+      badge: '🌿 Khu vườn chữa lành trên tay bạn',
+      title1: 'Trên web, khoa học.',
+      title2: 'Trên app, chữa lành.',
+      desc: 'Trang web cung cấp nền tảng lâm sàng — đánh giá, theo dõi, tư vấn chuyên sâu. Khi bạn mở app di động, bạn bước vào một khu vườn thiền định thực sự, được thiết kế để phục hồi tâm trí và cảm xúc.',
+      webLabel: 'Nền tảng web', appLabel: 'App di động',
+      webTitle: 'Khoa học & Lâm sàng', appTitle: 'Khu vườn chữa lành',
+      webDesc: 'Nơi bạn đo lường, theo dõi và hiểu rõ tình trạng ù tai của mình qua các công cụ được quốc tế công nhận.',
+      appDesc: 'Nơi bạn thực sự hít thở, thư giãn và chữa lành — âm thanh thiên nhiên, hơi thở có hướng dẫn, khu vườn riêng mỗi ngày.',
+      webFeatures: ['Đánh giá THI/TFI/ISI chuẩn WHO', 'Biểu đồ tiến triển theo thời gian', 'Chat chẩn đoán với Tinni AI', 'Notch therapy & kiểm tra thính lực'],
+      appFeatures: ['Botanical Healing Garden — khu vườn đa giác quan', 'Âm thanh thiên nhiên ru ngủ (Mưa · Sóng · Rừng)', 'Thiền hơi thở 4·7·8 với hoa thở sống động', 'Nhật ký cảm xúc & theo dõi tiến trình hàng ngày'],
+      journeyWeb: 'Hiểu & theo dõi', journeyBridge: 'tải app', journeyApp: 'Chữa lành & thư giãn',
+    },
+    watchRoadmap: {
+      badge: 'On Your Wrist',
+      title: 'Healing on Your Wrist:',
+      titleAccent: 'Tinnimate for Apple Watch.',
+      desc: 'Ba màn hình đồng hành — theo dõi hành trình, phát âm thanh thiền định, và hướng dẫn hít thở 4-7-8 ngay trên cổ tay bạn.',
+      screens: [
+        { label: 'Hành trình 12 ngày', desc: 'Theo dõi tiến trình chữa lành' },
+        { label: 'Đang phát: Mưa rừng', desc: 'Âm thanh trị liệu & điều khiển' },
+        { label: 'Nhịp thở 4-7-8', desc: 'Hướng dẫn hít thở trực quan' },
+      ],
+      features: [
+        { icon: '🌸', title: 'Hành trình chữa lành', desc: 'Theo dõi 12-ngày với hoa cúc thiền định trực quan' },
+        { icon: '🎵', title: 'Phát nhạc trị liệu', desc: 'Điều khiển âm thanh Mưa, Rừng, Sóng trực tiếp' },
+        { icon: '🌬️', title: 'Nhịp thở 4-7-8', desc: 'Hướng dẫn hít thở bằng vòng tròn động trên cổ tay' },
+      ],
+      notifyText: 'Nhận thông báo khi ra mắt',
+    },
   },
   en: {
     nav: { features: 'Features', how: 'How it Works', pricing: 'Pricing', testimonials: 'Reviews', login: 'Log in', cta: 'Get Started' },
@@ -192,6 +238,23 @@ const T = {
         { icon: '👂', title: 'Hearing Utilities', subtitle: 'Audiometry & tracking', desc: 'Test hearing with clinical-grade Hughson-Westlake at 6 frequencies.', tags: ['Audiometry', 'Hughson-Westlake', 'Progress Chart'], exclusive: false, accent: 'cyan' },
       ],
     },
+    mobileApp: {
+      badge: '📱 A healing garden in your hands',
+      headline: 'Tinnimate —',
+      headline2: 'Botanical Healing Garden',
+      desc: 'Experience sound therapy, meditation and tinnitus tracking in a serene natural space — designed to restore your mind and emotions every day.',
+      features: [
+        { icon: '🎵', title: 'Immersive Sound Library', desc: 'A living library of nature therapy sounds — Rain, Ocean, Forest, Zentones' },
+        { icon: '🤖', title: 'AI Guide Companion', desc: 'Tinni AI with you 24/7, suggesting exercises and advice whenever you need' },
+        { icon: '🌿', title: 'Mindfulness Tool Garden', desc: '4-7-8 breathing, CBT-i exercises and emotional journal in a meditation garden' },
+      ],
+      iphoneLabel: 'TinniMate on iPhone',
+      watchLabel: 'Companion App on Apple Watch',
+      appStore: 'Download on App Store',
+      googlePlay: 'Get on Google Play',
+      comingSoon: 'Coming Soon',
+      phoneFeatures: 'Phone app features',
+    },
     lifestyle: {
       badge: '🌱 Journey to improvement',
       title1: "Not about curing,",
@@ -229,6 +292,36 @@ const T = {
     },
     cta: { title: 'Ready to take control?', desc: 'Thousands of people have improved their quality of life with TinniMate. Start your journey today.', btn: 'Start Free →' },
     footer: { tagline: 'TinniMate — Your tinnitus companion', privacy: 'Privacy Policy', terms: 'Terms of Service', contact: 'Contact' },
+    botanicalApp: {
+      badge: '🌿 A healing garden in your pocket',
+      title1: 'On web, clinical.',
+      title2: 'On app, healing.',
+      desc: 'The website provides the clinical foundation — assessments, tracking, expert consultation. When you open the mobile app, you step into a real meditation garden, designed to restore your mind and emotions.',
+      webLabel: 'Web platform', appLabel: 'Mobile app',
+      webTitle: 'Science & Clinical', appTitle: 'Healing Garden',
+      webDesc: 'Where you measure, track, and deeply understand your tinnitus through internationally validated tools.',
+      appDesc: 'Where you actually breathe, relax and heal — nature sounds, guided breathing, your own private garden every day.',
+      webFeatures: ['WHO-standard THI/TFI/ISI assessments', 'Progress charts over time', 'Diagnostic chat with Tinni AI', 'Notch therapy & audiometry'],
+      appFeatures: ['Botanical Healing Garden — multi-sensory experience', 'Nature sounds for sleep (Rain · Ocean · Forest)', 'Guided 4·7·8 breathing with animated flower', 'Daily emotional journal & progress tracking'],
+      journeyWeb: 'Understand & track', journeyBridge: 'download app', journeyApp: 'Heal & relax',
+    },
+    watchRoadmap: {
+      badge: 'On Your Wrist',
+      title: 'Healing on Your Wrist:',
+      titleAccent: 'Tinnimate for Apple Watch.',
+      desc: 'Three companion screens — track your journey, play meditation sounds, and follow 4-7-8 breathing guidance right on your wrist.',
+      screens: [
+        { label: '12-day Journey', desc: 'Track your healing progress' },
+        { label: 'Playing: Forest Rain', desc: 'Sound therapy & controls' },
+        { label: '4-7-8 Breathing', desc: 'Visual breathing guidance' },
+      ],
+      features: [
+        { icon: '🌸', title: 'Healing Journey', desc: 'Track 12 days with a visual meditation daisy' },
+        { icon: '🎵', title: 'Therapy Sound Player', desc: 'Control Rain, Forest, Ocean sounds directly' },
+        { icon: '🌬️', title: '4-7-8 Breathing', desc: 'Animated breathing circle guide on your wrist' },
+      ],
+      notifyText: 'Notify me when launched',
+    },
   },
 }
 
@@ -259,6 +352,26 @@ function RevealSection({ children, className = '', delay = 0 }: { children: Reac
       style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
+  )
+}
+
+function LotusDecor({ size = 64, color = '#A8C5A0' }: { size?: number; color?: string }) {
+  const cx = size / 2, cy = size / 2
+  const petalLen = size * 0.30, petalW = size * 0.10, offset = size * 0.16
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => {
+        const rad = (deg * Math.PI) / 180
+        const ox = cx + Math.sin(rad) * offset
+        const oy = cy - Math.cos(rad) * offset
+        return (
+          <ellipse key={i} cx={ox} cy={oy} rx={petalW * 0.55} ry={petalLen * 0.55}
+            fill={color} opacity={i % 2 === 0 ? 0.6 : 0.35}
+            transform={`rotate(${deg} ${ox} ${oy})`} />
+        )
+      })}
+      <circle cx={cx} cy={cy} r={size * 0.10} fill={color} opacity={0.9} />
+    </svg>
   )
 }
 
@@ -339,16 +452,16 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Auditory pathway infographic */}
             <RevealSection delay={100}>
-              <div className="relative bg-white/[0.02] backdrop-blur border border-white/5 rounded-3xl p-8 overflow-hidden">
+              <div className="relative bg-white/[0.02] backdrop-blur border border-white/5 rounded-3xl p-4 sm:p-8 overflow-hidden">
                 <div className="absolute top-0 right-0 w-48 h-48 bg-[#C7BFFF]/5 blur-[80px] rounded-full" />
-                <h3 className="text-sm font-semibold text-[#C7BFFF] mb-6 uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-[#C7BFFF] mb-4 sm:mb-6 uppercase tracking-wider">
                   {lang === 'vi' ? 'Đường dẫn thính giác' : 'Auditory Pathway'}
                 </h3>
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-1">
                   {lt.education.pathway.map((step: string, i: number) => (
-                    <div key={i} className="flex items-center gap-2 flex-1">
-                      <div className={`flex flex-col items-center gap-2 flex-1 ${i === 3 ? 'relative' : ''}`}>
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${
+                    <div key={i} className="flex items-center gap-1 flex-1">
+                      <div className={`flex flex-col items-center gap-1 sm:gap-2 flex-1 ${i === 3 ? 'relative' : ''}`}>
+                        <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-2xl ${
                           i === 3
                             ? 'bg-gradient-to-br from-red-500/30 to-orange-500/20 border border-red-400/30 pulse-ring'
                             : 'bg-white/[0.06] border border-white/10'
@@ -618,6 +731,375 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* ── SECTION 5b: MOBILE APP — BOTANICAL STYLE ── */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="py-6 px-0 relative overflow-hidden">
+        <div className="relative rounded-3xl mx-4 md:mx-8 overflow-hidden"
+             style={{ background: 'linear-gradient(135deg, #F5F0E8 0%, #EDE8DC 40%, #E8EDE4 100%)' }}>
+          {/* Botanical leaf decor */}
+          <div className="absolute top-0 right-0 w-72 h-72 opacity-[0.07] pointer-events-none select-none"
+               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cellipse cx='100' cy='60' rx='40' ry='90' fill='%234A7C59' transform='rotate(-20 100 100)'/%3E%3Cellipse cx='100' cy='60' rx='40' ry='90' fill='%234A7C59' transform='rotate(20 100 100)'/%3E%3C/svg%3E\")", backgroundSize: 'cover' }} />
+          <div className="absolute bottom-0 left-0 w-56 h-56 opacity-[0.05] pointer-events-none select-none"
+               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cellipse cx='100' cy='60' rx='40' ry='90' fill='%234A7C59' transform='rotate(-35 100 100)'/%3E%3C/svg%3E\")", backgroundSize: 'cover' }} />
+
+          <div className="mx-auto max-w-6xl px-8 md:px-14 py-20">
+            <div className="grid lg:grid-cols-2 gap-10 items-center">
+
+              {/* Left: Headline + features */}
+              <RevealSection>
+                <div>
+                  {/* Badge */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4A7C59]/10 border border-[#4A7C59]/20 text-[#4A7C59] text-xs font-medium mb-6">
+                    <LotusDecor size={14} color="#4A7C59" />
+                    {lt.mobileApp.badge}
+                  </div>
+
+                  {/* Big headline */}
+                  <h2 className="font-black text-[#1A1A1A] leading-tight mb-3"
+                      style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)' }}>
+                    {lt.mobileApp.headline}
+                    <br />
+                    <span className="italic" style={{ color: '#3B6348' }}>{lt.mobileApp.headline2}</span>
+                  </h2>
+
+                  <p className="text-[#6B7B6E] text-sm leading-relaxed max-w-md mb-10">
+                    {lt.mobileApp.desc}
+                  </p>
+
+                  {/* Feature cards */}
+                  <div className="grid gap-3 mb-8">
+                    {lt.mobileApp.features.map((f: any, i: number) => (
+                      <RevealSection key={i} delay={100 + i * 80}>
+                        <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/50 border border-white/70 hover:bg-white/70 transition-all group backdrop-blur-sm">
+                          <div className="w-11 h-11 flex-shrink-0 rounded-xl flex items-center justify-center text-xl"
+                               style={{ background: 'linear-gradient(135deg, #D4E8DA, #C8DFC0)' }}>
+                            {f.icon}
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-bold text-[#1A1A1A] mb-0.5">{f.title}</h3>
+                            <p className="text-xs text-[#6B7B6E] leading-relaxed">{f.desc}</p>
+                          </div>
+                        </div>
+                      </RevealSection>
+                    ))}
+                  </div>
+
+                  {/* Phone features label */}
+                  <div className="text-xs font-semibold text-[#9BA89D] uppercase tracking-widest">
+                    {lt.mobileApp.phoneFeatures}
+                  </div>
+                </div>
+              </RevealSection>
+
+              {/* Right: Real app screenshots in CSS iPhone frames */}
+              <RevealSection delay={200}>
+                <div className="relative flex items-end justify-center gap-3" style={{ minHeight: '520px' }}>
+                  {/* Glow backdrop */}
+                  <div className="absolute inset-0 pointer-events-none"
+                       style={{ background: 'radial-gradient(ellipse at 50% 70%, rgba(74,124,89,0.14) 0%, transparent 65%)' }} />
+
+                  {/* iPhone 1 — Home screen (back, slightly rotated) */}
+                  <div className="relative z-10 self-end mb-6 hover:-translate-y-2 transition-transform duration-700"
+                       style={{ transform: 'rotate(-4deg) translateY(0px)' }}>
+                    {/* Phone frame */}
+                    <div className="relative rounded-[44px] overflow-hidden"
+                         style={{
+                           width: '200px',
+                           height: '430px',
+                           background: '#0A0F0C',
+                           boxShadow: '0 32px 80px rgba(0,0,0,0.35), 0 0 0 1.5px rgba(255,255,255,0.10), inset 0 0 0 1px rgba(255,255,255,0.04)',
+                         }}>
+                      {/* Dynamic Island */}
+                      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 w-24 h-7 rounded-full bg-black" />
+                      {/* Screen */}
+                      <div className="absolute inset-0 rounded-[44px] overflow-hidden">
+                        <img
+                          src="/app-screen-explore.jpg"
+                          alt="TinniMate - Khu vườn chữa lành"
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+                      {/* Glass sheen */}
+                      <div className="absolute top-0 left-0 right-0 h-1/2 rounded-t-[44px] pointer-events-none"
+                           style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%)' }} />
+                    </div>
+                  </div>
+
+                  {/* iPhone 2 — Home flower screen (front, center, taller) */}
+                  <div className="relative z-20 self-end hover:-translate-y-4 transition-transform duration-700 delay-75"
+                       style={{ transform: 'rotate(2deg) translateY(0px)' }}>
+                    {/* Phone frame */}
+                    <div className="relative rounded-[46px] overflow-hidden"
+                         style={{
+                           width: '220px',
+                           height: '470px',
+                           background: '#0A0F0C',
+                           boxShadow: '0 40px 100px rgba(0,0,0,0.40), 0 0 0 1.5px rgba(255,255,255,0.13), inset 0 0 0 1px rgba(255,255,255,0.05)',
+                         }}>
+                      {/* Dynamic Island */}
+                      <div className="absolute top-3.5 left-1/2 -translate-x-1/2 z-20 w-24 h-7 rounded-full bg-black" />
+                      {/* Screen */}
+                      <div className="absolute inset-0 rounded-[46px] overflow-hidden">
+                        <img
+                          src="/app-screen-home.jpg"
+                          alt="TinniMate - Trang chủ"
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+                      {/* Glass sheen */}
+                      <div className="absolute top-0 left-0 right-0 h-1/2 rounded-t-[46px] pointer-events-none"
+                           style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%)' }} />
+                    </div>
+                    {/* Coming soon badges below */}
+                    <div className="flex gap-2 mt-5 justify-center">
+                      <div className="group relative cursor-pointer">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1A1F1C] border border-[#3B6348]/30 hover:bg-[#1F2A22] transition-all">
+                          <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                          </svg>
+                          <div>
+                            <div className="text-[7px] text-white/50 uppercase tracking-wider leading-none">Coming soon</div>
+                            <div className="text-[10px] font-semibold text-white leading-tight">App Store</div>
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-[#1A1F1C]/95 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="text-[9px] font-bold text-[#A8C5A0]">{lt.mobileApp.comingSoon} ✨</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </RevealSection>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* ── SECTION 5c: HEALING GARDEN REVEAL ── */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-[#A8C5A0]/4 blur-[140px]" />
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full bg-[#D4A574]/3 blur-[100px]" />
+        </div>
+        <div className="mx-auto max-w-6xl relative">
+          <RevealSection>
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#A8C5A0]/10 border border-[#A8C5A0]/25 text-[#A8C5A0] text-xs font-medium mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#A8C5A0] animate-pulse" />
+                {lt.botanicalApp.badge}
+              </div>
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                {lt.botanicalApp.title1}{' '}
+                <span className="bg-gradient-to-r from-[#A8C5A0] via-[#E8B4B8] to-[#E8C97A] bg-clip-text text-transparent italic">
+                  {lt.botanicalApp.title2}
+                </span>
+              </h2>
+              <p className="text-[#938F9C] max-w-2xl mx-auto text-sm leading-relaxed">{lt.botanicalApp.desc}</p>
+            </div>
+          </RevealSection>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Clinical web side */}
+            <RevealSection delay={100}>
+              <div className="relative rounded-3xl p-8 bg-white/[0.03] border border-violet-500/15 overflow-hidden h-full">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/8 blur-[80px] rounded-full" />
+                <div className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-400/20 text-violet-300 text-[11px] font-semibold">
+                  💻 {lt.botanicalApp.webLabel}
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">{lt.botanicalApp.webTitle}</h3>
+                <p className="text-sm text-[#938F9C] leading-relaxed mb-6">{lt.botanicalApp.webDesc}</p>
+                <ul className="space-y-3">
+                  {lt.botanicalApp.webFeatures.map((f: string, i: number) => (
+                    <li key={i} className="flex items-center gap-2.5 text-sm text-[#CAC5CC]">
+                      <span className="w-5 h-5 flex-shrink-0 rounded-full bg-violet-500/15 border border-violet-400/20 flex items-center justify-center text-[10px] text-violet-300">⚕</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </RevealSection>
+
+            {/* Botanical app side */}
+            <RevealSection delay={200}>
+              <div className="relative rounded-3xl p-8 border border-[#A8C5A0]/20 overflow-hidden h-full"
+                   style={{ background: 'linear-gradient(135deg, #1A1F1C 0%, #1B1E1A 100%)' }}>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-[#A8C5A0]/6 blur-[80px] rounded-full" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#D4A574]/6 blur-[60px] rounded-full" />
+                <div className="absolute top-4 right-4 opacity-[0.06]">
+                  <LotusDecor size={120} />
+                </div>
+                <div className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#A8C5A0]/12 border border-[#A8C5A0]/25 text-[#A8C5A0] text-[11px] font-semibold">
+                  🌿 {lt.botanicalApp.appLabel}
+                </div>
+                <h3 className="text-2xl font-bold text-[#F5EDE0] mb-2 italic">{lt.botanicalApp.appTitle}</h3>
+                <p className="text-sm text-[#938F9C] leading-relaxed mb-6">{lt.botanicalApp.appDesc}</p>
+                <ul className="space-y-3">
+                  {lt.botanicalApp.appFeatures.map((f: string, i: number) => (
+                    <li key={i} className="flex items-center gap-2.5 text-sm text-[#D4C5B5]">
+                      <span className="w-5 h-5 flex-shrink-0 rounded-full bg-[#A8C5A0]/12 border border-[#A8C5A0]/25 flex items-center justify-center text-[10px] text-[#A8C5A0]">✦</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </RevealSection>
+          </div>
+
+          {/* Journey bridge */}
+          <RevealSection delay={350}>
+            <div className="mt-10 flex items-center justify-center gap-3 flex-wrap">
+              <div className="px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/8 text-sm text-[#CAC5CC] text-center min-w-[140px]">
+                <div className="text-base mb-1">💻</div>
+                <div className="font-medium">{lt.botanicalApp.journeyWeb}</div>
+              </div>
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-[#A8C5A0] text-xl">→</span>
+                <span className="text-[10px] text-[#484551]">{lt.botanicalApp.journeyBridge}</span>
+              </div>
+              <div className="px-5 py-3 rounded-2xl bg-[#A8C5A0]/8 border border-[#A8C5A0]/18 text-sm text-[#A8C5A0] text-center min-w-[140px]">
+                <div className="text-base mb-1">🌿</div>
+                <div className="font-medium">{lt.botanicalApp.journeyApp}</div>
+              </div>
+            </div>
+          </RevealSection>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* ── SECTION 5d: APPLE WATCH — TERRACOTTA ── */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="py-8 px-4 md:px-8">
+        <RevealSection>
+          <div className="relative rounded-3xl overflow-hidden"
+               style={{ background: 'linear-gradient(135deg, #C4624A 0%, #B85540 40%, #A84D3A 100%)' }}>
+            {/* Noise texture overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '128px' }} />
+
+            {/* Subtle top gradient vignette */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/10 to-transparent pointer-events-none" />
+
+            <div className="relative mx-auto max-w-6xl px-8 md:px-14 py-16">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+                {/* Left: 3 Apple Watch mockups */}
+                <RevealSection delay={100}>
+                  <div className="flex items-end justify-center gap-4 md:gap-6" style={{ minHeight: '340px' }}>
+                    {/* Watch 1 — main (center, taller) */}
+                    <div className="relative flex-shrink-0 hover:-translate-y-2 transition-transform duration-500 delay-75" style={{ marginBottom: '0' }}>
+                      <div className="relative w-24 md:w-28 rounded-[30%] overflow-hidden border border-white/15"
+                           style={{ height: '120px', background: '#1C1C1E', boxShadow: '0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)' }}>
+                        {/* Crown */}
+                        <div className="absolute right-0 top-[30%] w-1.5 h-5 bg-[#2A2A2C] rounded-r-sm translate-x-full border border-white/10" />
+                        {/* Screen - flower */}
+                        <div className="absolute inset-1.5 rounded-[24%] overflow-hidden bg-[#0D1A10] flex flex-col items-center justify-center">
+                          <div className="opacity-80"><LotusDecor size={48} color="#C8A0D0" /></div>
+                          <div className="absolute bottom-2 text-[7px] text-white/60 text-center leading-tight px-1">
+                            {lang === 'vi' ? lt.watchRoadmap.screens[0].label : lt.watchRoadmap.screens[0].label}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Watch 2 — center (tallest) */}
+                    <div className="relative flex-shrink-0 hover:-translate-y-3 transition-transform duration-500 z-10" style={{ marginBottom: '20px' }}>
+                      <div className="relative w-28 md:w-32 rounded-[28%] overflow-hidden border border-white/20"
+                           style={{ height: '136px', background: '#1C1C1E', boxShadow: '0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.10)' }}>
+                        {/* Crown */}
+                        <div className="absolute right-0 top-[30%] w-1.5 h-5 bg-[#2A2A2C] rounded-r-sm translate-x-full border border-white/10" />
+                        {/* Screen - music player */}
+                        <div className="absolute inset-1.5 rounded-[22%] overflow-hidden bg-[#0A0A0A] flex flex-col items-center justify-center gap-1.5 px-2">
+                          <div className="text-[8px] text-white/40 uppercase tracking-widest">{lang === 'vi' ? 'Đang phát' : 'Playing'}</div>
+                          <div className="text-[9px] text-white font-semibold">{lang === 'vi' ? 'Mưa rừng' : 'Forest Rain'}</div>
+                          {/* Mini playback bar */}
+                          <div className="w-full bg-white/10 rounded-full h-0.5 mt-1">
+                            <div className="bg-[#A8C5A0] h-0.5 rounded-full w-2/3" />
+                          </div>
+                          {/* Controls */}
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-white/60 text-[10px]">⏮</span>
+                            <div className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center">
+                              <span className="text-white text-[10px] ml-0.5">▶</span>
+                            </div>
+                            <span className="text-white/60 text-[10px]">⏭</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Watch 3 — right */}
+                    <div className="relative flex-shrink-0 hover:-translate-y-2 transition-transform duration-500 delay-150">
+                      <div className="relative w-24 md:w-28 rounded-[30%] overflow-hidden border border-white/15"
+                           style={{ height: '120px', background: '#1C1C1E', boxShadow: '0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)' }}>
+                        {/* Crown */}
+                        <div className="absolute right-0 top-[30%] w-1.5 h-5 bg-[#2A2A2C] rounded-r-sm translate-x-full border border-white/10" />
+                        {/* Screen - breathing circle */}
+                        <div className="absolute inset-1.5 rounded-[24%] overflow-hidden bg-[#060D0A] flex flex-col items-center justify-center gap-1">
+                          {/* Animated breathing ring */}
+                          <div className="relative">
+                            <div className="w-10 h-10 rounded-full border-2 border-[#4A7C59]/40 flex items-center justify-center">
+                              <div className="w-6 h-6 rounded-full bg-[#3B6348]/60 border border-[#4A7C59]/50" />
+                            </div>
+                          </div>
+                          <div className="text-[7px] text-[#A8C5A0] text-center">{lang === 'vi' ? 'Nhịp thở 4-7-8' : '4-7-8 Breath'}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </RevealSection>
+
+                {/* Right: Text content */}
+                <RevealSection delay={200}>
+                  <div>
+                    {/* Badge */}
+                    <div className="text-xs font-semibold text-white/60 uppercase tracking-[0.2em] mb-4">
+                      {lt.watchRoadmap.badge}
+                    </div>
+
+                    {/* Title */}
+                    <h2 className="font-black text-white leading-tight mb-5"
+                        style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)' }}>
+                      {lt.watchRoadmap.title}
+                      <br />
+                      <span className="italic text-white/90">{lt.watchRoadmap.titleAccent}</span>
+                    </h2>
+
+                    <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-sm">
+                      {lt.watchRoadmap.desc}
+                    </p>
+
+                    {/* Features */}
+                    <div className="grid gap-3">
+                      {lt.watchRoadmap.features.map((f: any, i: number) => (
+                        <div key={i} className="flex items-start gap-3 p-3.5 rounded-2xl bg-black/15 border border-white/10 hover:bg-black/20 transition-all">
+                          <div className="w-9 h-9 flex-shrink-0 rounded-xl bg-white/10 flex items-center justify-center text-lg">
+                            {f.icon}
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-white mb-0.5">{f.title}</div>
+                            <div className="text-xs text-white/55 leading-relaxed">{f.desc}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    <button className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/15 border border-white/25 text-sm text-white hover:bg-white/25 hover:border-white/40 transition-all cursor-pointer">
+                      🔔 {lt.watchRoadmap.notifyText}
+                    </button>
+                  </div>
+                </RevealSection>
+
+              </div>
+            </div>
+          </div>
+        </RevealSection>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
