@@ -16,7 +16,9 @@ import { QUEUE_SCRAPE } from './bullmq-config.js'
 import { loadSession, validateSession, markPageStatus } from '../browser/facebook-session-manager.js'
 import { launchStealthBrowser } from '../browser/launch-stealth-browser.js'
 import { scrapeGroupPosts, scrapeKeywordSearch } from '../scraper/scrape-group-posts.js'
+import { scrapePostComments } from '../scraper/scrape-post-comments.js'
 import { upsertFbPosts } from '../db/fb-posts-upsert.js'
+import { upsertFbComments } from '../db/fb-comments-upsert.js'
 import { getSupabaseServiceClient } from '../db/supabase-service-role-client.js'
 import { logger } from '../lib/pino-structured-logger.js'
 import type { Job } from 'bullmq'
@@ -111,18 +113,23 @@ async function runScrapeJob(job: Job<ScrapeJobPayload>) {
     // 3. Upsert posts
     const upsertResult = await upsertFbPosts(sourceId, scrapeResult.posts)
 
-    // 4. Enqueue analyze jobs cho posts mới (chỉ newInserted)
+    // 4. Enqueue analyze jobs for newly inserted posts
     if (upsertResult.newInserted > 0) {
       await enqueueAnalyzeForNewPosts(sourceId, upsertResult.newInserted)
     }
 
-    // 5. Update source last_scraped_at
+    // 5. Scrape comments for relevant posts (those with fb_post_url)
+    if (upsertResult.newInserted > 0 && context) {
+      await scrapeCommentsForNewPosts(context, sourceId, upsertResult.newInserted, log)
+    }
+
+    // 6. Update source last_scraped_at
     await db
       .from('fb_target_sources')
       .update({ last_scraped_at: new Date().toISOString() })
       .eq('id', sourceId)
 
-    // 6. Update scrape job record
+    // 7. Update scrape job record
     await updateScrapeJobRecord(sourceId, pageId, 'DONE', {
       postsFound: scrapeResult.posts.length,
       postsNew: upsertResult.newInserted,
@@ -154,9 +161,57 @@ async function runScrapeJob(job: Job<ScrapeJobPayload>) {
 }
 
 /**
+ * Scrape comments for newly inserted posts that have fb_post_url.
+ * Limits to top 10 posts to avoid long browser sessions.
+ */
+async function scrapeCommentsForNewPosts(
+  context: Awaited<ReturnType<typeof launchStealthBrowser>>['context'],
+  sourceId: string,
+  limit: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  log: { info: (obj: unknown, msg: string) => void; debug: (obj: unknown, msg: string) => void; warn: (obj: unknown, msg: string) => void },
+) {
+  const db = getSupabaseServiceClient()
+
+  const { data: postsWithUrl } = await db
+    .from('fb_posts')
+    .select('id, fb_post_url')
+    .eq('source_id', sourceId)
+    .eq('status', 'NEW')
+    .not('fb_post_url', 'is', null)
+    .order('scraped_at', { ascending: false })
+    .limit(Math.min(limit, 10))  // max 10 posts per scrape job
+
+  if (!postsWithUrl?.length) {
+    log.debug({}, 'No posts with URL for comment scraping')
+    return
+  }
+
+  log.info({ count: postsWithUrl.length }, 'Scraping comments for new posts')
+
+  for (const post of postsWithUrl as { id: string; fb_post_url: string }[]) {
+    try {
+      const result = await scrapePostComments(context, post.fb_post_url, {
+        maxComments: 50,
+        sessionId: post.id,
+      })
+      if (result.comments.length > 0) {
+        await upsertFbComments(post.id, result.comments)
+        log.info({ postId: post.id, count: result.comments.length }, 'Comments scraped & queued')
+      }
+      // Small delay between posts
+      await new Promise(r => setTimeout(r, 2000 + Math.random() * 3000))
+    } catch (err) {
+      log.warn({ postId: post.id, err: (err as Error).message }, 'Comment scrape failed for post — continuing')
+    }
+  }
+}
+
+/**
  * Enqueue analyze jobs cho posts mới nhất của source.
  */
 async function enqueueAnalyzeForNewPosts(sourceId: string, limit: number) {
+
   const db = getSupabaseServiceClient()
   const analyzeQueue = getAnalyzeQueue()
 

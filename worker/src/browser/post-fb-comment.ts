@@ -27,10 +27,15 @@ export type PostReplyResult = {
 export async function postFbCommentForReply(replyId: string): Promise<PostReplyResult> {
   const db = getSupabaseServiceClient()
 
-  // 1. Fetch reply + post URL + page_id
+  // 1. Fetch reply + post URL + page_id + optional comment_id
   const { data, error } = await db
     .from('fb_replies')
-    .select('id, draft_text, status, page_id, post_id, fb_posts(fb_post_url, fb_post_id), fb_pages(label, fb_page_url)')
+    .select(`
+      id, draft_text, status, page_id, post_id, comment_id,
+      fb_posts(fb_post_url, fb_post_id),
+      fb_pages(label, fb_page_url),
+      comment:fb_comments(id, fb_comment_id, comment_url)
+    `)
     .eq('id', replyId)
     .single()
 
@@ -42,8 +47,10 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
     status: string
     page_id: string | null
     post_id: string
+    comment_id: string | null
     fb_posts: { fb_post_url: string | null; fb_post_id: string } | null
     fb_pages: { label: string; fb_page_url: string | null } | null
+    comment: { id: string; fb_comment_id: string; comment_url: string | null } | null
   }
 
   if (!reply.page_id) {
@@ -57,8 +64,13 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
     throw new Error('draft_text empty')
   }
 
-  const log = logger.child({ replyId, pageId: reply.page_id, postUrl })
-  log.info('Posting FB comment')
+  // Navigate to comment URL (if this is a reply-to-comment) or post URL
+  const commentFbId = reply.comment?.fb_comment_id ?? null
+  const navigateUrl = reply.comment?.comment_url ?? postUrl
+  const isCommentReply = !!reply.comment_id && !!commentFbId
+
+  const log = logger.child({ replyId, pageId: reply.page_id, isCommentReply, postUrl })
+  log.info('Posting FB comment/reply')
 
   // 2. Load session
   const storageState = await loadSession(reply.page_id)
@@ -70,7 +82,7 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
 
   try {
     const page = await context.newPage()
-    await page.goto(postUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 })
+    await page.goto(navigateUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 })
     await randomDelay(2_000, 4_000)
 
     // Detect logged-out redirect
@@ -87,19 +99,27 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
       log.warn('fb_page_url missing — sẽ comment bằng tài khoản cá nhân')
     }
 
-    // 3. Open composer + type
-    await openCommentComposerAndType(page, reply.draft_text.trim())
+    // 3. If replying to a specific comment, click "Reply" under that comment
+    if (isCommentReply && commentFbId) {
+      await clickReplyButtonOnComment(page, commentFbId, log)
+    }
 
-    // 4. Submit
+    // 4. Open composer + type
+    const composerSelector = isCommentReply
+      ? 'div[aria-label*="Trả lời" i][contenteditable], div[aria-label*="Reply" i][contenteditable], div[contenteditable][role="textbox"]'
+      : undefined
+    await openCommentComposerAndType(page, reply.draft_text.trim(), composerSelector)
+
+    // 5. Submit
     await submitComment(page)
 
-    // 5. Confirm — đợi composer empty hoặc comment xuất hiện
+    // 6. Confirm — wait for compose to clear
     await page.waitForTimeout(3_500)
 
     const fbCommentId = await extractLatestCommentId(page).catch(() => null)
     const postedAt = new Date().toISOString()
 
-    // 6. Update DB
+    // 7. Update DB
     await db
       .from('fb_replies')
       .update({
@@ -110,10 +130,15 @@ export async function postFbCommentForReply(replyId: string): Promise<PostReplyR
       })
       .eq('id', replyId)
 
-    // Update post.status → REPLIED
-    await db.from('fb_posts').update({ status: 'REPLIED' }).eq('id', reply.post_id)
+    // If replying to comment, update comment status too
+    if (reply.comment_id) {
+      await db.from('fb_comments').update({ status: 'REPLIED' }).eq('id', reply.comment_id)
+    } else {
+      // Update post.status → REPLIED (only for post-level replies)
+      await db.from('fb_posts').update({ status: 'REPLIED' }).eq('id', reply.post_id)
+    }
 
-    log.info({ fbCommentId }, 'Comment posted')
+    log.info({ fbCommentId, isCommentReply }, 'Comment/reply posted')
     return { ok: true, postedAt, fbCommentId }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -138,15 +163,16 @@ const COMPOSER_SELECTORS = [
   'form div[contenteditable="true"][role="textbox"]',
 ]
 
-async function openCommentComposerAndType(page: Page, text: string): Promise<void> {
-  // Try clicking each candidate composer and typing
-  for (const sel of COMPOSER_SELECTORS) {
+async function openCommentComposerAndType(page: Page, text: string, overrideSelector?: string): Promise<void> {
+  const selectors = overrideSelector
+    ? [overrideSelector, ...COMPOSER_SELECTORS]
+    : COMPOSER_SELECTORS
+  for (const sel of selectors) {
     const box = page.locator(sel).first()
     if ((await box.count()) === 0) continue
     try {
       await box.click({ timeout: 5_000 })
       await randomDelay(500, 1_500)
-      // Use type to mimic real keystrokes (FB notice paste vs type)
       await box.type(text, { delay: 25 })
       await randomDelay(800, 1_500)
       return
@@ -156,6 +182,47 @@ async function openCommentComposerAndType(page: Page, text: string): Promise<voi
   }
   throw new Error('Không tìm thấy comment composer (FB DOM có thể đã đổi)')
 }
+
+/**
+ * Click the "Reply" / "Trả lời" button under a specific comment by its FB comment ID.
+ */
+async function clickReplyButtonOnComment(
+  page: Page,
+  fbCommentId: string,
+  log: { info: (o: unknown, m: string) => void; warn: (o: unknown, m: string) => void },
+): Promise<void> {
+  try {
+    const commentLink = page.locator(`a[href*="${fbCommentId}"]`).first()
+    if (await commentLink.count() > 0) {
+      await commentLink.scrollIntoViewIfNeeded()
+      await page.waitForTimeout(500)
+    } else {
+      log.warn({ fbCommentId }, 'Comment link not found by ID')
+    }
+
+    const replySelectors = [
+      'div[role="button"]:has-text("Trả lời")',
+      'div[role="button"]:has-text("Reply")',
+      'span:has-text("Trả lời")',
+    ]
+
+    for (const sel of replySelectors) {
+      try {
+        const btn = page.locator(sel).first()
+        if (await btn.count() > 0) {
+          await btn.click({ timeout: 5_000 })
+          await page.waitForTimeout(1500)
+          log.info({ fbCommentId, sel }, 'Clicked Reply button')
+          return
+        }
+      } catch { /* try next */ }
+    }
+    log.warn({ fbCommentId }, 'Could not find Reply button — will post as top-level comment')
+  } catch (err) {
+    log.warn({ err: (err as Error).message }, 'clickReplyButtonOnComment error')
+  }
+}
+
 
 async function submitComment(page: Page): Promise<void> {
   // Press Enter trên composer thường submit comment trên FB web

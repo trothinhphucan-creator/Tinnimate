@@ -15,6 +15,7 @@ import { mcpGetStoreStats } from './lib/agentsee-mcp-http-client.js'
 import { startScrapeConsumer } from './queue/scrape-consumer.js'
 import { startScrapeProducer, enqueueAllSources } from './queue/scrape-producer.js'
 import { startAnalyzeConsumer } from './pipeline/analyze-post-job.js'
+import { startCommentClassifyConsumer } from './pipeline/classify-comment-job.js'
 import { startFacebookLogin, getLoginStatus, getLoginScreenshot } from './browser/facebook-login-flow.js'
 import { getSupabaseServiceClient } from './db/supabase-service-role-client.js'
 import { markPageStatus } from './browser/facebook-session-manager.js'
@@ -48,6 +49,7 @@ async function main() {
   // 2. Start BullMQ consumers
   startScrapeConsumer()
   startAnalyzeConsumer()
+  startCommentClassifyConsumer()
 
   // 3. Start cron producer
   startScrapeProducer()
