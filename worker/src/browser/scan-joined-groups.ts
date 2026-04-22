@@ -77,27 +77,65 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
     await pw.goto('https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout: 20_000 })
     if (pw.url().includes('/login')) throw new Error('Session expired — cần đăng nhập lại')
 
-    // ── Navigate to Page Groups URL ──────────────────────────────────────────
-    const baseUrl = fbPageUrl.replace(/\/$/, '')
+    // ── CRITICAL: Switch to Page context first ───────────────────────────────
+    // Facebook shows a "Chuyển sang Trang" (Switch to Page) button when viewing
+    // the page as an admin. We must click it to act AS the page.
+    log.info('Switching to Page context via Chuyển button')
+    await pw.goto(fbPageUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
+    await pw.waitForTimeout(2500)
 
-    // Try /groups/ suffix first (works for Pages that have joined groups)
-    const pageGroupsUrl = `${baseUrl}/groups/`
-    log.info({ pageGroupsUrl }, 'Navigating to Page groups URL')
+    // Look for the "Chuyển" sidebar button to open switch modal
+    const switchSelectors = [
+      'div[role="button"]:has-text("Chuyển ngay")',
+      'div[role="button"]:has-text("Chuyển")',
+      'button:has-text("Chuyển ngay")',
+      'button:has-text("Chuyển")',
+    ]
 
-    await pw.goto(pageGroupsUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
+    let switched = false
+    for (const sel of switchSelectors) {
+      try {
+        const btn = pw.locator(sel).first()
+        if (await btn.count() > 0) {
+          log.info({ sel }, 'Clicking Switch button — opening modal')
+          await btn.click()
+          await pw.waitForTimeout(1500)
+
+          // A modal appears with another blue "Chuyển" button — click it
+          // The modal has a blue confirm button (role=button or button with text Chuyển)
+          const modalConfirm = pw.locator('[role="dialog"] div[role="button"]:has-text("Chuyển"), [role="dialog"] button:has-text("Chuyển")').first()
+          if (await modalConfirm.count() > 0) {
+            log.info('Clicking modal confirm Chuyển button')
+            await modalConfirm.click()
+            await pw.waitForTimeout(2500) // Wait for context switch to complete
+            switched = true
+            log.info({ currentUrl: pw.url() }, 'Switched to Page context')
+            break
+          } else {
+            // No modal found — might have switched directly
+            switched = true
+            break
+          }
+        }
+      } catch { /* continue */ }
+    }
+
+    if (!switched) {
+      log.info('No Switch button found — may already be acting as Page')
+    }
+
+    log.info({ currentUrl: pw.url() }, 'After switch — navigating to Page groups feed')
+
+    // ── Navigate to Page Groups Feed ─────────────────────────────────────────
+    // When acting as a Page, facebook.com/groups/feed/ shows groups the Page joined
+    const groupsFeedUrl = 'https://www.facebook.com/groups/feed/'
+    log.info({ groupsFeedUrl }, 'Navigating to groups feed as Page')
+
+    await pw.goto(groupsFeedUrl, { waitUntil: 'domcontentloaded', timeout: 25_000 })
     await pw.waitForTimeout(3000)
 
-    // Check if we're still on the page (not redirected to login or generic groups)
     const finalUrl = pw.url()
     log.info({ finalUrl }, 'Final URL after navigation')
-
-    // If redirected away from the Page groups, try sk=groups param
-    if (!finalUrl.includes(baseUrl.split('/').pop()!) && !finalUrl.includes('groups')) {
-      const skUrl = `${baseUrl}?sk=groups`
-      log.info({ skUrl }, 'Fallback to sk=groups param')
-      await pw.goto(skUrl, { waitUntil: 'domcontentloaded', timeout: 20_000 })
-      await pw.waitForTimeout(2000)
-    }
 
     // Scroll to load groups
     for (let i = 0; i < 6; i++) {
@@ -109,7 +147,7 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
     log.info({ url: pw.url() }, 'Extracting groups from page')
 
     // Extract groups — filter out notification noise
-    const SKIP = ['feed', 'create', 'discover', 'joined', 'manage', 'you_admin', 'invites', 'search', 'explore']
+    const SKIP = ['feed', 'create', 'discover', 'joined', 'joins', 'manage', 'you_admin', 'invites', 'search', 'explore']
     const NOISE = ['Chưa đọc', 'bài viết mới', 'ảnh mới', 'giờ·', 'phút·', 'tuần trước', 'ngày trước', 'Lần hoạt động', 'Nhóm của bạn']
 
     const allGroups: FbGroupInfo[] = await pw.evaluate((args: { skip: string[]; noise: string[] }) => {
@@ -128,9 +166,13 @@ export async function scanJoinedGroups(pageId: string, fbPageUrl?: string | null
         const rawName = a.getAttribute('aria-label') || a.textContent?.trim() || slug
 
         // Filter out notification-style text (contains noise patterns)
-        if (!rawName || rawName.length < 2) continue
+        if (!rawName || rawName.length < 4) continue
         if (args.noise.some(n => rawName.includes(n))) continue
         if (rawName.length > 120) continue // Too long = likely notification text
+        // Skip pure timestamp names like '1 ngày', '2 giờ', etc.
+        if (/^\d+\s*(ngày|giờ|phút|tuần|tháng|năm)/.test(rawName)) continue
+        // Skip navigation link text
+        if (['Bảng feed của bạn', 'Xem tất cả', 'Tất cả'].includes(rawName)) continue
 
         seen.add(slug)
 
