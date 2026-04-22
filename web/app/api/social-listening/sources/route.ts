@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/social-listening/require-admin'
 import { NextResponse } from 'next/server'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
@@ -6,6 +7,8 @@ const adminDb = () => getAdminSupabase() as any
 
 // GET /api/social-listening/sources
 export async function GET() {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const db = adminDb()
   const { data, error } = await db
     .from('fb_target_sources')
@@ -19,6 +22,8 @@ export async function GET() {
 
 // POST /api/social-listening/sources
 export async function POST(req: Request) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const body = (await req.json()) as {
     label?: string
     type?: string
@@ -51,6 +56,8 @@ export async function POST(req: Request) {
 
 // PATCH /api/social-listening/sources  Body: { id, ...updates }
 export async function PATCH(req: Request) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const { id, ...updates } = (await req.json()) as { id?: string; [k: string]: unknown }
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
@@ -67,6 +74,8 @@ export async function PATCH(req: Request) {
 
 // DELETE /api/social-listening/sources?id=xxx
 export async function DELETE(req: Request) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const { searchParams } = new URL(req.url)
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })

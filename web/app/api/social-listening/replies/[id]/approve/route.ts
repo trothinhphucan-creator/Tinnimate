@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/social-listening/require-admin'
 import { NextResponse } from 'next/server'
 import { workerClient } from '@/lib/social-listening/worker-client'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
@@ -10,6 +11,8 @@ export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const { id } = await params
 
   // UUID validation

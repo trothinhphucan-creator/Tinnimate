@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/social-listening/require-admin'
 import { isValidUUID, invalidId } from '@/lib/social-listening/validate-id'
 import { NextResponse } from 'next/server'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
@@ -10,6 +11,8 @@ export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const { id } = await params
   if (!isValidUUID(id)) return invalidId()
   const db = adminDb()
@@ -27,6 +30,8 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const { id } = await params
   if (!isValidUUID(id)) return invalidId()
   const { draft_text, page_id } = (await req.json()) as {

@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/social-listening/require-admin'
 import { NextResponse } from 'next/server'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
@@ -6,6 +7,8 @@ const adminDb = () => getAdminSupabase() as any
 
 // GET /api/social-listening/pages
 export async function GET() {
+  const guard = await requireAdmin(); if (guard) return guard
+
   try {
     const db = getAdminSupabase()
     const { data, error } = await db
@@ -22,6 +25,8 @@ export async function GET() {
 
 // POST /api/social-listening/pages  Body: { label: string }
 export async function POST(req: Request) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   try {
     const { label } = (await req.json()) as { label?: string }
     if (!label?.trim()) {

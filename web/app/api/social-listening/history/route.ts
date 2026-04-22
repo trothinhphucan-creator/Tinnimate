@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/social-listening/require-admin'
 import { NextResponse } from 'next/server'
 import { getAdminSupabase } from '@/lib/supabase/admin-client'
 
@@ -7,6 +8,8 @@ const adminDb = () => getAdminSupabase() as any
 // GET /api/social-listening/history?filter=ALL|POSTED|REJECTED|FAILED|CRISIS&limit=100
 // Trả lịch sử fb_replies join post + page (loại trừ status DRAFT để tách khỏi review queue).
 export async function GET(req: Request) {
+  const guard = await requireAdmin(); if (guard) return guard
+
   const { searchParams } = new URL(req.url)
   const filter = searchParams.get('filter') ?? 'ALL'
   const limit = Math.min(Number(searchParams.get('limit') ?? 100), 200)
