@@ -9,9 +9,12 @@ import { logger } from '../lib/pino-structured-logger.js'
 
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
 
-/** Model IDs — read from env, fallback to stable release names */
-export const GEMINI_FLASH = env.GEMINI_MODEL_CLASSIFY ?? 'gemini-2.5-flash'
-export const GEMINI_PRO   = 'gemini-2.5-pro'
+/** Model IDs — read from env, fallback to stable release names.
+ * Classify uses 2.0-flash (non-thinking) — 2.5-flash thinking tokens consume maxOutputTokens
+ * before the JSON body, causing truncated responses.
+ */
+export const GEMINI_FLASH = env.GEMINI_MODEL_CLASSIFY ?? 'gemini-2.0-flash'
+export const GEMINI_PRO   = 'gemini-2.5-flash'  // used for reply generation (benefits from reasoning)
 
 /**
  * Get a model instance. Mỗi call tạo model mới (stateless).

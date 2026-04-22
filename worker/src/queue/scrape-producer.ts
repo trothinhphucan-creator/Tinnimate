@@ -74,9 +74,10 @@ export async function enqueueAllSources(): Promise<{ queued: number; skipped: nu
     }
 
     try {
-      await queue.add(`scrape:${source.id}`, payload, {
-        jobId: `scrape:${source.id}:${Date.now()}`,
-        // Delay nhỏ stagger giữa các source (30s * index) — tránh parallel
+      await queue.add(`scrape-${source.id}`, payload, {
+        // Stable jobId — dedup prevents duplicate runs from multiple enqueue calls
+        jobId: `scrape-${source.id}`,
+        // Stagger 30s per source to avoid parallel browser sessions
         delay: queued * 30_000,
       })
       queued++

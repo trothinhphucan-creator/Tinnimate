@@ -73,8 +73,15 @@ async function _generateOnce(
   hint?: string,
 ): Promise<string> {
   const settings = await getSlSettings()
-  const model = getGeminiModel(settings.model_id !== 'gemini-2.5-flash-preview-04-17' ? settings.model_id : GEMINI_FLASH)
-  const systemPrompt = settings.reply_system_prompt || REPLY_SYSTEM_PROMPT
+  const model = getGeminiModel(
+    (settings.model_id?.length ?? 0) > 5 && !settings.model_id.includes('preview')
+      ? settings.model_id
+      : GEMINI_FLASH,
+  )
+  // Require >100 chars — guards against placeholder DB values like "Tinni Companion"
+  const systemPrompt = (settings.reply_system_prompt?.length ?? 0) > 100
+    ? settings.reply_system_prompt
+    : REPLY_SYSTEM_PROMPT
 
   const userMessage = [
     `Topic: ${classification.topic} | Urgency: ${classification.urgency} | Lang: ${classification.lang}`,

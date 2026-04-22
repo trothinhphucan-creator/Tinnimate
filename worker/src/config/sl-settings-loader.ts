@@ -22,9 +22,9 @@ export type SlSettings = {
 
 const DEFAULT_SETTINGS: SlSettings = {
   llm_provider: 'gemini',
-  model_id: 'gemini-2.5-flash-preview-04-17',
-  temperature: 0.7,
-  max_tokens: 300,
+  model_id: 'gemini-2.5-flash',
+  temperature: 0.3,
+  max_tokens: 512,
   reply_system_prompt: REPLY_SYSTEM_PROMPT,
   classify_system_prompt: CLASSIFY_SYSTEM_PROMPT,
   comment_classify_prompt: COMMENT_CLASSIFY_SYSTEM_PROMPT,

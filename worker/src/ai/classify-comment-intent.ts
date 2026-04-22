@@ -13,6 +13,17 @@ import { COMMENT_CLASSIFY_SYSTEM_PROMPT } from '../pipeline/prompts/ai-prompts.j
 import { getSlSettings } from '../config/sl-settings-loader.js'
 import { logger } from '../lib/pino-structured-logger.js'
 
+/** Strip markdown wrapper or prose preamble — same as classify-post-relevance */
+function extractJson(raw: string): string {
+  const stripped = raw.trim()
+  const fenceMatch = stripped.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fenceMatch) return fenceMatch[1].trim()
+  const start = stripped.indexOf('{')
+  const end = stripped.lastIndexOf('}')
+  if (start !== -1 && end > start) return stripped.slice(start, end + 1)
+  return stripped
+}
+
 export type CommentClassification = {
   needs_reply: boolean
   intent: 'seeking_info' | 'asking_question' | 'sharing_experience' | 'complaining' | 'spam' | 'other'
@@ -29,7 +40,10 @@ export async function classifyCommentIntent(
 ): Promise<CommentClassification> {
   const settings = await getSlSettings()
   const model = getGeminiModel()
-  const systemPrompt = settings.comment_classify_prompt || COMMENT_CLASSIFY_SYSTEM_PROMPT
+  // Require >100 chars to avoid using placeholder DB values (e.g. "Social Listening Expert")
+  const systemPrompt = (settings.comment_classify_prompt?.length ?? 0) > 100
+    ? settings.comment_classify_prompt
+    : COMMENT_CLASSIFY_SYSTEM_PROMPT
 
   const userMsg = [
     postContent ? `Bài viết gốc (context): "${postContent.slice(0, 500)}"` : '',
@@ -45,7 +59,7 @@ export async function classifyCommentIntent(
       generationConfig: {
         responseMimeType: 'application/json',
         temperature: 0.1,
-        maxOutputTokens: 256,
+        maxOutputTokens: 512,
       },
     })
   } catch (err) {
@@ -57,12 +71,12 @@ export async function classifyCommentIntent(
   geminiUsage.track(usage?.promptTokenCount ?? 0, usage?.candidatesTokenCount ?? 0, 'comment-classify')
 
   try {
-    const parsed = JSON.parse(raw) as CommentClassification
-    // Validate required fields
+    if (!raw.trim()) throw new Error('Empty response')
+    const parsed = JSON.parse(extractJson(raw)) as CommentClassification
     if (typeof parsed.needs_reply !== 'boolean') throw new Error('Missing needs_reply')
     return parsed
   } catch {
-    logger.warn({ raw }, 'Failed to parse comment classification JSON')
+    logger.warn({ raw: raw.slice(0, 200) }, 'Failed to parse comment classification JSON')
     return {
       needs_reply: false,
       intent: 'other',
