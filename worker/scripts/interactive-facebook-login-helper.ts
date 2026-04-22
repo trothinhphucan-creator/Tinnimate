@@ -36,7 +36,8 @@ if (fs.existsSync(envPath)) {
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL ?? ''
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
-const ENCRYPTION_KEY = process.env.FB_COOKIE_ENCRYPTION_KEY ?? ''
+// Support both naming conventions
+const ENCRYPTION_KEY = process.env.FB_COOKIE_ENCRYPTION_KEY ?? process.env.FB_SESSION_ENC_KEY ?? ''
 const TIMEOUT_MS = Number(getArg('--timeout') ?? '300') * 1000 // default 5 min
 
 function getArg(name: string): string | null {
@@ -55,22 +56,22 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
   process.exit(1)
 }
 if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length < 64) {
-  console.error('❌ FB_COOKIE_ENCRYPTION_KEY must be 64 hex chars (256-bit AES key)')
+  console.error('❌ FB_SESSION_ENC_KEY (hoặc FB_COOKIE_ENCRYPTION_KEY) phải là 64 hex chars (256-bit AES key)')
+  console.error('   Xem giá trị trong /home/haichu/tinnimate/worker/.env: FB_SESSION_ENC_KEY=...')
   process.exit(1)
 }
 
-// ── Crypto helpers (same as facebook-session-manager.ts) ────────────────────
-function encryptAES256GCM(plaintext: string, hexKey: string): string {
-  const key = Buffer.from(hexKey, 'hex')
-  const iv = crypto.randomBytes(16)
+// ── Crypto: SAME format as src/lib/session-cookie-encryption.ts ────────────
+// Format: [iv 12 bytes][authTag 16 bytes][encrypted bytes] → Postgres bytea
+function encryptSessionState(stateJson: string, hexKey: string): string {
+  const key = Buffer.from(hexKey, 'hex')  // 32 bytes
+  const iv = crypto.randomBytes(12)        // 12-byte IV for AES-GCM
   const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
-  const enc = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
-  const tag = cipher.getAuthTag()
-  return JSON.stringify({
-    iv: iv.toString('hex'),
-    tag: tag.toString('hex'),
-    data: enc.toString('hex'),
-  })
+  const encrypted = Buffer.concat([cipher.update(stateJson, 'utf8'), cipher.final()])
+  const tag = cipher.getAuthTag()          // 16 bytes
+  const blob = Buffer.concat([iv, tag, encrypted])
+  // Postgres bytea hex literal: \x<hex>
+  return `\\x${blob.toString('hex')}`
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -157,11 +158,11 @@ async function main() {
         origins: [],
       })
 
-      const encrypted = encryptAES256GCM(storageState, ENCRYPTION_KEY)
+      const encryptedHex = encryptSessionState(storageState, ENCRYPTION_KEY)
 
-      // Save to Supabase
+      // Save to Supabase — column: session_cookie_enc (bytea)
       const { error: upsertErr } = await db.from('fb_pages').update({
-        encrypted_session: encrypted,
+        session_cookie_enc: encryptedHex,
         fb_user_id: fbUserId,
         status: 'ONLINE',
         last_active_at: new Date().toISOString(),

@@ -10,7 +10,7 @@ type FbPage = {
   id: string
   label: string
   fb_user_id: string | null
-  status: 'IDLE' | 'CONNECTING' | 'ONLINE' | 'ERROR' | 'LOGGED_OUT' | 'OFFLINE'
+  status: 'IDLE' | 'CONNECTING' | 'ONLINE' | 'ERROR' | 'LOGGED_OUT'
   last_active_at: string | null
   last_error: string | null
 }
@@ -345,7 +345,7 @@ export default function FanpagesAdminPage() {
                   <div className="font-medium">{p.label}</div>
                   {p.fb_user_id && <div className="text-xs text-slate-500 mt-0.5">FB ID: {p.fb_user_id}</div>}
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${STATUS_COLORS[p.status] ?? STATUS_COLORS['OFFLINE']}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${STATUS_COLORS[p.status] ?? STATUS_COLORS['IDLE']}`}>
                   {p.status}
                 </span>
               </div>

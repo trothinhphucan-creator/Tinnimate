@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const db = await getAdminDb()
     const { data, error } = await db
       .from('fb_pages')
-      .insert({ label: label.trim(), status: 'OFFLINE' })
+      .insert({ label: label.trim(), status: 'IDLE' })
       .select('id, label, status')
       .single()
 

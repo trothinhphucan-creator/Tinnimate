@@ -153,7 +153,7 @@ export default async function SocialListeningDashboard() {
                       {new Date(p.last_active_at).toLocaleString('vi-VN')}
                     </span>
                   )}
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[p.status] ?? STATUS_COLORS['OFFLINE']}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[p.status] ?? STATUS_COLORS['IDLE']}`}>
                     {p.status}
                   </span>
                 </div>
