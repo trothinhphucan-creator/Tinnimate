@@ -12,16 +12,16 @@ import {
 const CATEGORIES = ['Tất cả', 'Thiên nhiên', 'White noise', 'Tần số', 'Thiền'];
 
 const SOUNDS = [
-  { name: 'Mưa rừng',   sub: 'White noise', ill: <WaterLily size={56} />, tint: 'sky'     as const },
-  { name: 'Đại dương',  sub: 'Thiên nhiên', ill: <Coral size={56} />,     tint: 'sky'     as const },
-  { name: 'Rừng sâu',   sub: 'Thiên nhiên', ill: <Fern size={56} />,      tint: 'sage'    as const },
-  { name: 'Bếp lửa',    sub: 'Ấm áp',       ill: <Wildflower size={56} />,tint: 'terra'   as const },
-  { name: 'Chim hót',   sub: 'Thiên nhiên', ill: <Sakura size={56} />,    tint: 'petal'   as const },
-  { name: 'Zen chuông', sub: 'Thiền',        ill: <Bamboo size={56} />,    tint: 'sage'    as const },
-  { name: 'White',      sub: 'Tần số',       ill: <Dandelion size={56} />, tint: 'default' as const },
-  { name: 'Pink',       sub: 'Tần số',       ill: <Sakura size={56} />,    tint: 'petal'   as const },
-  { name: 'Brown',      sub: 'Tần số',       ill: <Mushroom size={56} />,  tint: 'terra'   as const },
-  { name: '528 Hz',     sub: 'Chữa lành',    ill: <LotusOrb size={60} progress={0} animate={false} />, tint: 'petal' as const },
+  { name: 'Mưa rừng',   sub: 'White noise', trackId: 'rain',     ill: <WaterLily size={56} />, tint: 'sky'     as const },
+  { name: 'Đại dương',  sub: 'Thiên nhiên', trackId: 'ocean',    ill: <Coral size={56} />,     tint: 'sky'     as const },
+  { name: 'Rừng sâu',   sub: 'Thiên nhiên', trackId: 'forest',   ill: <Fern size={56} />,      tint: 'sage'    as const },
+  { name: 'Bếp lửa',    sub: 'Ấm áp',       trackId: 'campfire', ill: <Wildflower size={56} />,tint: 'terra'   as const },
+  { name: 'Chim hót',   sub: 'Thiên nhiên', trackId: 'birds',    ill: <Sakura size={56} />,    tint: 'petal'   as const },
+  { name: 'Zen chuông', sub: 'Thiền',        trackId: 'zen',      ill: <Bamboo size={56} />,    tint: 'sage'    as const },
+  { name: 'White',      sub: 'Tần số',       trackId: 'white',    ill: <Dandelion size={56} />, tint: 'default' as const },
+  { name: 'Pink',       sub: 'Tần số',       trackId: 'pink',     ill: <Sakura size={56} />,    tint: 'petal'   as const },
+  { name: 'Brown',      sub: 'Tần số',       trackId: 'brown',    ill: <Mushroom size={56} />,  tint: 'terra'   as const },
+  { name: '528 Hz',     sub: 'Chữa lành',    trackId: '528hz',    ill: <LotusOrb size={60} progress={0} animate={false} />, tint: 'petal' as const },
 ];
 
 export default function ExploreScreen() {
@@ -77,7 +77,7 @@ export default function ExploreScreen() {
                 key={i}
                 style={{ width: '47.5%' }}
                 activeOpacity={0.8}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/therapy' as any); }}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push(`/therapy?track=${sound.trackId}` as any); }}
               >
                 <BotanicalCard tint={sound.tint} style={{ padding: 14, minHeight: 140 }}>
                   <View style={{ alignItems: 'center', marginBottom: 6 }}>{sound.ill}</View>
